@@ -801,3 +801,6 @@ input{border-color:var(--border);border-radius:12px}
 #tableHead{position:relative!important;top:auto!important;margin-bottom:0!important}
 #tableHead.stage-head-fixed{position:fixed!important;z-index:100;top:0!important;margin:0!important;background:var(--card);box-sizing:border-box}
 .table-head-anchor.stage-head-fixed-active{height:var(--stage-head-height,24px)}
+
+/* Long-press source marker stays inside the cell so row 1 is never visually clipped. */
+#pages .progress-cell.paint-source{outline:none!important;box-shadow:inset 0 0 0 2px #777}

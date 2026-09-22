@@ -786,8 +786,7 @@ function updatePaintPoint(x,y){
 function paintAutoScrollStep(){
   paintScrollRaf=0;
   if(!paintMode)return;
-  let dy=0;
-  // オートスクロールは縦モードだけ。横モードでは画面を動かさない。
+  let dx=0,dy=0;
   if(paintAxis==="vertical"){
     const h=window.innerHeight;
     if(paintLastY<PAINT_SCROLL_EDGE){
@@ -797,11 +796,26 @@ function paintAutoScrollStep(){
       const strength=(paintLastY-(h-PAINT_SCROLL_EDGE))/PAINT_SCROLL_EDGE;
       dy=Math.max(1,Math.round(PAINT_SCROLL_MAX*Math.min(1,strength)));
     }
+  }else if(paintAxis==="horizontal"){
+    const scroller=document.getElementById("stageTableScroll");
+    if(scroller){
+      const r=scroller.getBoundingClientRect();
+      // 左端は固定ページ番号の幅を除外し、見えているセル領域の端で自動スクロールする。
+      const pageCol=parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--progress-page-col"))||28;
+      const leftEdge=r.left+pageCol;
+      const rightEdge=r.right;
+      if(paintLastX<leftEdge+PAINT_SCROLL_EDGE){
+        const strength=(leftEdge+PAINT_SCROLL_EDGE-paintLastX)/PAINT_SCROLL_EDGE;
+        dx=-Math.max(1,Math.round(PAINT_SCROLL_MAX*Math.min(1,strength)));
+      }else if(paintLastX>rightEdge-PAINT_SCROLL_EDGE){
+        const strength=(paintLastX-(rightEdge-PAINT_SCROLL_EDGE))/PAINT_SCROLL_EDGE;
+        dx=Math.max(1,Math.round(PAINT_SCROLL_MAX*Math.min(1,strength)));
+      }
+      if(dx)scroller.scrollLeft+=dx;
+    }
   }
-  if(dy){
-    window.scrollBy(0,dy);
-    updatePaintPoint(paintLastX,paintLastY);
-  }
+  if(dy)window.scrollBy(0,dy);
+  if(dx||dy)updatePaintPoint(paintLastX,paintLastY);
   paintScrollRaf=requestAnimationFrame(paintAutoScrollStep);
 }
 function startPaintAutoScroll(){
