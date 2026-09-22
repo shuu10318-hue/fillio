@@ -60,38 +60,6 @@ button{font:inherit;color:inherit}
 .sticky-delete{height:44px;border:1px solid #ddd;border-radius:10px;background:#fff;color:#777;font-weight:700}
 .sticky-delete:active{background:#f3f3f3}
 
-/* Smooth swipe/page transition */
-#pages{
-  will-change:transform,opacity;
-  transform:translateX(0);
-  opacity:1;
-}
-#pages.page-slide-out-left{
-  transform:translateX(-24px);
-  opacity:.25;
-  transition:transform 130ms ease-in,opacity 130ms ease-in;
-}
-#pages.page-slide-out-right{
-  transform:translateX(24px);
-  opacity:.25;
-  transition:transform 130ms ease-in,opacity 130ms ease-in;
-}
-#pages.page-slide-in-from-right{
-  animation:pageInRight 220ms cubic-bezier(.22,.61,.36,1);
-}
-#pages.page-slide-in-from-left{
-  animation:pageInLeft 220ms cubic-bezier(.22,.61,.36,1);
-}
-@keyframes pageInRight{
-  from{transform:translateX(28px);opacity:.2}
-  to{transform:translateX(0);opacity:1}
-}
-@keyframes pageInLeft{
-  from{transform:translateX(-28px);opacity:.2}
-  to{transform:translateX(0);opacity:1}
-}
-
-
 /* Symbol-free progress cells */
 .state-swatch{
   display:inline-block;
@@ -730,7 +698,6 @@ input{border-color:var(--border);border-radius:12px}
 /* ===== Dashboard + vertical input prototype ===== */
 .prototype-input-mode .prototype-dashboard-only{display:none!important}
 .prototype-input-mode .navigation{display:none!important}
-.prototype-input-hint{margin:4px 3px 10px;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.02em}
 .prototype-input-card{padding-bottom:20px}
 #pages.prototype-all-pages{min-height:0!important;height:auto!important}
 .project-dashboard-strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin-top:11px;padding-top:10px;border-top:1px solid var(--border)}

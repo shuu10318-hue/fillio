@@ -918,7 +918,7 @@ document.getElementById("backupFile").addEventListener("change",async e=>{
 });
 
 
-// メモ一覧表示中は、背面の12Pスワイプへタッチ操作を伝えない
+// メモ一覧表示中は、背面の工程表へタッチ操作を伝えない
 const memoOverlay=document.getElementById("memoListModal");
 ["touchstart","touchmove","touchend"].forEach(type=>{
   memoOverlay.addEventListener(type,e=>e.stopPropagation(),{passive:true});
@@ -1110,61 +1110,6 @@ document.getElementById("createNewProject").onclick=()=>{
 };
 
 load();
-
-
-// --- Smooth swipe navigation prototype ---
-(function(){
-  const swipeArea=document.getElementById("pages");
-  if(!swipeArea)return;
-
-  let startX=0,startY=0,tracking=false,animating=false;
-  const MIN_X=55,MAX_Y=50;
-
-  function changePage(direction){
-    if(animating)return;
-    const maxView=Math.max(0,Math.ceil(totalPages/12)-1);
-    if(direction==="next" && currentView>=maxView)return;
-    if(direction==="prev" && currentView<=0)return;
-
-    animating=true;
-    const outClass=direction==="next"?"page-slide-out-left":"page-slide-out-right";
-    const inClass=direction==="next"?"page-slide-in-from-right":"page-slide-in-from-left";
-
-    swipeArea.classList.remove("page-slide-in-from-right","page-slide-in-from-left");
-    swipeArea.classList.add(outClass);
-
-    setTimeout(()=>{
-      currentView += direction==="next" ? 1 : -1;
-      swipeArea.classList.remove(outClass);
-      renderPages();
-
-      // Restart entrance animation cleanly.
-      void swipeArea.offsetWidth;
-      swipeArea.classList.add(inClass);
-      setTimeout(()=>{
-        swipeArea.classList.remove(inClass);
-        animating=false;
-      },230);
-    },130);
-  }
-
-  swipeArea.addEventListener("touchstart",e=>{
-    if(animating || e.touches.length!==1)return;
-    startX=e.touches[0].clientX;
-    startY=e.touches[0].clientY;
-    tracking=true;
-  },{passive:true});
-
-  swipeArea.addEventListener("touchend",e=>{
-    if(!tracking || !e.changedTouches.length)return;
-    tracking=false;
-    if(Date.now()<suppressPageSwipeUntil)return;
-    const dx=e.changedTouches[0].clientX-startX;
-    const dy=e.changedTouches[0].clientY-startY;
-    if(Math.abs(dx)<MIN_X || Math.abs(dy)>MAX_Y || Math.abs(dx)<=Math.abs(dy))return;
-    changePage(dx<0?"next":"prev");
-  },{passive:true});
-})();
 
 
 // --- 工程カスタマイズ prototype ---
@@ -1767,8 +1712,8 @@ const FULL_I18N={
  "＋ 工程を追加":"+ Add Stage","キャンセル":"Cancel","保存":"Save","作成":"Create","編集":"Edit","この作品を削除":"Delete Project",
  "新しいフォルダ":"New Folder","フォルダ名":"Folder name","フォルダ名を変更":"Rename Folder","フォルダから戻す":"Move out of folder",
  "付箋":"Page Note","付箋を削除":"Delete Note","閉じる":"Close","すべて":"All","赤":"Red","黄":"Yellow","青":"Blue","緑":"Green","移動":"Go",
- "使い方":"Help","工程マスをタップ":"Tap a stage cell","長押し＋スライド":"Long press + slide","左右にスワイプ":"Swipe left/right",
- "ページ番号をタップ":"Tap a page number","進捗と完成予想":"Progress & forecast","バックアップ":"Backup","マーカー":"Legend",
+ "使い方":"Help","工程マスをタップ":"Tap a stage cell","長押し＋スライド":"Long press + slide",
+ "ページ番号をタップ":"Tap a page number","マーカー":"Legend",
  "💾 バックアップ":"💾 Backup","📂 復元":"📂 Restore","工程":"Stages","工程名":"Stage name","上へ":"Up","下へ":"Down",
  "言語":"Language","アプリ設定":"App Settings","新規作品のデフォルト":"New Project Defaults","設定":"Settings",
  "全工程":"All stages","締切":"Deadline","ページ":"Pages","未設定":"Not set","完了":"Done","完成工程":"completed stages",
@@ -1782,12 +1727,9 @@ const FULL_I18N={
  "着手=0.5工程として直近7日から算出":"Calculated from the last 7 days, counting in-progress as 0.5 stage.",
  "全作品のページ数・進捗・付箋・作業履歴を1つのJSONに保存します。":"Save all projects, progress, notes and work history in one JSON file.",
  "Chromeのダウンロード一覧または端末の「Downloads」を確認してください。":"Check Chrome downloads or the device Downloads folder.",
- "JSONバックアップには作品・進捗・作業履歴・付箋などのデータを保存します。大きな変更の前にもバックアップしておくと安心です。":"JSON backup stores projects, progress, work history and notes. Back up before major changes.",
  "タップするたびに「未着手 → 着手 → 完了 → 未着手」と切り替わります。":"Each tap cycles: Not started → In progress → Complete → Not started.",
  "工程マスを約0.5秒長押しし、上下または左右になぞると範囲をプレビューできます。指を離すと確定します。振動したら開始です。":"Long-press a stage cell for about 0.5 seconds, then slide vertically or horizontally to preview the range. Release to apply it. It starts when the device vibrates.",
- "工程表を左右にスワイプすると、12ページずつ移動できます。「前」「次」ボタンでも移動できます。":"Swipe the production table left or right to move 12 pages at a time. You can also use Prev and Next.",
  "そのページに付箋メモを付けられます。赤・黄・青・緑で分類でき、「メモ一覧」から絞り込みやページ移動もできます。":"Add a note to a page and classify it by red, yellow, blue or green. Filter notes and jump to pages from Notes.",
- "着手率・完成率・工程別進捗を自動集計します。作業履歴から完成予想を計算し、締切を設定している場合は必要ペースも確認できます。":"Automatically summarizes started/completed rates and stage progress. Work history is used to estimate completion and required pace when a deadline is set."
  }};
 const JA_STAGE_DEFAULTS=["ネーム","ペン","背景","トーン","写植"];
 const EN_STAGE_DEFAULTS=["Storyboard","Line Art","Background","Tone","Lettering"];
