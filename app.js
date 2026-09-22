@@ -1233,56 +1233,45 @@ function displayStageName(name,index){
 function renderDynamicTableHead(){
   const head=document.getElementById("tableHead"); if(!head)return;
   document.documentElement.style.setProperty("--stage-count",String(stages.length));
-  head.innerHTML=`<div class="table-head-corner"></div><div class="stage-head-viewport"><div class="stage-head-track">${stages.map((n,i)=>`<div class="head">${escapeStageHtml(displayStageName(n,i))}</div>`).join("")}</div></div>`;
-  syncStageHeaderScroll();
+  head.innerHTML=`<div class="table-head-corner"></div>${stages.map((n,i)=>`<div class="head">${escapeStageHtml(displayStageName(n,i))}</div>`).join("")}`;
 }
-function syncStageHeaderScroll(){
-  const scroller=document.getElementById("stageTableScroll");
-  const track=document.querySelector("#tableHead .stage-head-track");
-  if(!scroller||!track)return;
-  // 横スクロール量をその場で反映。CSS transition / rAF を介さない。
-  track.style.transition="none";
-  track.style.transform=`translate3d(${-scroller.scrollLeft}px,0,0)`;
-}
-const stageTableScroll=document.getElementById("stageTableScroll");
-if(stageTableScroll)stageTableScroll.addEventListener("scroll",syncStageHeaderScroll,{passive:true});
 
-// 工程名は縦スクロール時だけ画面上部に追従させる。
-// 横方向はセル本体の scrollLeft と同期して同じ列位置を保つ。
+// 工程ヘッダーの縦方向の追従だけを担当する。
+// 横方向はヘッダーとセルが同じスクロール領域にあるためJS同期しない。
 (function setupVerticalStageHeaderFollow(){
   const anchor=document.getElementById("tableHeadAnchor");
   const head=document.getElementById("tableHead");
-  const body=document.getElementById("stageTableScroll");
-  if(!anchor||!head||!body)return;
-  let ticking=false;
+  const scroller=document.getElementById("stageTableScroll");
+  const card=document.querySelector(".prototype-input-card");
+  if(!anchor||!head||!scroller||!card)return;
+  let fixed=false;
   function update(){
-    ticking=false;
-    if(head.classList.contains("stage-head-fixed")){
-      // fixed 状態の寸法計算に自身を使わない
-      head.classList.remove("stage-head-fixed");
-      anchor.classList.remove("stage-head-fixed-active");
-    }
-    const a=anchor.getBoundingClientRect();
-    const b=body.getBoundingClientRect();
+    const cardRect=card.getBoundingClientRect();
+    const anchorRect=anchor.getBoundingClientRect();
+    const pagesRect=document.getElementById("pages")?.getBoundingClientRect();
     const h=head.offsetHeight;
-    const shouldFix=a.top<=0 && b.bottom>h;
-    if(shouldFix){
+    const shouldFix=anchorRect.top<=0 && pagesRect && pagesRect.bottom>h;
+    if(shouldFix&&!fixed){
       anchor.style.setProperty("--stage-head-height",`${h}px`);
       anchor.classList.add("stage-head-fixed-active");
-      head.style.left=`${a.left}px`;
-      head.style.width=`${a.width}px`;
       head.classList.add("stage-head-fixed");
-      syncStageHeaderScroll();
+      fixed=true;
+    }else if(!shouldFix&&fixed){
+      head.classList.remove("stage-head-fixed");
+      anchor.classList.remove("stage-head-fixed-active");
+      fixed=false;
+    }
+    if(fixed){
+      // 固定時の横位置はCSSのscroll-driven positioningではなく、
+      // スクロール領域そのものにヘッダーを残すため追加同期は不要。
+      head.style.width=`${Math.max(scroller.scrollWidth, cardRect.width)}px`;
     }else{
-      head.style.left="";
       head.style.width="";
     }
   }
-  function requestUpdate(){if(ticking)return;ticking=true;requestAnimationFrame(update)}
-  window.addEventListener("scroll",requestUpdate,{passive:true});
-  window.addEventListener("resize",requestUpdate,{passive:true});
-  body.addEventListener("scroll",requestUpdate,{passive:true});
-  requestUpdate();
+  window.addEventListener("scroll",update,{passive:true});
+  window.addEventListener("resize",update,{passive:true});
+  update();
 })();
 
 let editingProjectId=null;

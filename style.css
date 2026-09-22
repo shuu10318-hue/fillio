@@ -812,3 +812,22 @@ input{border-color:var(--border);border-radius:12px}
   scroll-behavior:auto!important;
   will-change:auto!important;
 }
+
+/* --- Native horizontal header movement: no JS scrollLeft sync --- */
+#tableHead{
+  display:grid!important;
+  width:max-content!important;
+  min-width:max-content!important;
+  grid-template-columns:var(--progress-page-col) repeat(var(--stage-count,5),var(--progress-cell-size))!important;
+  gap:var(--progress-grid-gap)!important;
+}
+#tableHead .head{
+  width:var(--progress-cell-size)!important;
+  min-width:var(--progress-cell-size)!important;
+}
+#tableHead .table-head-corner{
+  position:sticky;
+  left:0;
+  z-index:6;
+}
+.stage-head-viewport,.stage-head-track{display:contents!important;transform:none!important}
