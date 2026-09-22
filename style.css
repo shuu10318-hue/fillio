@@ -795,3 +795,9 @@ input{border-color:var(--border);border-radius:12px}
   background:var(--card);
 }
 @media(max-width:360px){:root{--progress-cell-size:48px;--progress-page-col:26px;--progress-grid-gap:2px}}
+
+/* --- robust vertical follow for stage header --- */
+.table-head-anchor{position:relative;height:auto;margin-bottom:5px}
+#tableHead{position:relative!important;top:auto!important;margin-bottom:0!important}
+#tableHead.stage-head-fixed{position:fixed!important;z-index:100;top:0!important;margin:0!important;background:var(--card);box-sizing:border-box}
+.table-head-anchor.stage-head-fixed-active{height:var(--stage-head-height,24px)}

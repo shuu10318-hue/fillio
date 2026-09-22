@@ -1231,6 +1231,44 @@ function syncStageHeaderScroll(){
 const stageTableScroll=document.getElementById("stageTableScroll");
 if(stageTableScroll)stageTableScroll.addEventListener("scroll",syncStageHeaderScroll,{passive:true});
 
+// 工程名は縦スクロール時だけ画面上部に追従させる。
+// 横方向はセル本体の scrollLeft と同期して同じ列位置を保つ。
+(function setupVerticalStageHeaderFollow(){
+  const anchor=document.getElementById("tableHeadAnchor");
+  const head=document.getElementById("tableHead");
+  const body=document.getElementById("stageTableScroll");
+  if(!anchor||!head||!body)return;
+  let ticking=false;
+  function update(){
+    ticking=false;
+    if(head.classList.contains("stage-head-fixed")){
+      // fixed 状態の寸法計算に自身を使わない
+      head.classList.remove("stage-head-fixed");
+      anchor.classList.remove("stage-head-fixed-active");
+    }
+    const a=anchor.getBoundingClientRect();
+    const b=body.getBoundingClientRect();
+    const h=head.offsetHeight;
+    const shouldFix=a.top<=0 && b.bottom>h;
+    if(shouldFix){
+      anchor.style.setProperty("--stage-head-height",`${h}px`);
+      anchor.classList.add("stage-head-fixed-active");
+      head.style.left=`${a.left}px`;
+      head.style.width=`${a.width}px`;
+      head.classList.add("stage-head-fixed");
+      syncStageHeaderScroll();
+    }else{
+      head.style.left="";
+      head.style.width="";
+    }
+  }
+  function requestUpdate(){if(ticking)return;ticking=true;requestAnimationFrame(update)}
+  window.addEventListener("scroll",requestUpdate,{passive:true});
+  window.addEventListener("resize",requestUpdate,{passive:true});
+  body.addEventListener("scroll",requestUpdate,{passive:true});
+  requestUpdate();
+})();
+
 let editingProjectId=null;
 function updateEditProjectTotal(){
   const a=Math.max(1,Number(document.getElementById("editProjectStart").value)||1);
