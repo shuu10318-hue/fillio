@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f6f6f6">
+<title>漫画制作進捗</title>
+
+
+<link rel="stylesheet" href="style.css?v=20260922-prototype-dashboard1">
+</head>
+<body>
+
+
+<div id="helpModal" class="help-overlay" aria-hidden="true">
+  <div class="help-sheet" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+    <div class="help-head">
+      <div id="helpTitle" class="help-title">使い方</div>
+      <button id="helpClose" class="help-close" type="button" aria-label="閉じる">×</button>
+    </div>
+    <div class="help-scroll">
+      <div class="help-item">
+        <div class="help-item-title">工程マスをタップ</div>
+        <div class="help-item-text">タップするたびに「未着手 → 着手 → 完了 → 未着手」と切り替わります。</div>
+        <div class="help-states">
+          <div class="help-state"><span class="help-swatch"></span>未着手</div>
+          <div class="help-state"><span class="help-swatch started"></span>着手</div>
+          <div class="help-state"><span class="help-swatch done"></span>完了</div>
+        </div>
+      </div>
+      <div class="help-item">
+        <div class="help-item-title">長押し＋スライド</div>
+        <div class="help-item-text">工程マスを約0.5秒長押しして、そのまま同じ工程をなぞると、最初のマスの状態を連続コピーできます。振動したらコピー開始です。</div>
+      </div>
+      <div class="help-item">
+        <div class="help-item-title">左右にスワイプ</div>
+        <div class="help-item-text">工程表を左右にスワイプすると、12ページずつ移動できます。「前」「次」ボタンでも移動できます。</div>
+      </div>
+      <div class="help-item">
+        <div class="help-item-title">ページ番号をタップ</div>
+        <div class="help-item-text">そのページに付箋メモを付けられます。赤・黄・青・緑で分類でき、「メモ一覧」から絞り込みやページ移動もできます。</div>
+      </div>
+      <div class="help-item">
+        <div class="help-item-title">進捗と完成予想</div>
+        <div class="help-item-text">着手率・完成率・工程別進捗を自動集計します。作業履歴から完成予想を計算し、締切を設定している場合は必要ペースも確認できます。</div>
+      </div>
+      <div class="help-item">
+        <div class="help-item-title">バックアップ</div>
+        <div class="help-item-text">JSONバックアップには作品・進捗・作業履歴・付箋などのデータを保存します。大きな変更の前にもバックアップしておくと安心です。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="projectHome" style="display:none">
+  <div class="project-home-head">
+    <h1 id="homeTitle">作品一覧</h1>
+    <div class="home-head-actions"><button id="languageButton" class="settings-button language-button" type="button" aria-label="Language">🌐</button><button id="appSettingsButton" class="settings-button" type="button" aria-label="設定">⚙️</button><button id="newProjectButton" class="project-add-button">＋ 新しい作品</button></div>
+  </div>
+  <div id="folderHead" class="folder-head"><div id="folderHeadTitle" class="folder-head-title"></div><button id="folderRename" class="folder-rename" type="button">名前変更</button><button id="folderDelete" class="folder-remove" type="button">削除</button></div>
+<div id="folderToolbar" class="folder-toolbar"><button id="folderAdd" class="folder-add" type="button">＋ フォルダ</button></div>
+<div id="projectList"></div>
+  <div class="project-backup-note">作品ごとの進捗・付箋・作業履歴は端末内に自動保存されます。</div>
+</div>
+
+<div class="app prototype-input-mode" id="editorApp" style="display:none">
+<div class="top-title"><h1>漫画制作進捗</h1><div class="top-actions"><button id="memoListButton" class="memo-list-button">メモ一覧</button></div></div>
+<div class="current-project-title-wrap"><div class="current-project-title-label" id="currentProjectTitleLabel">作品</div><div id="currentProjectTitle" class="current-project-title"></div></div><div id="projectBreadcrumb" class="project-breadcrumb"></div>
+<div class="card" style="display:none">
+<div class="label">作品名</div><input id="title" value="ばちぼこゾンビランド" placeholder="作品名">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:15px;margin-bottom:7px">
+<div class="label" style="margin:0">制作ページ数</div><div id="totalPageLabel" style="font-size:11px;color:var(--muted)">全48P</div>
+</div>
+<div class="page-range">
+<div><input id="startPageInput" type="number" min="1" max="999" value="1"><span>P</span></div>
+<b>〜</b>
+<div><input id="endPageInput" type="number" min="1" max="999" value="48"><span>P</span></div>
+</div>
+<div class="label" style="margin-top:15px">創作開始日</div>
+<input id="creationStartDateInput" type="date">
+<div class="label" style="margin-top:15px">締切予定日</div>
+<input id="deadlineInput" type="date">
+</div>
+<div class="card overall-card prototype-dashboard-only">
+<div class="overall-ring" id="overallRing">
+<div class="overall-ring-inner"><span>着手</span><b id="startedPercent"></b><span>完成</span><b id="donePercent"></b></div>
+</div>
+<div class="overall-detail">
+<div class="overall-kicker">全体</div>
+<div class="summary-top"><div><div class="summary-title">制作進捗 <span class="status-pill">制作中</span></div></div><div id="completePages" class="complete-pages"></div></div>
+<div class="ring-legend"><span><i class="ring-key started"></i> 着手</span><span><i class="ring-key done"></i> 完成</span></div>
+</div>
+</div>
+<div class="card prototype-dashboard-only"><div class="section-title">工程別進捗</div><div id="stageProgress"></div></div>
+<div class="prototype-input-hint" id="prototypeInputHint">入力モード — 全ページを縦にスクロール</div>
+<div class="card prototype-input-card">
+<div class="table-toolbar"><div style="display:flex;align-items:center"><div class="section-title" style="margin:0">工程表</div><button id="helpButton" class="help-fab" type="button" aria-label="使い方">?</button></div><div id="range" class="range"></div></div>
+<div id="tableHead" class="table-head"></div>
+<div id="pages"></div>
+<div class="navigation"><button id="prev" class="nav-button">← 前</button><div id="navPage" class="nav-page"></div><button id="next" class="nav-button">次 →</button></div>
+</div>
+<div class="card prototype-dashboard-only">
+<div class="section-title">作業履歴</div>
+<div class="history-stats">
+<div class="history-stat"><span>今日</span><b id="todayWork">+0</b><span>完成工程</span></div>
+<div class="history-stat"><span>直近7日</span><b id="weekWork">0</b><span>完成工程</span></div>
+<div class="history-stat"><span>1日平均</span><b id="avgWork">0.0</b><span>工程</span></div>
+</div>
+<div class="label">直近7日間</div>
+<div id="historyChart" class="history-chart"></div>
+<div class="forecast">
+<div><b>完成予想</b><small>着手=0.5工程として直近7日から算出</small></div>
+<div id="forecastDate" class="forecast-date">—<br><span style="font-size:10px;color:var(--muted);font-weight:400">データ収集中</span></div>
+</div>
+<div id="deadlineStatus" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;line-height:1.65;color:var(--muted)"></div>
+</div>
+
+<div class="saved" id="saveMessage">変更は自動保存されます</div>
+</div>
+
+
+<div id="memoListModal" class="memo-modal">
+  <div class="memo-sheet">
+    <div class="memo-head">
+      <h2>メモ一覧</h2>
+      <button id="closeMemoList" class="memo-close">閉じる</button>
+    </div>
+    <div class="memo-filters">
+      <button class="memo-filter active" data-filter="all">すべて</button>
+      <button class="memo-filter" data-filter="#f4a6a6">赤</button>
+      <button class="memo-filter" data-filter="#f4dc8a">黄</button>
+      <button class="memo-filter" data-filter="#9ec8f4">青</button>
+      <button class="memo-filter" data-filter="#a9ddb0">緑</button>
+    </div>
+    <div id="memoListBody" class="memo-scroll"></div>
+  </div>
+</div>
+
+<div id="editProjectModal" class="project-modal">
+  <div class="project-sheet project-edit-sheet">
+    <div class="project-edit-head"><h2>作品編集</h2></div>
+    <div class="project-edit-scroll">
+    <div class="label">作品名</div>
+    <input id="editProjectTitle" placeholder="作品名">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;margin-bottom:7px">
+      <div class="label" style="margin:0">制作ページ</div>
+      <div id="editProjectTotal" style="font-size:11px;color:var(--muted)"></div>
+    </div>
+    <div class="page-range">
+      <div><input id="editProjectStart" type="number" min="1" max="999"><span>P</span></div>
+      <b>〜</b>
+      <div><input id="editProjectEnd" type="number" min="1" max="999"><span>P</span></div>
+    </div>
+    <div class="label" style="margin-top:14px">創作開始日</div>
+    <input id="editProjectCreationStartDate" type="date">
+    <div class="label" style="margin-top:14px">締切予定日</div>
+    <input id="editProjectDeadline" type="date">
+    <div class="label" style="margin-top:14px">工程設定</div>
+    <div id="stageEditorList" class="stage-editor-list"></div>
+    <button id="stageAddButton" class="stage-add-button" type="button">＋ 工程を追加</button>
+    <div class="stage-editor-note">工程名の変更・並び替え・追加・削除（最大8工程）</div>
+    </div>
+    <div class="project-modal-actions project-edit-actions">
+      <button id="cancelEditProject" class="project-cancel-button">キャンセル</button>
+      <button id="saveEditProject" class="project-create-button">保存</button>
+    </div>
+  </div>
+</div>
+
+<select id="appLanguage" style="display:none"><option value="ja">日本語</option><option value="en">English</option></select>
+<div id="languageModal" class="project-modal">
+  <div class="project-sheet language-sheet">
+    <h2 id="languageModalTitle">Language</h2>
+    <div class="language-choice">
+      <button type="button" class="language-option" data-lang="ja">日本語</button>
+      <button type="button" class="language-option" data-lang="en">English</button>
+    </div>
+    <div class="project-modal-actions">
+      <button id="languageCancel" class="project-cancel-button">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<div id="appSettingsModal" class="project-modal">
+  <div class="project-sheet settings-sheet">
+    <h2 id="settingsTitle">アプリ設定</h2>
+    <div class="settings-section-title settings-first-section" id="settingsDefaultsTitle">新規作品のデフォルト</div>
+    <div class="label" id="settingsPagesLabel">制作ページ</div>
+    <div class="page-range">
+      <div><input id="defaultStartPage" type="number" min="1" max="999"><span>P</span></div><b>〜</b>
+      <div><input id="defaultEndPage" type="number" min="1" max="999"><span>P</span></div>
+    </div>
+    <div class="label" id="settingsStagesLabel" style="margin-top:14px">工程</div>
+    <div id="defaultStageList" class="stage-editor-list"></div>
+    <button id="defaultStageAdd" class="stage-add-button" type="button">＋ 工程を追加</button>
+    <div class="stage-editor-note" id="settingsNote">新しい作品を作るときの初期値です。作品ごとに変更できます。</div>
+    <div class="settings-section-title data-management-title" id="dataManagementTitle">データ管理</div>
+    <div class="backup-actions settings-backup-actions">
+      <button id="exportBackup" class="backup-button">💾 バックアップ</button>
+      <button id="importBackup" class="backup-button">📂 復元</button>
+    </div>
+    <input id="backupFile" type="file" accept=".json,application/json" hidden>
+    <div class="backup-note" id="dataManagementNote">全作品・フォルダ・進捗・付箋・作業履歴を1つのJSONに保存します。</div>
+    <div id="backupStatus" class="backup-status" style="display:none"></div>
+    <div class="project-modal-actions">
+      <button id="settingsCancel" class="project-cancel-button">キャンセル</button>
+      <button id="settingsSave" class="project-create-button">保存</button>
+    </div>
+  </div>
+</div>
+
+<div id="projectModal" class="project-modal">
+  <div class="project-sheet">
+    <h2>新しい作品</h2>
+    <div class="label">作品名</div>
+    <input id="newProjectTitle" value="" placeholder="作品名">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;margin-bottom:7px">
+      <div class="label" style="margin:0">制作ページ</div>
+      <div id="newProjectTotal" style="font-size:11px;color:var(--muted)">全1P</div>
+    </div>
+    <div class="page-range">
+      <div><input id="newProjectStart" type="number" min="1" max="999" value="1"><span>P</span></div>
+      <b>〜</b>
+      <div><input id="newProjectEnd" type="number" min="1" max="999" value="1"><span>P</span></div>
+    </div>
+    <div class="label" style="margin-top:14px">創作開始日</div>
+    <input id="newProjectCreationStartDate" type="date">
+    <div class="label" style="margin-top:14px">締切予定日</div>
+    <input id="newProjectDeadline" type="date">
+    <button id="newStageToggle" class="new-stage-toggle" type="button">
+      <span>工程をカスタマイズ</span><span id="newStageChevron">⌄</span>
+    </button>
+    <div id="newStagePanel" class="new-stage-panel">
+      <div id="newStageEditorList" class="stage-editor-list"></div>
+      <button id="newStageAddButton" class="stage-add-button" type="button">＋ 工程を追加</button>
+      <div class="stage-editor-note">変更しなければ「ネーム・ペン・背景・トーン・写植」で作成されます</div>
+    </div>
+    <div class="project-modal-actions">
+      <button id="cancelNewProject" class="project-cancel-button">キャンセル</button>
+      <button id="createNewProject" class="project-create-button">作成</button>
+    </div>
+  </div>
+</div>
+
+<div id="stickyModal" class="sticky-modal">
+ <div class="sticky-sheet">
+  <div class="sticky-head"><h2 id="stickyTitle">付箋</h2><button id="stickyClose" class="sticky-close">×</button></div>
+  <textarea id="stickyText" placeholder="修正点・忘れたくないことなど"></textarea>
+  <div class="label" style="margin-top:12px">マーカー</div>
+  <div class="color-picks">
+   <button type="button" class="color-pick" data-color="#f4a6a6" style="background:#f4a6a6"></button>
+   <button type="button" class="color-pick" data-color="#f4dc8a" style="background:#f4dc8a"></button>
+   <button type="button" class="color-pick" data-color="#9ec8f4" style="background:#9ec8f4"></button>
+   <button type="button" class="color-pick" data-color="#a9ddb0" style="background:#a9ddb0"></button>
+  </div>
+  <div class="sticky-actions">
+   <button type="button" id="stickyDelete" class="sticky-delete">付箋を削除</button>
+   <button type="button" id="stickySave" class="sticky-save">保存</button>
+  </div>
+ </div>
+</div>
+
+<div id="folderModal" class="folder-modal">
+  <div class="folder-sheet">
+    <h3>新しいフォルダ</h3>
+    <input id="folderNameInput" type="text" maxlength="40" placeholder="フォルダ名">
+    <div class="folder-sheet-actions"><button id="folderCancel" type="button">キャンセル</button><button id="folderCreate" type="button">作成</button></div>
+  </div>
+</div>
+<div id="folderRenameModal" class="folder-modal">
+  <div class="folder-sheet">
+    <h3>フォルダ名を変更</h3>
+    <input id="folderRenameInput" type="text" maxlength="40" placeholder="フォルダ名">
+    <div class="folder-sheet-actions"><button id="folderRenameCancel" type="button">キャンセル</button><button id="folderRenameSave" type="button">保存</button></div>
+  </div>
+</div>
+
+
+<script src="app.js?v=20260922-prototype-dashboard1"></script>
+</body>
+</html>
+
+
