@@ -7,7 +7,7 @@
 <title>漫画制作進捗</title>
 
 
-<link rel="stylesheet" href="style.css?v=20260922-defaultreset1">
+<link rel="stylesheet" href="style.css?v=20260922-pageselect1">
 </head>
 <body>
 
@@ -175,8 +175,8 @@
     <div class="settings-section-title settings-first-section" id="settingsDefaultsTitle">新規作品のデフォルト</div>
     <div class="label" id="settingsPagesLabel">制作ページ</div>
     <div class="page-range">
-      <div><input id="defaultStartPage" type="number" min="1" max="999"><span>P</span></div><b>〜</b>
-      <div><input id="defaultEndPage" type="number" min="1" max="999"><span>P</span></div>
+      <div><select id="defaultStartPage" class="page-select" aria-label="開始ページ"></select><span>P</span></div><b>〜</b>
+      <div><select id="defaultEndPage" class="page-select" aria-label="終了ページ"></select><span>P</span></div>
     </div>
     <div class="label" id="settingsStagesLabel" style="margin-top:14px">工程</div>
     <div id="defaultStageList" class="stage-editor-list"></div>
@@ -208,9 +208,9 @@
       <div id="newProjectTotal" style="font-size:11px;color:var(--muted)">全1P</div>
     </div>
     <div class="page-range">
-      <div><input id="newProjectStart" type="number" min="1" max="999" value="1"><span>P</span></div>
+      <div><select id="newProjectStart" class="page-select" aria-label="開始ページ"></select><span>P</span></div>
       <b>〜</b>
-      <div><input id="newProjectEnd" type="number" min="1" max="999" value="1"><span>P</span></div>
+      <div><select id="newProjectEnd" class="page-select" aria-label="終了ページ"></select><span>P</span></div>
     </div>
     <div class="label" style="margin-top:14px">創作開始日</div>
     <input id="newProjectCreationStartDate" type="date">
@@ -265,7 +265,7 @@
 </div>
 
 
-<script src="app.js?v=20260922-defaultreset1"></script>
+<script src="app.js?v=20260922-pageselect1"></script>
 </body>
 </html>
 

@@ -15,9 +15,9 @@ const UI_TEXT={
 };
 function normalizeAppSettings(raw){
  const lang=raw?.language==="en"?"en":"ja";
- let a=Math.max(1,Math.min(999,Number(raw?.defaultStartPage)||1));
- let b=Math.max(a,Math.min(999,Number(raw?.defaultEndPage)||48));
- if(b-a+1>300)b=a+299;
+ let a=Math.max(1,Math.min(500,Number(raw?.defaultStartPage)||1));
+ let b=Math.max(a,Math.min(500,Number(raw?.defaultEndPage)||48));
+ if(b-a+1>500)b=a+499;
  let ss=Array.isArray(raw?.defaultStages)?raw.defaultStages.map(x=>String(x||"").trim()).filter(Boolean).slice(0,8):[];
  if(!ss.length)ss=[...DEFAULT_STAGES];
  return {language:lang,defaultStartPage:a,defaultEndPage:b,defaultStages:ss};
@@ -121,7 +121,7 @@ function makeProjectData(){
   };
 }
 function freshProjectData(title="新しい作品",sp=1,ep=1){
-  const n=Math.max(1,Math.min(300,ep-sp+1));
+  const n=Math.max(1,Math.min(500,ep-sp+1));
   const p=createProgress(n);
   return {
     title,creationStartDate:"",deadline:"",totalPages:n,startPage:sp,progress:p,stages:[...DEFAULT_STAGES],folderId:null,
@@ -149,7 +149,7 @@ function save(){
   save.timer=setTimeout(()=>m.textContent=languageSettings?.language==="en"?"Changes are saved automatically":"変更は自動保存されます",1200);
 }
 function normalizeProjectData(s){
-  let n=Number.isInteger(s?.totalPages)&&s.totalPages>0?Math.min(300,s.totalPages):48;
+  let n=Number.isInteger(s?.totalPages)&&s.totalPages>0?Math.min(500,s.totalPages):48;
   let sp=Number.isInteger(s?.startPage)&&s.startPage>0?s.startPage:1;
 const projectStages=Array.isArray(s?.stages)&&s.stages.length
     ? s.stages.map(x=>String(x??"").trim()).slice(0,8)
@@ -487,7 +487,7 @@ function restoreBackup(data){
     return "all";
   }
   // v4以前: 1作品バックアップは新しい作品として追加
-  if(!data||!Number.isInteger(data.totalPages)||data.totalPages<1||data.totalPages>300||!Array.isArray(data.progress))throw new Error("invalid");
+  if(!data||!Number.isInteger(data.totalPages)||data.totalPages<1||data.totalPages>500||!Array.isArray(data.progress))throw new Error("invalid");
   const id=newProjectId();
   projectStore.projects[id]=normalizeProjectData(data);
   projectStore.activeProjectId=id;
@@ -496,7 +496,7 @@ function restoreBackup(data){
   return "single";
 }
 function resizeProgress(n){
-  n=Math.max(1,Math.min(300,Number(n)||48));
+  n=Math.max(1,Math.min(500,Number(n)||48));
   const old=progress;
   progress=Array.from({length:n},(_,p)=>old[p]?[...old[p]]:Array(stages.length).fill(0));
   totalPages=n;currentView=Math.min(currentView,Math.max(0,Math.ceil(n/12)-1));
@@ -1038,6 +1038,20 @@ document.getElementById("newStageAddButton").addEventListener("click",()=>{
 });
 
 
+function populatePageSelect(selectId){
+  const select=document.getElementById(selectId);
+  if(!select||select.options.length)return;
+  const frag=document.createDocumentFragment();
+  for(let page=1;page<=500;page++){
+    const option=document.createElement("option");
+    option.value=String(page);
+    option.textContent=String(page);
+    frag.appendChild(option);
+  }
+  select.appendChild(frag);
+}
+["defaultStartPage","defaultEndPage","newProjectStart","newProjectEnd"].forEach(populatePageSelect);
+
 document.getElementById("appSettingsButton").onclick=()=>{
  document.getElementById("defaultStartPage").value=projectDefaults.startPage;
  document.getElementById("defaultEndPage").value=projectDefaults.endPage;
@@ -1048,9 +1062,9 @@ document.getElementById("settingsCancel").onclick=()=>document.getElementById("a
 document.getElementById("appSettingsModal").onclick=e=>{if(e.target.id==="appSettingsModal")e.currentTarget.classList.remove("open")};
 document.getElementById("defaultStageAdd").onclick=()=>{if(defaultStageDraft.length<8){defaultStageDraft.push(languageSettings.language==="en"?"New Stage":"新しい工程");renderDefaultStageEditor()}};
 document.getElementById("settingsSave").onclick=()=>{
- let a=Math.max(1,Math.min(999,Number(document.getElementById("defaultStartPage").value)||1));
- let b=Math.max(a,Math.min(999,Number(document.getElementById("defaultEndPage").value)||a));
- if(b-a+1>300){alert(appSettings.language==="en"?"Up to 300 pages per project.":"1作品300ページまでです。");return}
+ let a=Math.max(1,Math.min(500,Number(document.getElementById("defaultStartPage").value)||1));
+ let b=Math.max(a,Math.min(500,Number(document.getElementById("defaultEndPage").value)||a));
+ if(b-a+1>500){alert(appSettings.language==="en"?"Up to 500 pages per project.":"1作品500ページまでです。");return}
  const ss=defaultStageDraft.map(x=>String(x||"").trim()).filter(Boolean);
  if(!ss.length)return;
  appSettings=normalizeAppSettings({language:document.getElementById("appLanguage").value,defaultStartPage:a,defaultEndPage:b,defaultStages:ss});
@@ -1075,17 +1089,17 @@ document.getElementById("newProjectButton").onclick=()=>{
 document.getElementById("cancelNewProject").onclick=()=>document.getElementById("projectModal").classList.remove("open");
 document.getElementById("projectModal").onclick=e=>{if(e.target.id==="projectModal")e.currentTarget.classList.remove("open")};
 function updateNewProjectTotal(){
-  let a=Math.max(1,Math.min(999,Number(document.getElementById("newProjectStart").value)||1));
-  let b=Math.max(a,Math.min(999,Number(document.getElementById("newProjectEnd").value)||a));
+  let a=Math.max(1,Math.min(500,Number(document.getElementById("newProjectStart").value)||1));
+  let b=Math.max(a,Math.min(500,Number(document.getElementById("newProjectEnd").value)||a));
   document.getElementById("newProjectTotal").textContent=`全${b-a+1}P`;
 }
-document.getElementById("newProjectStart").addEventListener("input",updateNewProjectTotal);
-document.getElementById("newProjectEnd").addEventListener("input",updateNewProjectTotal);
+document.getElementById("newProjectStart").addEventListener("change",updateNewProjectTotal);
+document.getElementById("newProjectEnd").addEventListener("change",updateNewProjectTotal);
 document.getElementById("createNewProject").onclick=()=>{
   const title=document.getElementById("newProjectTitle").value.trim();
-  let a=Math.max(1,Math.min(999,Number(document.getElementById("newProjectStart").value)||1));
-  let b=Math.max(a,Math.min(999,Number(document.getElementById("newProjectEnd").value)||a));
-  if(b-a+1>300){alert("1作品300ページまでです。");return;}
+  let a=Math.max(1,Math.min(500,Number(document.getElementById("newProjectStart").value)||1));
+  let b=Math.max(a,Math.min(500,Number(document.getElementById("newProjectEnd").value)||a));
+  if(b-a+1>500){alert("1作品500ページまでです。");return;}
   const id=newProjectId();
   projectStore.projects[id]=freshProjectData(title,a,b);
   // フォルダ内から作成した場合は、そのフォルダに所属させる
@@ -1822,7 +1836,7 @@ languageObserver.observe(document.body,{subtree:true,childList:true,characterDat
 const _alert=window.alert.bind(window),_confirm=window.confirm.bind(window);
 window.alert=(msg)=>{
  if(uiLang()==="en"){
-   msg=String(msg).replace("1作品300ページまでです。","Up to 300 pages per project.")
+   msg=String(msg).replace("1作品500ページまでです。","Up to 500 pages per project.")
     .replace("工程は1つ以上必要です。","At least one stage is required.")
     .replace("フォルダ名を入力してください。","Enter a folder name.")
     .replace("❌ このバックアップファイルは読み込めませんでした。","❌ This backup file could not be read.")
@@ -2053,9 +2067,9 @@ document.getElementById("appSettingsButton").onclick=()=>{
  document.getElementById("appSettingsModal").classList.add("open");
 };
 document.getElementById("settingsSave").onclick=()=>{
- let a=Math.max(1,Math.min(999,Number(document.getElementById("defaultStartPage").value)||1));
- let b=Math.max(a,Math.min(999,Number(document.getElementById("defaultEndPage").value)||a));
- if(b-a+1>300){alert(uiLang()==="en"?"Up to 300 pages per project.":"1作品300ページまでです。");return}
+ let a=Math.max(1,Math.min(500,Number(document.getElementById("defaultStartPage").value)||1));
+ let b=Math.max(a,Math.min(500,Number(document.getElementById("defaultEndPage").value)||a));
+ if(b-a+1>500){alert(uiLang()==="en"?"Up to 500 pages per project.":"1作品500ページまでです。");return}
  const ss=defaultStageDraft.map(x=>String(x||"").trim()).filter(Boolean);
  if(!ss.length)return;
  appSettings=normalizeAppSettings({
