@@ -18,7 +18,7 @@ function normalizeAppSettings(raw){
  let a=Math.max(1,Math.min(500,Number(raw?.defaultStartPage)||1));
  let b=Math.max(a,Math.min(500,Number(raw?.defaultEndPage)||48));
  if(b-a+1>500)b=a+499;
- let ss=Array.isArray(raw?.defaultStages)?raw.defaultStages.map(x=>String(x||"").trim()).filter(Boolean).slice(0,8):[];
+ let ss=Array.isArray(raw?.defaultStages)?raw.defaultStages.map(x=>String(x||"").trim()).filter(Boolean):[];
  if(!ss.length)ss=[...DEFAULT_STAGES];
  return {language:lang,defaultStartPage:a,defaultEndPage:b,defaultStages:ss};
 }
@@ -60,7 +60,7 @@ function renderDefaultStageEditor(){
    row.querySelector('[data-act="del"]').onclick=()=>{if(defaultStageDraft.length<=1)return;defaultStageDraft.splice(i,1);renderDefaultStageEditor()};
    box.appendChild(row);
  });
- document.getElementById("defaultStageAdd").disabled=defaultStageDraft.length>=8;
+ document.getElementById("defaultStageAdd").disabled=false;
 }
 
 loadAppSettings();
@@ -152,7 +152,7 @@ function normalizeProjectData(s){
   let n=Number.isInteger(s?.totalPages)&&s.totalPages>0?Math.min(500,s.totalPages):48;
   let sp=Number.isInteger(s?.startPage)&&s.startPage>0?s.startPage:1;
 const projectStages=Array.isArray(s?.stages)&&s.stages.length
-    ? s.stages.map(x=>String(x??"").trim()).slice(0,8)
+    ? s.stages.map(x=>String(x??"").trim())
     : [...DEFAULT_STAGES];
   let pg=Array.from({length:n},(_,p)=>Array.from({length:projectStages.length},(_,i)=>[0,1,2].includes(s?.progress?.[p]?.[i])?s.progress[p][i]:0));
   return {
@@ -1019,7 +1019,7 @@ function renderNewProjectStageEditor(){
     };
     box.appendChild(row);
   });
-  document.getElementById("newStageAddButton").disabled=newProjectStageDraft.length>=8;
+  document.getElementById("newStageAddButton").disabled=false;
 }
 function resetNewProjectStages(){
   newProjectStageDraft=[...DEFAULT_STAGES];
@@ -1032,7 +1032,6 @@ document.getElementById("newStageToggle").addEventListener("click",()=>{
   document.getElementById("newStageToggle").classList.toggle("open");
 });
 document.getElementById("newStageAddButton").addEventListener("click",()=>{
-  if(newProjectStageDraft.length>=8)return;
   newProjectStageDraft.push("");
   renderNewProjectStageEditor();
 });
@@ -1089,7 +1088,7 @@ document.getElementById("appSettingsButton").onclick=()=>{
 };
 document.getElementById("settingsCancel").onclick=closeAppSettings;
 document.getElementById("appSettingsModal").onclick=e=>{if(e.target.id==="appSettingsModal")closeAppSettings()};
-document.getElementById("defaultStageAdd").onclick=()=>{if(defaultStageDraft.length<8){defaultStageDraft.push(languageSettings.language==="en"?"New Stage":"新しい工程");renderDefaultStageEditor()}};
+document.getElementById("defaultStageAdd").onclick=()=>{defaultStageDraft.push(languageSettings.language==="en"?"New Stage":"新しい工程");renderDefaultStageEditor()};
 document.getElementById("settingsSave").onclick=()=>{
  let a=Math.max(1,Math.min(500,Number(document.getElementById("defaultStartPage").value)||1));
  let b=Math.max(a,Math.min(500,Number(document.getElementById("defaultEndPage").value)||a));
@@ -1202,10 +1201,9 @@ function renderStageEditor(){
     box.appendChild(row);
   });
   const add=document.getElementById("stageAddButton");
-  if(add)add.disabled=stageDraft.length>=8;
+  if(add)add.disabled=false;
 }
 document.getElementById("stageAddButton")?.addEventListener("click",()=>{
-  if(stageDraft.length>=8)return;
   stageDraft.push("");
   stageDraftMeta.push({originalIndex:null});
   renderStageEditor();
