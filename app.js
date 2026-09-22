@@ -1052,14 +1052,43 @@ function populatePageSelect(selectId){
 }
 ["defaultStartPage","defaultEndPage","newProjectStart","newProjectEnd"].forEach(populatePageSelect);
 
+let modalPageScrollY=0;
+function lockPageScroll(){
+  if(document.body.dataset.modalScrollLocked==="1")return;
+  modalPageScrollY=window.scrollY||document.documentElement.scrollTop||0;
+  document.body.dataset.modalScrollLocked="1";
+  document.body.style.position="fixed";
+  document.body.style.top=`-${modalPageScrollY}px`;
+  document.body.style.left="0";
+  document.body.style.right="0";
+  document.body.style.width="100%";
+  document.body.style.overflow="hidden";
+}
+function unlockPageScroll(){
+  if(document.body.dataset.modalScrollLocked!=="1")return;
+  delete document.body.dataset.modalScrollLocked;
+  document.body.style.position="";
+  document.body.style.top="";
+  document.body.style.left="";
+  document.body.style.right="";
+  document.body.style.width="";
+  document.body.style.overflow="";
+  window.scrollTo(0,modalPageScrollY);
+}
+function closeAppSettings(){
+  document.getElementById("appSettingsModal").classList.remove("open");
+  unlockPageScroll();
+}
+
 document.getElementById("appSettingsButton").onclick=()=>{
  document.getElementById("defaultStartPage").value=projectDefaults.startPage;
  document.getElementById("defaultEndPage").value=projectDefaults.endPage;
  defaultStageDraft=[...projectDefaults.stages];renderDefaultStageEditor();
+ lockPageScroll();
  document.getElementById("appSettingsModal").classList.add("open");
 };
-document.getElementById("settingsCancel").onclick=()=>document.getElementById("appSettingsModal").classList.remove("open");
-document.getElementById("appSettingsModal").onclick=e=>{if(e.target.id==="appSettingsModal")e.currentTarget.classList.remove("open")};
+document.getElementById("settingsCancel").onclick=closeAppSettings;
+document.getElementById("appSettingsModal").onclick=e=>{if(e.target.id==="appSettingsModal")closeAppSettings()};
 document.getElementById("defaultStageAdd").onclick=()=>{if(defaultStageDraft.length<8){defaultStageDraft.push(languageSettings.language==="en"?"New Stage":"新しい工程");renderDefaultStageEditor()}};
 document.getElementById("settingsSave").onclick=()=>{
  let a=Math.max(1,Math.min(500,Number(document.getElementById("defaultStartPage").value)||1));
@@ -1069,7 +1098,7 @@ document.getElementById("settingsSave").onclick=()=>{
  if(!ss.length)return;
  appSettings=normalizeAppSettings({language:document.getElementById("appLanguage").value,defaultStartPage:a,defaultEndPage:b,defaultStages:ss});
  persistAppSettings();applyLanguage();
- document.getElementById("appSettingsModal").classList.remove("open");
+ closeAppSettings();
 };
 
 document.getElementById("newProjectButton").onclick=()=>{
@@ -1083,11 +1112,16 @@ document.getElementById("newProjectButton").onclick=()=>{
   renderNewProjectStageEditor();
   document.getElementById("newStagePanel").classList.remove("open");
   document.getElementById("newStageToggle").classList.remove("open");
+  lockPageScroll();
   document.getElementById("projectModal").classList.add("open");
   setTimeout(()=>document.getElementById("newProjectTitle").focus(),50);
 };
-document.getElementById("cancelNewProject").onclick=()=>document.getElementById("projectModal").classList.remove("open");
-document.getElementById("projectModal").onclick=e=>{if(e.target.id==="projectModal")e.currentTarget.classList.remove("open")};
+function closeNewProjectModal(){
+  document.getElementById("projectModal").classList.remove("open");
+  unlockPageScroll();
+}
+document.getElementById("cancelNewProject").onclick=closeNewProjectModal;
+document.getElementById("projectModal").onclick=e=>{if(e.target.id==="projectModal")closeNewProjectModal()};
 function updateNewProjectTotal(){
   let a=Math.max(1,Math.min(500,Number(document.getElementById("newProjectStart").value)||1));
   let b=Math.max(a,Math.min(500,Number(document.getElementById("newProjectEnd").value)||a));
@@ -1119,7 +1153,7 @@ document.getElementById("createNewProject").onclick=()=>{
   }
   projectStore.activeProjectId=id;
   persistProjectStore();
-  document.getElementById("projectModal").classList.remove("open");
+  closeNewProjectModal();
   openProject(id);
 };
 
