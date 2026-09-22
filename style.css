@@ -721,57 +721,15 @@ input{border-color:var(--border);border-radius:12px}
 #appSettingsModal .settings-sheet {
   overscroll-behavior: contain;
 }
-\n\n/* 2026-09-23: variable stage count + square cells + horizontal table scrolling */
-.progress-table-scroll{
-  width:100%;
-  overflow-x:auto;
-  overflow-y:visible;
-  -webkit-overflow-scrolling:touch;
-  overscroll-behavior-x:contain;
-  scrollbar-width:thin;
-}
-.progress-table-inner{
-  --progress-cell-size:clamp(44px,12vw,56px);
-  --progress-row-label-width:42px;
-  --progress-grid-gap:5px;
-  width:max-content;
-  min-width:100%;
-}
-#progressTableInner #tableHead,
-#progressTableInner #pages .page-row{
-  display:grid;
-  grid-template-columns:var(--progress-row-label-width) repeat(var(--stage-count,5),var(--progress-cell-size))!important;
-  gap:var(--progress-grid-gap)!important;
-  width:max-content;
-  min-width:100%;
-  justify-content:start;
-}
-#progressTableInner .progress-cell{
-  width:var(--progress-cell-size);
-  height:var(--progress-cell-size);
-  min-width:var(--progress-cell-size);
-  aspect-ratio:1 / 1;
-  box-sizing:border-box;
-}
-#progressTableInner #tableHead > :first-child,
-#progressTableInner #pages .page-number{
-  position:sticky;
-  left:0;
-  z-index:3;
-  width:var(--progress-row-label-width);
-  box-sizing:border-box;
-  background:var(--card,#fff);
-}
-#progressTableInner #tableHead > :first-child{z-index:4;}
-#progressTableInner .head{
-  width:var(--progress-cell-size);
-  min-width:var(--progress-cell-size);
-  overflow-wrap:anywhere;
-}
-@media(max-width:360px){
-  .progress-table-inner{
-    --progress-cell-size:44px;
-    --progress-row-label-width:36px;
-    --progress-grid-gap:4px;
-  }
-}
+
+
+/* --- Horizontal stage table: responsive square cells + sticky page column --- */
+:root{--progress-cell-size:clamp(48px,11vw,58px);--progress-page-col:28px;--progress-grid-gap:3px}
+.stage-table-scroll{width:100%;max-width:100%;overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x pan-y;padding-bottom:2px}
+#tableHead,#pages .page-row{width:max-content;min-width:100%;grid-template-columns:var(--progress-page-col) repeat(var(--stage-count,5),var(--progress-cell-size))!important;gap:var(--progress-grid-gap)!important}
+#tableHead .head{width:var(--progress-cell-size);min-width:var(--progress-cell-size)}
+#pages .progress-cell{width:var(--progress-cell-size);height:var(--progress-cell-size);min-width:var(--progress-cell-size);min-height:var(--progress-cell-size)}
+#tableHead>div:first-child,#pages .page-number{position:sticky;left:0;z-index:3;background:var(--card)}
+#tableHead>div:first-child{z-index:4}
+#pages .page-number{width:var(--progress-page-col);min-width:var(--progress-page-col);align-self:stretch;display:flex;align-items:center;justify-content:center}
+@media(max-width:360px){:root{--progress-cell-size:48px;--progress-page-col:26px;--progress-grid-gap:2px}}

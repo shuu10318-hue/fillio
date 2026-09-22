@@ -7,7 +7,7 @@
 <title>漫画制作進捗</title>
 
 
-<link rel="stylesheet" href="style.css?v=20260923-modal-lock2">
+<link rel="stylesheet" href="style.css?v=20260923-horizontal-stages2">
 </head>
 <body>
 
@@ -83,11 +83,9 @@
 <div class="card prototype-dashboard-only"><div class="section-title">工程別進捗</div><div id="stageProgress"></div></div>
 <div class="card prototype-input-card">
 <div class="table-toolbar"><div style="display:flex;align-items:center"><div class="section-title" style="margin:0">工程表</div><button id="helpButton" class="help-fab" type="button" aria-label="使い方">?</button></div><div id="range" class="range"></div></div>
-<div id="progressTableScroll" class="progress-table-scroll">
-<div id="progressTableInner" class="progress-table-inner">
+<div class="stage-table-scroll" id="stageTableScroll">
 <div id="tableHead" class="table-head"></div>
 <div id="pages"></div>
-</div>
 </div>
 <div class="navigation"><button id="prev" class="nav-button">← 前</button><div id="navPage" class="nav-page"></div><button id="next" class="nav-button">次 →</button></div>
 </div>
@@ -150,7 +148,7 @@
     <div class="label" style="margin-top:14px">工程設定</div>
     <div id="stageEditorList" class="stage-editor-list"></div>
     <button id="stageAddButton" class="stage-add-button" type="button">＋ 工程を追加</button>
-    <div class="stage-editor-note">工程名の変更・並び替え・追加・削除（最大8工程）</div>
+    <div class="stage-editor-note">工程名の変更・並び替え・追加・削除</div>
     </div>
     <div class="project-modal-actions project-edit-actions">
       <button id="cancelEditProject" class="project-cancel-button">キャンセル</button>
@@ -269,7 +267,7 @@
 </div>
 
 
-<script src="app.js?v=20260923-modal-lock2"></script>
+<script src="app.js?v=20260923-horizontal-stages2"></script>
 </body>
 </html>
 

@@ -8,6 +8,7 @@ let projectDefaults={startPage:1,endPage:48,stages:[]};
 let projectStore={version:2,activeProjectId:null,projects:{}};
 let currentProjectId=null;
 const DEFAULT_STAGES=["ネーム","ペン","背景","トーン","写植"];
+const MAX_STAGES=100;
 
 const UI_TEXT={
  ja:{home:"作品一覧",newProject:"＋ 新しい作品",settings:"アプリ設定",language:"言語",defaults:"新規作品のデフォルト",pages:"制作ページ",stages:"工程",addStage:"＋ 工程を追加",cancel:"キャンセル",save:"保存",note:"新しい作品を作るときの初期値です。作品ごとに変更できます。",folderAdd:"＋ フォルダ",memo:"メモ一覧",backProjects:"作品一覧"},
@@ -18,7 +19,7 @@ function normalizeAppSettings(raw){
  let a=Math.max(1,Math.min(500,Number(raw?.defaultStartPage)||1));
  let b=Math.max(a,Math.min(500,Number(raw?.defaultEndPage)||48));
  if(b-a+1>500)b=a+499;
- let ss=Array.isArray(raw?.defaultStages)?raw.defaultStages.map(x=>String(x||"").trim()).filter(Boolean):[];
+ let ss=Array.isArray(raw?.defaultStages)?raw.defaultStages.map(x=>String(x||"").trim()).filter(Boolean).slice(0,MAX_STAGES):[];
  if(!ss.length)ss=[...DEFAULT_STAGES];
  return {language:lang,defaultStartPage:a,defaultEndPage:b,defaultStages:ss};
 }
@@ -152,7 +153,7 @@ function normalizeProjectData(s){
   let n=Number.isInteger(s?.totalPages)&&s.totalPages>0?Math.min(500,s.totalPages):48;
   let sp=Number.isInteger(s?.startPage)&&s.startPage>0?s.startPage:1;
 const projectStages=Array.isArray(s?.stages)&&s.stages.length
-    ? s.stages.map(x=>String(x??"").trim())
+    ? s.stages.map(x=>String(x??"").trim()).slice(0,MAX_STAGES)
     : [...DEFAULT_STAGES];
   let pg=Array.from({length:n},(_,p)=>Array.from({length:projectStages.length},(_,i)=>[0,1,2].includes(s?.progress?.[p]?.[i])?s.progress[p][i]:0));
   return {
@@ -1032,6 +1033,7 @@ document.getElementById("newStageToggle").addEventListener("click",()=>{
   document.getElementById("newStageToggle").classList.toggle("open");
 });
 document.getElementById("newStageAddButton").addEventListener("click",()=>{
+  if(newProjectStageDraft.length>=MAX_STAGES){alert(languageSettings?.language==="en"?`Up to ${MAX_STAGES} stages.`:`工程は最大${MAX_STAGES}個までです。`);return}
   newProjectStageDraft.push("");
   renderNewProjectStageEditor();
 });
@@ -1088,7 +1090,7 @@ document.getElementById("appSettingsButton").onclick=()=>{
 };
 document.getElementById("settingsCancel").onclick=closeAppSettings;
 document.getElementById("appSettingsModal").onclick=e=>{if(e.target.id==="appSettingsModal")closeAppSettings()};
-document.getElementById("defaultStageAdd").onclick=()=>{defaultStageDraft.push(languageSettings.language==="en"?"New Stage":"新しい工程");renderDefaultStageEditor()};
+document.getElementById("defaultStageAdd").onclick=()=>{if(defaultStageDraft.length>=MAX_STAGES){alert(languageSettings?.language==="en"?`Up to ${MAX_STAGES} stages.`:`工程は最大${MAX_STAGES}個までです。`);return}defaultStageDraft.push(languageSettings.language==="en"?"New Stage":"新しい工程");renderDefaultStageEditor()};
 document.getElementById("settingsSave").onclick=()=>{
  let a=Math.max(1,Math.min(500,Number(document.getElementById("defaultStartPage").value)||1));
  let b=Math.max(a,Math.min(500,Number(document.getElementById("defaultEndPage").value)||a));
@@ -1204,6 +1206,7 @@ function renderStageEditor(){
   if(add)add.disabled=false;
 }
 document.getElementById("stageAddButton")?.addEventListener("click",()=>{
+  if(stageDraft.length>=MAX_STAGES){alert(languageSettings?.language==="en"?`Up to ${MAX_STAGES} stages.`:`工程は最大${MAX_STAGES}個までです。`);return}
   stageDraft.push("");
   stageDraftMeta.push({originalIndex:null});
   renderStageEditor();
@@ -1801,7 +1804,7 @@ const FULL_I18N={
  "データ収集中":"Collecting data","完成！":"Complete!","変更は自動保存されます":"Changes are saved automatically",
  "保存しました ✓":"Saved ✓","該当するメモはありません。":"No matching notes.","（メモ本文なし）":"(No note text)",
  "修正点・忘れたくないことなど":"Corrections, reminders, etc.",
- "工程名の変更・並び替え・追加・削除（最大8工程）":"Rename, reorder, add or delete stages (max 8).",
+ "工程名の変更・並び替え・追加・削除":"Rename, reorder, add or delete stages.",
  "新しい作品を作るときの初期値です。作品ごとに変更できます。":"Initial values for new projects. You can change them for each project.",
  "作品ごとの進捗・付箋・作業履歴は端末内に自動保存されます。":"Project progress, notes and work history are saved automatically on this device.",
  "まだ作品がありません。":"No projects yet.","「＋ 新しい作品」から作成できます。":"Create one with “+ New Project”.",
@@ -1910,7 +1913,7 @@ const I18N_MORE_EN={
  "創作開始日":"Start date","締切予定日":"Deadline","工程設定":"Stage Settings",
  "工程をカスタマイズ":"Customize Stages","工程名":"Stage name",
  "変更しなければ「ネーム・ペン・背景・トーン・写植」で作成されます":"If unchanged, the default stages will be used.",
- "工程名の変更・並び替え・追加・削除（最大8工程）":"Rename, reorder, add or delete stages (max 8).",
+ "工程名の変更・並び替え・追加・削除":"Rename, reorder, add or delete stages.",
  "変更は自動保存されます":"Changes are saved automatically",
  "完成":"Completed","着手":"Started","全工程":"All stages","締切":"Deadline",
  "ページ":"Pages","未設定":"Not set","無題":"Untitled",
