@@ -144,15 +144,15 @@ function save(){
   projectStore.activeProjectId=currentProjectId;
   persistProjectStore();
   const m=document.getElementById("saveMessage");
-  m.textContent="保存しました ✓";
+  m.textContent=languageSettings?.language==="en"?"Saved ✓":"保存しました ✓";
   clearTimeout(save.timer);
-  save.timer=setTimeout(()=>m.textContent="変更は自動保存されます",1200);
+  save.timer=setTimeout(()=>m.textContent=languageSettings?.language==="en"?"Changes are saved automatically":"変更は自動保存されます",1200);
 }
 function normalizeProjectData(s){
   let n=Number.isInteger(s?.totalPages)&&s.totalPages>0?Math.min(300,s.totalPages):48;
   let sp=Number.isInteger(s?.startPage)&&s.startPage>0?s.startPage:1;
 const projectStages=Array.isArray(s?.stages)&&s.stages.length
-    ? s.stages.map(x=>String(x||"工程").trim()||"工程").slice(0,8)
+    ? s.stages.map(x=>String(x??"").trim()).slice(0,8)
     : [...DEFAULT_STAGES];
   let pg=Array.from({length:n},(_,p)=>Array.from({length:projectStages.length},(_,i)=>[0,1,2].includes(s?.progress?.[p]?.[i])?s.progress[p][i]:0));
   return {
@@ -521,7 +521,7 @@ function renderStages(){
     const sp=Math.round(st/totalPages*100),dp=Math.round(dn/totalPages*100);
     const d=document.createElement("div");d.className="stage";
     const stageStats=languageSettings?.language==="en" ? `Started ${sp}% · Completed ${dp}%` : `着手 ${sp}% ・ 完成 ${dp}%`;
-    d.innerHTML=`<div class="stage-info"><span>${name}</span><span>${stageStats}</span></div><div class="dual-bar"><div class="started-bar" style="width:${sp}%"></div><div class="done-bar" style="width:${dp}%"></div></div>`;
+    d.innerHTML=`<div class="stage-info"><span>${displayStageName(name,s)}</span><span>${stageStats}</span></div><div class="dual-bar"><div class="started-bar" style="width:${sp}%"></div><div class="done-bar" style="width:${dp}%"></div></div>`;
     stageProgress.appendChild(d);
   });
 }
@@ -1033,7 +1033,7 @@ document.getElementById("newStageToggle").addEventListener("click",()=>{
 });
 document.getElementById("newStageAddButton").addEventListener("click",()=>{
   if(newProjectStageDraft.length>=8)return;
-  newProjectStageDraft.push("新しい工程");
+  newProjectStageDraft.push("");
   renderNewProjectStageEditor();
 });
 
@@ -1090,7 +1090,7 @@ document.getElementById("createNewProject").onclick=()=>{
   projectStore.projects[id]=freshProjectData(title,a,b);
   // フォルダ内から作成した場合は、そのフォルダに所属させる
   projectStore.projects[id].folderId=currentFolderId||null;
-  const newStages=newProjectStageDraft.map((x,i)=>String(x||"").trim()||(appSettings.language==="en"?`Stage ${i+1}`:`工程${i+1}`));
+  const newStages=newProjectStageDraft.map(x=>String(x??"").trim());
   projectStore.projects[id].stages=newStages;
   projectStore.projects[id].progress=Array.from({length:b-a+1},()=>Array(newStages.length).fill(0));
   projectStore.projects[id].creationStartDate=document.getElementById("newProjectCreationStartDate").value||"";
@@ -1158,14 +1158,19 @@ function renderStageEditor(){
 }
 document.getElementById("stageAddButton")?.addEventListener("click",()=>{
   if(stageDraft.length>=8)return;
-  stageDraft.push("新しい工程");
+  stageDraft.push("");
   stageDraftMeta.push({originalIndex:null});
   renderStageEditor();
 });
+function displayStageName(name,index){
+  const value=String(name??"").trim();
+  if(value)return value;
+  return languageSettings?.language==="en"?"New Stage":"新しい工程";
+}
 function renderDynamicTableHead(){
   const head=document.getElementById("tableHead"); if(!head)return;
   document.documentElement.style.setProperty("--stage-count",String(stages.length));
-  head.innerHTML="<div></div>"+stages.map(n=>`<div class="head">${escapeStageHtml(n)}</div>`).join("");
+  head.innerHTML="<div></div>"+stages.map((n,i)=>`<div class="head">${escapeStageHtml(displayStageName(n,i))}</div>`).join("");
 }
 
 let editingProjectId=null;
@@ -1204,7 +1209,7 @@ document.getElementById("saveEditProject").addEventListener("click",()=>{
   const newTotal=newEnd-newStart+1;
   const oldStart=p.startPage||1, oldProgress=Array.isArray(p.progress)?p.progress:[];
   const oldStages=Array.isArray(p.stages)&&p.stages.length?[...p.stages]:[...DEFAULT_STAGES];
-  const cleanedStages=stageDraft.map((x,i)=>String(x||"").trim()||`工程${i+1}`);
+  const cleanedStages=stageDraft.map(x=>String(x??"").trim());
   // Each draft item carries its original column index, so rename/reorder preserves the exact progress column.
   const mapping=stageDraftMeta.map(x=>x.originalIndex);
   p.stages=cleanedStages;
@@ -1454,12 +1459,41 @@ document.getElementById("folderBack")?.addEventListener("click",e=>{
  renderFoldersAndFilter();
  saveViewState("root");
 });
+document.getElementById("folderRename")?.addEventListener("click",()=>{
+ if(!currentFolderId)return;
+ const f=projectStore.folders?.[currentFolderId];if(!f)return;
+ const modal=document.getElementById("folderRenameModal"),input=document.getElementById("folderRenameInput");
+ input.value=f.name||"";modal.classList.add("open");document.body.style.overflow="hidden";
+ setTimeout(()=>{input.focus();input.select();},50);
+});
+function closeFolderRename(){
+ document.getElementById("folderRenameModal")?.classList.remove("open");
+ document.body.style.overflow="";
+}
+function saveFolderRename(){
+ if(!currentFolderId)return closeFolderRename();
+ const f=projectStore.folders?.[currentFolderId];if(!f)return closeFolderRename();
+ const name=document.getElementById("folderRenameInput").value.trim();
+ if(!name)return;
+ f.name=name;persistProjectStore();closeFolderRename();renderFoldersAndFilter();saveViewState("folder");
+}
+document.getElementById("folderRenameCancel")?.addEventListener("click",closeFolderRename);
+document.getElementById("folderRenameSave")?.addEventListener("click",saveFolderRename);
+document.getElementById("folderRenameInput")?.addEventListener("keydown",e=>{if(e.key==="Enter")saveFolderRename()});
+document.getElementById("folderRenameModal")?.addEventListener("click",e=>{if(e.target.id==="folderRenameModal")closeFolderRename()});
 document.getElementById("folderDelete")?.addEventListener("click",()=>{
  if(!currentFolderId)return;
  const f=projectStore.folders[currentFolderId];if(!f)return;
  if(!confirm(`「${f.name}」を削除しますか？\n中の作品は作品一覧へ戻ります。`))return;
- Object.values(projectStore.projects).forEach(p=>{if(p.folderId===currentFolderId)p.folderId=null});
- delete projectStore.folders[currentFolderId];currentFolderId=null;persistProjectStore();renderProjectHome();setTimeout(renderFoldersAndFilter,0);
+ const deletedFolderId=currentFolderId;
+ Object.values(projectStore.projects).forEach(p=>{if(p.folderId===deletedFolderId)p.folderId=null});
+ delete projectStore.folders[deletedFolderId];
+ if(Array.isArray(projectStore.rootOrder))projectStore.rootOrder=projectStore.rootOrder.filter(k=>k!=="f:"+deletedFolderId);
+ currentFolderId=null;
+ persistProjectStore();
+ saveViewState("root");
+ renderProjectHome();
+ renderFoldersAndFilter();
 });
 
 
