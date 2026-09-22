@@ -831,3 +831,9 @@ input{border-color:var(--border);border-radius:12px}
   z-index:6;
 }
 .stage-head-viewport,.stage-head-track{display:contents!important;transform:none!important}
+
+/* Native two-axis table behavior: keep the header in the same horizontal scroller. */
+.stage-table-scroll{overflow-x:auto!important;overflow-y:clip!important;}
+.table-head-anchor{position:sticky!important;top:0!important;z-index:100!important;height:auto!important;margin-bottom:5px!important;background:var(--card)!important;}
+.table-head-anchor.stage-head-fixed-active{height:auto!important;}
+#tableHead,#tableHead.stage-head-fixed{position:relative!important;top:auto!important;left:auto!important;margin:0!important;width:max-content!important;min-width:max-content!important;transform:none!important;}

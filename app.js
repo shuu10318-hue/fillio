@@ -1236,54 +1236,7 @@ function renderDynamicTableHead(){
   head.innerHTML=`<div class="table-head-corner"></div>${stages.map((n,i)=>`<div class="head">${escapeStageHtml(displayStageName(n,i))}</div>`).join("")}`;
 }
 
-// 工程ヘッダーの縦方向の追従だけを担当する。
-// 横方向はヘッダーとセルが同じスクロール領域にあるためJS同期しない。
-(function setupVerticalStageHeaderFollow(){
-  const anchor=document.getElementById("tableHeadAnchor");
-  const head=document.getElementById("tableHead");
-  const scroller=document.getElementById("stageTableScroll");
-  const card=document.querySelector(".prototype-input-card");
-  if(!anchor||!head||!scroller||!card)return;
-  let fixed=false;
-  function update(){
-    const cardRect=card.getBoundingClientRect();
-    const anchorRect=anchor.getBoundingClientRect();
-    const pagesRect=document.getElementById("pages")?.getBoundingClientRect();
-    const h=head.offsetHeight;
-    const shouldFix=anchorRect.top<=0 && pagesRect && pagesRect.bottom>h;
-    if(shouldFix&&!fixed){
-      anchor.style.setProperty("--stage-head-height",`${h}px`);
-      anchor.classList.add("stage-head-fixed-active");
-      head.classList.add("stage-head-fixed");
-      fixed=true;
-    }else if(!shouldFix&&fixed){
-      head.classList.remove("stage-head-fixed");
-      anchor.classList.remove("stage-head-fixed-active");
-      fixed=false;
-    }
-    if(fixed){
-      // position:fixed になるとヘッダーは横スクロール領域から外れる。
-      // その間だけ現在の scrollLeft を即時反映し、工程名をセルと同じ位置に保つ。
-      const scrollerRect=scroller.getBoundingClientRect();
-      head.style.width=`${Math.max(scroller.scrollWidth, cardRect.width)}px`;
-      head.style.left=`${scrollerRect.left-scroller.scrollLeft}px`;
-      head.style.transform="none";
-      const corner=head.querySelector(".table-head-corner");
-      if(corner) corner.style.transform=`translateX(${scroller.scrollLeft}px)`;
-    }else{
-      head.style.width="";
-      head.style.left="";
-      head.style.transform="";
-      const corner=head.querySelector(".table-head-corner");
-      if(corner) corner.style.transform="";
-    }
-  }
-  // 縦固定中だけ必要になる横位置補正。rAFやtransitionを挟まず直接反映する。
-  scroller.addEventListener("scroll",update,{passive:true});
-  window.addEventListener("scroll",update,{passive:true});
-  window.addEventListener("resize",update,{passive:true});
-  update();
-})();
+// 工程ヘッダーはCSS stickyで縦追従。横方向は同じスクロール領域なのでJS同期不要。
 
 let editingProjectId=null;
 function updateEditProjectTotal(){
