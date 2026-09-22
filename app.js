@@ -1216,21 +1216,7 @@ function displayStageName(name,index){
   if(value)return value;
   return languageSettings?.language==="en"?"New Stage":"新しい工程";
 }
-// 工程ヘッダーと工程表本体の横スクロール位置を同期する
-(function setupStageScrollSync(){
-  const head=document.getElementById("stageHeadScroll");
-  const body=document.getElementById("stageTableScroll");
-  if(!head||!body)return;
-  let syncing=false;
-  const sync=(from,to)=>()=>{
-    if(syncing)return;
-    syncing=true;
-    to.scrollLeft=from.scrollLeft;
-    requestAnimationFrame(()=>{syncing=false});
-  };
-  body.addEventListener("scroll",sync(body,head),{passive:true});
-  head.addEventListener("scroll",sync(head,body),{passive:true});
-})();
+// 工程ヘッダーは横スクロールに追従させない（縦方向のstickyのみ）
 
 function renderDynamicTableHead(){
   const head=document.getElementById("tableHead"); if(!head)return;

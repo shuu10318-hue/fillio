@@ -726,7 +726,7 @@ input{border-color:var(--border);border-radius:12px}
 /* --- Horizontal stage table: square cells + synced sticky header/page column --- */
 :root{--progress-cell-size:clamp(48px,11vw,58px);--progress-page-col:28px;--progress-grid-gap:3px}
 .stage-head-sticky{position:sticky;top:0;z-index:20;background:var(--card);margin-bottom:6px}
-.stage-head-scroll{width:100%;max-width:100%;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x}
+.stage-head-scroll{width:100%;max-width:100%;overflow-x:hidden;overflow-y:hidden;scrollbar-width:none;touch-action:pan-y}
 .stage-head-scroll::-webkit-scrollbar{display:none}
 .stage-table-scroll{width:100%;max-width:100%;overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x pan-y;padding-bottom:8px}
 #tableHead,#pages .page-row{display:grid;width:max-content;min-width:100%;grid-template-columns:var(--progress-page-col) repeat(var(--stage-count,5),var(--progress-cell-size))!important;gap:var(--progress-grid-gap)!important}
