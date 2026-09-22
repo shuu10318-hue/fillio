@@ -862,12 +862,12 @@ function renderMemoList(){
     jump.textContent="移動";
     jump.onclick=()=>{
       if(index<0||index>=totalPages)return;
-      currentView=Math.floor(index/12);
       document.getElementById("memoListModal").classList.remove("open");
       document.body.style.overflow="";
       render();
       const pages=document.getElementById("pages");
-      if(pages)pages.scrollIntoView({behavior:"smooth",block:"start"});
+      const targetRow=pages?.children?.[index];
+      if(targetRow)targetRow.scrollIntoView({behavior:"smooth",block:"center"});
     };
     row.append(pg,tx,jump);
     body.appendChild(row);
