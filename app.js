@@ -1219,8 +1219,17 @@ function displayStageName(name,index){
 function renderDynamicTableHead(){
   const head=document.getElementById("tableHead"); if(!head)return;
   document.documentElement.style.setProperty("--stage-count",String(stages.length));
-  head.innerHTML="<div></div>"+stages.map((n,i)=>`<div class="head">${escapeStageHtml(displayStageName(n,i))}</div>`).join("");
+  head.innerHTML=`<div class="table-head-corner"></div><div class="stage-head-viewport"><div class="stage-head-track">${stages.map((n,i)=>`<div class="head">${escapeStageHtml(displayStageName(n,i))}</div>`).join("")}</div></div>`;
+  syncStageHeaderScroll();
 }
+function syncStageHeaderScroll(){
+  const scroller=document.getElementById("stageTableScroll");
+  const track=document.querySelector("#tableHead .stage-head-track");
+  if(!scroller||!track)return;
+  track.style.transform=`translateX(${-scroller.scrollLeft}px)`;
+}
+const stageTableScroll=document.getElementById("stageTableScroll");
+if(stageTableScroll)stageTableScroll.addEventListener("scroll",syncStageHeaderScroll,{passive:true});
 
 let editingProjectId=null;
 function updateEditProjectTotal(){
