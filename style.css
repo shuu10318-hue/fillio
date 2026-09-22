@@ -711,3 +711,13 @@ input{border-color:var(--border);border-radius:12px}
 
 /* Page selectors for new-project defaults and creation */
 .page-range select.page-select{min-height:44px;border:1px solid var(--border);border-radius:12px;background:#fff;padding:0 34px 0 11px;font-size:16px;color:inherit}
+
+/* Modal background scroll lock support */
+.project-modal,
+#appSettingsModal {
+  overscroll-behavior: contain;
+}
+.project-sheet,
+#appSettingsModal .settings-sheet {
+  overscroll-behavior: contain;
+}

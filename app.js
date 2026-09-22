@@ -2098,6 +2098,7 @@ document.getElementById("appSettingsButton").onclick=()=>{
  document.getElementById("defaultEndPage").value=projectDefaults.endPage;
  defaultStageDraft=[...projectDefaults.stages];
  renderDefaultStageEditor();
+ lockPageScroll();
  document.getElementById("appSettingsModal").classList.add("open");
 };
 document.getElementById("settingsSave").onclick=()=>{
@@ -2114,6 +2115,7 @@ document.getElementById("settingsSave").onclick=()=>{
  });
  persistAppSettings();
  document.getElementById("appSettingsModal").classList.remove("open");
+ unlockPageScroll();
  applyCurrentLanguageNow();
 };
 document.getElementById("appLanguage").value=languageSettings.language;
