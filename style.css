@@ -804,3 +804,11 @@ input{border-color:var(--border);border-radius:12px}
 
 /* Long-press source marker stays inside the cell so row 1 is never visually clipped. */
 #pages .progress-cell.paint-source{outline:none!important;box-shadow:inset 0 0 0 2px #777}
+
+/* Stage header horizontal sync must be immediate: never animate/interpolate it. */
+.stage-head-track{
+  transition:none!important;
+  animation:none!important;
+  scroll-behavior:auto!important;
+  will-change:auto!important;
+}

@@ -1240,7 +1240,9 @@ function syncStageHeaderScroll(){
   const scroller=document.getElementById("stageTableScroll");
   const track=document.querySelector("#tableHead .stage-head-track");
   if(!scroller||!track)return;
-  track.style.transform=`translateX(${-scroller.scrollLeft}px)`;
+  // 横スクロール量をその場で反映。CSS transition / rAF を介さない。
+  track.style.transition="none";
+  track.style.transform=`translate3d(${-scroller.scrollLeft}px,0,0)`;
 }
 const stageTableScroll=document.getElementById("stageTableScroll");
 if(stageTableScroll)stageTableScroll.addEventListener("scroll",syncStageHeaderScroll,{passive:true});
