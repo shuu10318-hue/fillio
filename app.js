@@ -1230,26 +1230,9 @@ function displayStageName(name,index){
   if(value)return value;
   return languageSettings?.language==="en"?"New Stage":"新しい工程";
 }
-// 初期5工程＋ページ番号の6マスが、工程表の表示幅にぴったり収まるサイズにする。
-// 工程を追加してもマスの大きさは変えず、そのまま横スクロールする。
-function updateProgressCellSize(){
-  const scroller=document.getElementById("stageTableScroll");
-  if(!scroller)return;
-  const styles=getComputedStyle(document.documentElement);
-  const gap=parseFloat(styles.getPropertyValue("--progress-grid-gap"))||3;
-  const visibleColumns=6; // ページ番号1 + 初期工程5
-  const available=scroller.clientWidth;
-  if(!available)return;
-  const size=(available-gap*(visibleColumns-1))/visibleColumns;
-  document.documentElement.style.setProperty("--progress-cell-size",`${size}px`);
-}
-window.addEventListener("resize",updateProgressCellSize,{passive:true});
-requestAnimationFrame(updateProgressCellSize);
-
 function renderDynamicTableHead(){
   const head=document.getElementById("tableHead"); if(!head)return;
   document.documentElement.style.setProperty("--stage-count",String(stages.length));
-  updateProgressCellSize();
   head.innerHTML=`<div class="table-head-corner"></div>${stages.map((n,i)=>`<div class="head">${escapeStageHtml(displayStageName(n,i))}</div>`).join("")}`;
 }
 
