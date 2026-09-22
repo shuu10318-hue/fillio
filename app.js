@@ -2071,6 +2071,26 @@ document.getElementById("settingsSave").onclick=()=>{
 document.getElementById("appLanguage").value=languageSettings.language;
 updateLanguageButtons();
 
+/* Reset ONLY the stage list used as defaults for newly-created projects.
+   Existing projects and their progress are never touched. */
+const defaultStageReset=document.getElementById("defaultStageReset");
+if(defaultStageReset){
+ const updateDefaultStageResetLabel=()=>{
+   defaultStageReset.textContent=languageSettings.language==="en"?"Reset Stages":"工程を初期設定に戻す";
+ };
+ updateDefaultStageResetLabel();
+ defaultStageReset.onclick=()=>{
+   const en=languageSettings.language==="en";
+   const ok=confirm(en
+     ?"Reset the default stages for new projects?\nExisting projects will not be affected."
+     :"新規作品用の工程を初期設定に戻しますか？\n既存の作品には影響しません。");
+   if(!ok)return;
+   defaultStageDraft=[...(en?EN_STAGE_DEFAULTS:JA_STAGE_DEFAULTS)];
+   renderDefaultStageEditor();
+ };
+}
+
+
 /* ---- extracted script block ---- */
 
 /* ---- Persistence + default-settings language patch ---- */
@@ -2082,6 +2102,7 @@ function localizeDefaultsSettingsUi(){
  set("settingsPagesLabel","制作ページ","Pages");
  set("settingsStagesLabel","工程","Stages");
  set("defaultStageAdd","＋ 工程を追加","+ Add Stage");
+ set("defaultStageReset","工程を初期設定に戻す","Reset Stages");
  set("settingsNote","新しい作品を作るときの初期値です。作品ごとに変更できます。","These initial values are used when creating a new project. You can change them per project.");
  set("settingsCancel","キャンセル","Cancel");
  set("settingsSave","保存","Save");

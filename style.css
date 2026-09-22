@@ -705,3 +705,6 @@ input{border-color:var(--border);border-radius:12px}
 .project-dashboard-strip span{display:block;color:var(--muted);font-size:8px;white-space:nowrap}
 .project-dashboard-strip b{display:block;margin-top:2px;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:360px){.project-dashboard-strip{gap:3px}.project-dashboard-strip>div{padding:6px 1px}.project-dashboard-strip b{font-size:10px}}
+
+/* New-project default stages: reset control */
+.default-stage-reset{margin-top:8px;background:#fff;color:#555}
