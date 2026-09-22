@@ -1262,13 +1262,24 @@ function renderDynamicTableHead(){
       fixed=false;
     }
     if(fixed){
-      // 固定時の横位置はCSSのscroll-driven positioningではなく、
-      // スクロール領域そのものにヘッダーを残すため追加同期は不要。
+      // position:fixed になるとヘッダーは横スクロール領域から外れる。
+      // その間だけ現在の scrollLeft を即時反映し、工程名をセルと同じ位置に保つ。
+      const scrollerRect=scroller.getBoundingClientRect();
       head.style.width=`${Math.max(scroller.scrollWidth, cardRect.width)}px`;
+      head.style.left=`${scrollerRect.left-scroller.scrollLeft}px`;
+      head.style.transform="none";
+      const corner=head.querySelector(".table-head-corner");
+      if(corner) corner.style.transform=`translateX(${scroller.scrollLeft}px)`;
     }else{
       head.style.width="";
+      head.style.left="";
+      head.style.transform="";
+      const corner=head.querySelector(".table-head-corner");
+      if(corner) corner.style.transform="";
     }
   }
+  // 縦固定中だけ必要になる横位置補正。rAFやtransitionを挟まず直接反映する。
+  scroller.addEventListener("scroll",update,{passive:true});
   window.addEventListener("scroll",update,{passive:true});
   window.addEventListener("resize",update,{passive:true});
   update();
