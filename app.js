@@ -1216,8 +1216,6 @@ function displayStageName(name,index){
   if(value)return value;
   return languageSettings?.language==="en"?"New Stage":"新しい工程";
 }
-// 工程ヘッダーは横スクロールに追従させない（縦方向のstickyのみ）
-
 function renderDynamicTableHead(){
   const head=document.getElementById("tableHead"); if(!head)return;
   document.documentElement.style.setProperty("--stage-count",String(stages.length));

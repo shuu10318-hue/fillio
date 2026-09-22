@@ -723,17 +723,53 @@ input{border-color:var(--border);border-radius:12px}
 }
 
 
-/* --- Horizontal stage table: square cells + synced sticky header/page column --- */
+/* --- Horizontal stage table: one horizontal scroll plane; only page numbers stay fixed --- */
 :root{--progress-cell-size:clamp(48px,11vw,58px);--progress-page-col:28px;--progress-grid-gap:3px}
-.stage-head-sticky{position:sticky;top:0;z-index:20;background:var(--card);margin-bottom:6px}
-.stage-head-scroll{width:100%;max-width:100%;overflow-x:hidden;overflow-y:hidden;scrollbar-width:none;touch-action:pan-y}
-.stage-head-scroll::-webkit-scrollbar{display:none}
-.stage-table-scroll{width:100%;max-width:100%;overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x pan-y;padding-bottom:8px}
-#tableHead,#pages .page-row{display:grid;width:max-content;min-width:100%;grid-template-columns:var(--progress-page-col) repeat(var(--stage-count,5),var(--progress-cell-size))!important;gap:var(--progress-grid-gap)!important}
-#tableHead{margin-bottom:0}
-#tableHead .head{width:var(--progress-cell-size);min-width:var(--progress-cell-size)}
-#pages .progress-cell{box-sizing:border-box;width:var(--progress-cell-size);height:var(--progress-cell-size);min-width:var(--progress-cell-size);min-height:var(--progress-cell-size)}
-#tableHead>div:first-child,#pages .page-number{position:sticky;left:0;z-index:3;background:var(--card)}
+.prototype-input-card{min-width:0;overflow:hidden}
+.stage-table-scroll{
+  display:block;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow-x:auto;
+  overflow-y:visible;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-x:contain;
+  touch-action:pan-x pan-y;
+  padding-bottom:4px;
+}
+#tableHead,#pages .page-row{
+  width:max-content;
+  min-width:max-content;
+  grid-template-columns:var(--progress-page-col) repeat(var(--stage-count,5),var(--progress-cell-size))!important;
+  gap:var(--progress-grid-gap)!important;
+}
+#tableHead .head{
+  position:static!important;
+  left:auto!important;
+  width:var(--progress-cell-size);
+  min-width:var(--progress-cell-size);
+}
+#pages .progress-cell{
+  width:var(--progress-cell-size);
+  height:var(--progress-cell-size);
+  min-width:var(--progress-cell-size);
+  min-height:var(--progress-cell-size);
+}
+/* 横スクロールで固定するのは左端のページ番号だけ。工程名はセルと同じ座標で流れる。 */
+#tableHead>div:first-child,#pages .page-number{
+  position:sticky;
+  left:0;
+  z-index:3;
+  background:var(--card);
+}
 #tableHead>div:first-child{z-index:4;width:var(--progress-page-col);min-width:var(--progress-page-col)}
-#pages .page-number{box-sizing:border-box;width:var(--progress-page-col);min-width:var(--progress-page-col);align-self:stretch;display:flex;align-items:center;justify-content:center}
+#pages .page-number{
+  width:var(--progress-page-col);
+  min-width:var(--progress-page-col);
+  align-self:stretch;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
 @media(max-width:360px){:root{--progress-cell-size:48px;--progress-page-col:26px;--progress-grid-gap:2px}}
