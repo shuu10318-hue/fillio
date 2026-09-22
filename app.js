@@ -698,17 +698,22 @@ function renderPages(){
   prev.disabled=true; next.disabled=true;
 }
 
-// 長押しスライド：最初のマスの状態を、同じ工程の通過マスへコピーする
+// 長押しスライド：同じ工程を範囲プレビューし、指を離した時だけ確定する
 let suppressCellClickUntil=0;
 let suppressPageSwipeUntil=0;
 let paintHoldTimer=null;
 let paintMode=false;
 let paintStartX=0,paintStartY=0;
 let paintStage=-1,paintValue=0;
-let paintTouched=new Set();
+let paintSourcePage=-1,paintCurrentPage=-1;
+let paintPreviewPages=new Set();
 let paintSourceCell=null;
+let paintLastX=0,paintLastY=0;
+let paintScrollRaf=0;
 const PAINT_HOLD_MS=480;
 const PAINT_CANCEL_MOVE=12;
+const PAINT_SCROLL_EDGE=72;
+const PAINT_SCROLL_MAX=12;
 
 function setCellVisual(cell,value){
   cell.classList.remove("state0","state1","state2","state-started","state-done");
@@ -719,39 +724,97 @@ function setCellVisual(cell,value){
 function cancelPaintHold(){
   if(paintHoldTimer){clearTimeout(paintHoldTimer);paintHoldTimer=null}
 }
-function paintCellAtPoint(x,y){
-  const el=document.elementFromPoint(x,y);
-  const cell=el?.closest?.(".progress-cell");
-  if(!cell || !pages.contains(cell))return;
-  const p=Number(cell.dataset.pageIndex), s=Number(cell.dataset.stageIndex);
-  if(!Number.isInteger(p)||!Number.isInteger(s)||s!==paintStage)return;
-  const key=p+":"+s;
-  if(paintTouched.has(key))return;
-  paintTouched.add(key);
-  progress[p][s]=paintValue;
-  setCellVisual(cell,paintValue);
+function getPaintCell(p,s=paintStage){
+  return pages.querySelector(`.progress-cell[data-page-index="${p}"][data-stage-index="${s}"]`);
 }
-function finishPaint(){
+function restorePaintPreview(){
+  for(const p of paintPreviewPages){
+    const cell=getPaintCell(p);
+    if(cell)setCellVisual(cell,progress[p][paintStage]);
+  }
+  paintPreviewPages.clear();
+}
+function showPaintPreview(endPage){
+  if(!paintMode || !Number.isInteger(endPage))return;
+  endPage=Math.max(0,Math.min(totalPages-1,endPage));
+  paintCurrentPage=endPage;
+  const lo=Math.min(paintSourcePage,endPage), hi=Math.max(paintSourcePage,endPage);
+  const next=new Set();
+  for(let p=lo;p<=hi;p++)next.add(p);
+  for(const p of paintPreviewPages){
+    if(!next.has(p)){
+      const cell=getPaintCell(p);
+      if(cell)setCellVisual(cell,progress[p][paintStage]);
+    }
+  }
+  for(const p of next){
+    const cell=getPaintCell(p);
+    if(cell)setCellVisual(cell,paintValue);
+  }
+  paintPreviewPages=next;
+}
+function updatePaintPoint(x,y){
+  paintLastX=x;paintLastY=y;
+  const el=document.elementFromPoint(x,y);
+  const cell=el?.closest?.('.progress-cell');
+  if(!cell || !pages.contains(cell))return;
+  const p=Number(cell.dataset.pageIndex),s=Number(cell.dataset.stageIndex);
+  if(!Number.isInteger(p)||!Number.isInteger(s)||s!==paintStage)return;
+  showPaintPreview(p);
+}
+function paintAutoScrollStep(){
+  paintScrollRaf=0;
+  if(!paintMode)return;
+  const h=window.innerHeight;
+  let dy=0;
+  if(paintLastY<PAINT_SCROLL_EDGE){
+    const strength=(PAINT_SCROLL_EDGE-paintLastY)/PAINT_SCROLL_EDGE;
+    dy=-Math.max(1,Math.round(PAINT_SCROLL_MAX*Math.min(1,strength)));
+  }else if(paintLastY>h-PAINT_SCROLL_EDGE){
+    const strength=(paintLastY-(h-PAINT_SCROLL_EDGE))/PAINT_SCROLL_EDGE;
+    dy=Math.max(1,Math.round(PAINT_SCROLL_MAX*Math.min(1,strength)));
+  }
+  if(dy){
+    window.scrollBy(0,dy);
+    updatePaintPoint(paintLastX,paintLastY);
+  }
+  paintScrollRaf=requestAnimationFrame(paintAutoScrollStep);
+}
+function startPaintAutoScroll(){
+  if(!paintScrollRaf)paintScrollRaf=requestAnimationFrame(paintAutoScrollStep);
+}
+function stopPaintAutoScroll(){
+  if(paintScrollRaf){cancelAnimationFrame(paintScrollRaf);paintScrollRaf=0}
+}
+function endPaint(commit){
   cancelPaintHold();
+  stopPaintAutoScroll();
   const wasPaintMode=paintMode;
   paintMode=false;
-  if(paintSourceCell)paintSourceCell.classList.remove("paint-source");
+  if(paintSourceCell)paintSourceCell.classList.remove('paint-source');
   paintSourceCell=null;
-  if(!wasPaintMode)return;
+  if(!wasPaintMode){paintPreviewPages.clear();return}
   suppressCellClickUntil=Date.now()+500;
   suppressPageSwipeUntil=Date.now()+500;
-  save();
-  updateSummary();
+  if(commit){
+    for(const p of paintPreviewPages)progress[p][paintStage]=paintValue;
+    paintPreviewPages.clear();
+    save();
+    updateSummary();
+  }else{
+    restorePaintPreview();
+  }
 }
-pages.addEventListener("touchstart",e=>{
+pages.addEventListener('touchstart',e=>{
   if(e.touches.length!==1)return;
-  const cell=e.target.closest?.(".progress-cell");
+  const cell=e.target.closest?.('.progress-cell');
   if(!cell)return;
   cancelPaintHold();
+  stopPaintAutoScroll();
   paintMode=false;
-  paintTouched.clear();
-  paintStartX=e.touches[0].clientX;
-  paintStartY=e.touches[0].clientY;
+  paintPreviewPages.clear();
+  paintStartX=paintLastX=e.touches[0].clientX;
+  paintStartY=paintLastY=e.touches[0].clientY;
   paintSourceCell=cell;
   paintHoldTimer=setTimeout(()=>{
     const p=Number(cell.dataset.pageIndex),s=Number(cell.dataset.stageIndex);
@@ -759,29 +822,32 @@ pages.addEventListener("touchstart",e=>{
     paintMode=true;
     paintStage=s;
     paintValue=progress[p][s];
-    paintTouched.add(p+":"+s);
-    cell.classList.add("paint-source");
+    paintSourcePage=paintCurrentPage=p;
+    paintPreviewPages=new Set([p]);
+    cell.classList.add('paint-source');
     suppressCellClickUntil=Date.now()+1000;
     suppressPageSwipeUntil=Date.now()+1000;
     if(navigator.vibrate)navigator.vibrate(28);
+    startPaintAutoScroll();
   },PAINT_HOLD_MS);
 },{passive:true});
 
-pages.addEventListener("touchmove",e=>{
+pages.addEventListener('touchmove',e=>{
   if(e.touches.length!==1)return;
   const t=e.touches[0];
+  paintLastX=t.clientX;paintLastY=t.clientY;
   if(!paintMode){
     if(Math.hypot(t.clientX-paintStartX,t.clientY-paintStartY)>PAINT_CANCEL_MOVE)cancelPaintHold();
     return;
   }
-  // 塗りモード中だけ画面スクロール/ページスワイプを止める
+  // 長押し中はネイティブスクロールを止め、端では専用のオートスクロールを使う
   e.preventDefault();
   suppressPageSwipeUntil=Date.now()+500;
-  paintCellAtPoint(t.clientX,t.clientY);
+  updatePaintPoint(t.clientX,t.clientY);
 },{passive:false});
 
-pages.addEventListener("touchend",finishPaint,{passive:true});
-pages.addEventListener("touchcancel",finishPaint,{passive:true});
+pages.addEventListener('touchend',()=>endPaint(true),{passive:true});
+pages.addEventListener('touchcancel',()=>endPaint(false),{passive:true});
 
 function render(){renderDynamicTableHead();renderPages();updateSummary()}
 prev.onclick=()=>{if(currentView>0){currentView--;renderPages()}};
