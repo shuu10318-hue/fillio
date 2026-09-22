@@ -698,20 +698,22 @@ function renderPages(){
   prev.disabled=true; next.disabled=true;
 }
 
-// 長押しスライド：同じ工程を範囲プレビューし、指を離した時だけ確定する
+// 長押しスライド：最初の移動方向で縦/横を固定し、範囲プレビュー後に指を離して確定する
 let suppressCellClickUntil=0;
 let suppressPageSwipeUntil=0;
 let paintHoldTimer=null;
 let paintMode=false;
+let paintAxis=null;
 let paintStartX=0,paintStartY=0;
 let paintStage=-1,paintValue=0;
-let paintSourcePage=-1,paintCurrentPage=-1;
-let paintPreviewPages=new Set();
+let paintSourcePage=-1;
 let paintSourceCell=null;
+let paintPreviewCells=new Set();
 let paintLastX=0,paintLastY=0;
 let paintScrollRaf=0;
 const PAINT_HOLD_MS=480;
 const PAINT_CANCEL_MOVE=12;
+const PAINT_AXIS_LOCK_MOVE=10;
 const PAINT_SCROLL_EDGE=72;
 const PAINT_SCROLL_MAX=12;
 
@@ -724,55 +726,76 @@ function setCellVisual(cell,value){
 function cancelPaintHold(){
   if(paintHoldTimer){clearTimeout(paintHoldTimer);paintHoldTimer=null}
 }
-function getPaintCell(p,s=paintStage){
+function paintKey(p,s){return `${p}:${s}`}
+function getPaintCell(p,s){
   return pages.querySelector(`.progress-cell[data-page-index="${p}"][data-stage-index="${s}"]`);
 }
 function restorePaintPreview(){
-  for(const p of paintPreviewPages){
-    const cell=getPaintCell(p);
-    if(cell)setCellVisual(cell,progress[p][paintStage]);
+  for(const key of paintPreviewCells){
+    const [p,s]=key.split(":").map(Number);
+    const cell=getPaintCell(p,s);
+    if(cell)setCellVisual(cell,progress[p][s]);
   }
-  paintPreviewPages.clear();
+  paintPreviewCells.clear();
 }
-function showPaintPreview(endPage){
-  if(!paintMode || !Number.isInteger(endPage))return;
-  endPage=Math.max(0,Math.min(totalPages-1,endPage));
-  paintCurrentPage=endPage;
-  const lo=Math.min(paintSourcePage,endPage), hi=Math.max(paintSourcePage,endPage);
+function showPaintPreview(endPage,endStage){
+  if(!paintMode)return;
   const next=new Set();
-  for(let p=lo;p<=hi;p++)next.add(p);
-  for(const p of paintPreviewPages){
-    if(!next.has(p)){
-      const cell=getPaintCell(p);
-      if(cell)setCellVisual(cell,progress[p][paintStage]);
+  if(paintAxis==="vertical"){
+    endPage=Math.max(0,Math.min(totalPages-1,endPage));
+    const lo=Math.min(paintSourcePage,endPage),hi=Math.max(paintSourcePage,endPage);
+    for(let p=lo;p<=hi;p++)next.add(paintKey(p,paintStage));
+  }else if(paintAxis==="horizontal"){
+    endStage=Math.max(0,Math.min(stages.length-1,endStage));
+    const lo=Math.min(paintStage,endStage),hi=Math.max(paintStage,endStage);
+    for(let s=lo;s<=hi;s++)next.add(paintKey(paintSourcePage,s));
+  }else{
+    next.add(paintKey(paintSourcePage,paintStage));
+  }
+  for(const key of paintPreviewCells){
+    if(!next.has(key)){
+      const [p,s]=key.split(":").map(Number);
+      const cell=getPaintCell(p,s);
+      if(cell)setCellVisual(cell,progress[p][s]);
     }
   }
-  for(const p of next){
-    const cell=getPaintCell(p);
+  for(const key of next){
+    const [p,s]=key.split(":").map(Number);
+    const cell=getPaintCell(p,s);
     if(cell)setCellVisual(cell,paintValue);
   }
-  paintPreviewPages=next;
+  paintPreviewCells=next;
 }
 function updatePaintPoint(x,y){
   paintLastX=x;paintLastY=y;
+  if(!paintAxis){
+    const dx=x-paintStartX,dy=y-paintStartY;
+    if(Math.max(Math.abs(dx),Math.abs(dy))>=PAINT_AXIS_LOCK_MOVE){
+      paintAxis=Math.abs(dx)>Math.abs(dy)?"horizontal":"vertical";
+    }
+  }
   const el=document.elementFromPoint(x,y);
   const cell=el?.closest?.('.progress-cell');
   if(!cell || !pages.contains(cell))return;
   const p=Number(cell.dataset.pageIndex),s=Number(cell.dataset.stageIndex);
-  if(!Number.isInteger(p)||!Number.isInteger(s)||s!==paintStage)return;
-  showPaintPreview(p);
+  if(!Number.isInteger(p)||!Number.isInteger(s))return;
+  if(paintAxis==="vertical")showPaintPreview(p,paintStage);
+  else if(paintAxis==="horizontal")showPaintPreview(paintSourcePage,s);
 }
 function paintAutoScrollStep(){
   paintScrollRaf=0;
   if(!paintMode)return;
-  const h=window.innerHeight;
   let dy=0;
-  if(paintLastY<PAINT_SCROLL_EDGE){
-    const strength=(PAINT_SCROLL_EDGE-paintLastY)/PAINT_SCROLL_EDGE;
-    dy=-Math.max(1,Math.round(PAINT_SCROLL_MAX*Math.min(1,strength)));
-  }else if(paintLastY>h-PAINT_SCROLL_EDGE){
-    const strength=(paintLastY-(h-PAINT_SCROLL_EDGE))/PAINT_SCROLL_EDGE;
-    dy=Math.max(1,Math.round(PAINT_SCROLL_MAX*Math.min(1,strength)));
+  // オートスクロールは縦モードだけ。横モードでは画面を動かさない。
+  if(paintAxis==="vertical"){
+    const h=window.innerHeight;
+    if(paintLastY<PAINT_SCROLL_EDGE){
+      const strength=(PAINT_SCROLL_EDGE-paintLastY)/PAINT_SCROLL_EDGE;
+      dy=-Math.max(1,Math.round(PAINT_SCROLL_MAX*Math.min(1,strength)));
+    }else if(paintLastY>h-PAINT_SCROLL_EDGE){
+      const strength=(paintLastY-(h-PAINT_SCROLL_EDGE))/PAINT_SCROLL_EDGE;
+      dy=Math.max(1,Math.round(PAINT_SCROLL_MAX*Math.min(1,strength)));
+    }
   }
   if(dy){
     window.scrollBy(0,dy);
@@ -791,14 +814,18 @@ function endPaint(commit){
   stopPaintAutoScroll();
   const wasPaintMode=paintMode;
   paintMode=false;
+  paintAxis=null;
   if(paintSourceCell)paintSourceCell.classList.remove('paint-source');
   paintSourceCell=null;
-  if(!wasPaintMode){paintPreviewPages.clear();return}
+  if(!wasPaintMode){paintPreviewCells.clear();return}
   suppressCellClickUntil=Date.now()+500;
   suppressPageSwipeUntil=Date.now()+500;
   if(commit){
-    for(const p of paintPreviewPages)progress[p][paintStage]=paintValue;
-    paintPreviewPages.clear();
+    for(const key of paintPreviewCells){
+      const [p,s]=key.split(":").map(Number);
+      progress[p][s]=paintValue;
+    }
+    paintPreviewCells.clear();
     save();
     updateSummary();
   }else{
@@ -812,7 +839,8 @@ pages.addEventListener('touchstart',e=>{
   cancelPaintHold();
   stopPaintAutoScroll();
   paintMode=false;
-  paintPreviewPages.clear();
+  paintAxis=null;
+  paintPreviewCells.clear();
   paintStartX=paintLastX=e.touches[0].clientX;
   paintStartY=paintLastY=e.touches[0].clientY;
   paintSourceCell=cell;
@@ -822,8 +850,8 @@ pages.addEventListener('touchstart',e=>{
     paintMode=true;
     paintStage=s;
     paintValue=progress[p][s];
-    paintSourcePage=paintCurrentPage=p;
-    paintPreviewPages=new Set([p]);
+    paintSourcePage=p;
+    paintPreviewCells=new Set([paintKey(p,s)]);
     cell.classList.add('paint-source');
     suppressCellClickUntil=Date.now()+1000;
     suppressPageSwipeUntil=Date.now()+1000;
@@ -840,7 +868,7 @@ pages.addEventListener('touchmove',e=>{
     if(Math.hypot(t.clientX-paintStartX,t.clientY-paintStartY)>PAINT_CANCEL_MOVE)cancelPaintHold();
     return;
   }
-  // 長押し中はネイティブスクロールを止め、端では専用のオートスクロールを使う
+  // 長押し開始後は最初の移動方向へ固定。斜めにぶれても縦/横の範囲だけを変更する。
   e.preventDefault();
   suppressPageSwipeUntil=Date.now()+500;
   updatePaintPoint(t.clientX,t.clientY);
@@ -1756,7 +1784,7 @@ const FULL_I18N={
  "Chromeのダウンロード一覧または端末の「Downloads」を確認してください。":"Check Chrome downloads or the device Downloads folder.",
  "JSONバックアップには作品・進捗・作業履歴・付箋などのデータを保存します。大きな変更の前にもバックアップしておくと安心です。":"JSON backup stores projects, progress, work history and notes. Back up before major changes.",
  "タップするたびに「未着手 → 着手 → 完了 → 未着手」と切り替わります。":"Each tap cycles: Not started → In progress → Complete → Not started.",
- "工程マスを約0.5秒長押しして、そのまま同じ工程をなぞると、最初のマスの状態を連続コピーできます。振動したらコピー開始です。":"Long-press a stage cell for about 0.5 seconds, then slide along the same stage to copy its state. Copying starts when the device vibrates.",
+ "工程マスを約0.5秒長押しし、上下または左右になぞると範囲をプレビューできます。指を離すと確定します。振動したら開始です。":"Long-press a stage cell for about 0.5 seconds, then slide vertically or horizontally to preview the range. Release to apply it. It starts when the device vibrates.",
  "工程表を左右にスワイプすると、12ページずつ移動できます。「前」「次」ボタンでも移動できます。":"Swipe the production table left or right to move 12 pages at a time. You can also use Prev and Next.",
  "そのページに付箋メモを付けられます。赤・黄・青・緑で分類でき、「メモ一覧」から絞り込みやページ移動もできます。":"Add a note to a page and classify it by red, yellow, blue or green. Filter notes and jump to pages from Notes.",
  "着手率・完成率・工程別進捗を自動集計します。作業履歴から完成予想を計算し、締切を設定している場合は必要ペースも確認できます。":"Automatically summarizes started/completed rates and stage progress. Work history is used to estimate completion and required pace when a deadline is set."
