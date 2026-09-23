@@ -878,8 +878,8 @@ input{border-color:var(--border);border-radius:12px}
   overscroll-behavior:auto contain;
   touch-action:pan-x pan-y;
   padding-bottom:4px;
-  padding-right:8px;
-  scrollbar-gutter:stable;
+  padding-right:0;
+  scrollbar-gutter:auto;
 }
 .table-head-anchor{
   display:block!important;
