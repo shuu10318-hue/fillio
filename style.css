@@ -1053,3 +1053,57 @@ input{border-color:var(--border);border-radius:12px}
 
 /* fillio logo: same size on every screen and returns to Library */
 .fillio-home-link{appearance:none;-webkit-appearance:none;border:0;background:transparent;padding:0;margin:0;display:block;line-height:0;cursor:pointer}
+
+
+/* 2026-09-23 fillio header consistency fix */
+#projectHome .brand-head,
+#editorApp .editor-brand{
+  height:44px!important;
+  min-height:44px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+}
+#projectHome .fillio-home-link,
+#editorApp .fillio-home-link{
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+  padding:0!important;
+  margin:0!important;
+  width:116px!important;
+  height:43px!important;
+  min-width:116px!important;
+  min-height:43px!important;
+  border-radius:0!important;
+  display:block!important;
+  line-height:0!important;
+  -webkit-tap-highlight-color:transparent;
+}
+#projectHome .fillio-home-link:focus,
+#projectHome .fillio-home-link:focus-visible,
+#projectHome .fillio-home-link:active,
+#editorApp .fillio-home-link:focus,
+#editorApp .fillio-home-link:focus-visible,
+#editorApp .fillio-home-link:active{
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+}
+#projectHome .fillio-logo,
+#editorApp .fillio-logo{
+  display:block!important;
+  width:116px!important;
+  height:43px!important;
+  max-width:none!important;
+  object-fit:contain!important;
+  object-position:left center!important;
+}
+@media(max-width:360px){
+  #projectHome .fillio-home-link,#editorApp .fillio-home-link{width:104px!important;min-width:104px!important;height:38px!important;min-height:38px!important}
+  #projectHome .fillio-logo,#editorApp .fillio-logo{width:104px!important;height:38px!important}
+}
