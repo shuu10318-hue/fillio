@@ -451,7 +451,7 @@ function showBackupStatus(message){
 function exportBackup(){
   try{
     const data=makeBackup(),date=localDate();
-    const fileName=`漫画制作進捗_全作品_backup_${date}.json`;
+    const fileName=`fillio-backup-${date}.json`;
     const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json;charset=utf-8"});
     const url=URL.createObjectURL(blob),link=document.createElement("a");
     link.href=url;link.download=fileName;link.style.display="none";
@@ -2118,7 +2118,7 @@ function translateUiPatterns(root=document){
    if(x!==s)el.textContent=raw.replace(s,x);
  }
  // title/placeholderなど
- document.title="Manga Production Tracker";
+ document.title="fillio";
  document.querySelectorAll("[placeholder]").forEach(el=>{
    const p=el.getAttribute("placeholder");
    if(p==="作品名")el.setAttribute("placeholder","Project title");
@@ -2178,7 +2178,7 @@ const JA_STATIC_BY_ID={
 };
 function restoreKnownJapaneseUi(){
   Object.entries(JA_STATIC_BY_ID).forEach(([id,txt])=>{const el=document.getElementById(id);if(el)el.textContent=txt});
-  document.title="漫画制作進捗";
+  document.title="fillio";
   document.documentElement.lang="ja";
 }
 function rerenderCurrentViewForLanguage(){
@@ -2488,7 +2488,7 @@ const CLEAN_USER_TEXT_SELECTOR = [
 function cleanEnglishPass(root=document){
  if(languageSettings?.language!=="en")return;
  document.documentElement.lang="en";
- document.title="Manga Production Tracker";
+ document.title="fillio";
  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
  const nodes=[]; while(walker.nextNode())nodes.push(walker.currentNode);
  for(const n of nodes){
@@ -2533,7 +2533,7 @@ if(languageSettings?.language==="en"){
  setTimeout(()=>cleanEnglishPass(document),80);
 }else{
  document.documentElement.lang="ja";
- document.title="漫画制作進捗";
+ document.title="fillio";
 }
 
 document.querySelectorAll(".language-option").forEach(btn=>{

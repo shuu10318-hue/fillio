@@ -1043,3 +1043,11 @@ input{border-color:var(--border);border-radius:12px}
 .sticky-delete{width:100%}
 /* Folder inputs no longer need footer-action spacing. */
 .folder-sheet input{margin-top:2px}
+
+/* fillio brand */
+.brand-head{display:flex;flex-direction:column;align-items:flex-start;gap:9px;min-width:0}
+.brand-head h1{margin:0;font-size:18px}
+.fillio-logo{display:block;width:116px;height:auto}
+.fillio-logo-small{width:94px}
+.editor-brand{display:flex;align-items:center;min-height:32px}
+@media(max-width:360px){.fillio-logo{width:104px}.fillio-logo-small{width:86px}}
