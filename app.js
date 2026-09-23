@@ -11,7 +11,7 @@ const DEFAULT_STAGES=["ネーム","ペン","背景","トーン","写植"];
 const MAX_STAGES=100;
 
 const UI_TEXT={
- ja:{home:"Library",newProject:"＋ 新しい作品",settings:"アプリ設定",language:"言語",defaults:"新規作品のデフォルト",pages:"制作ページ",stages:"工程",addStage:"＋ 工程を追加",cancel:"キャンセル",save:"保存",note:"新しい作品を作るときの初期値です。作品ごとに変更できます。",folderAdd:"＋ フォルダ",memo:"メモ一覧",backProjects:"作品一覧"},
+ ja:{home:"Library",newProject:"＋ 新しい作品",settings:"アプリ設定",language:"言語",defaults:"新規プロジェクトのデフォルト",pages:"制作ページ",stages:"工程",addStage:"＋ 工程を追加",cancel:"キャンセル",save:"保存",note:"新しいプロジェクトを作るときの初期値です。プロジェクトごとに変更できます。",folderAdd:"＋ フォルダ",memo:"メモ一覧",backProjects:"作品一覧"},
  en:{home:"Library",newProject:"+ New Project",settings:"App Settings",language:"Language",defaults:"New Project Defaults",pages:"Pages",stages:"Stages",addStage:"+ Add Stage",cancel:"Cancel",save:"Save",note:"These are the initial values for new projects. Each project can be changed separately.",folderAdd:"+ Folder",memo:"Notes",backProjects:"Projects"}
 };
 function normalizeAppSettings(raw){
@@ -2065,13 +2065,13 @@ const FULL_I18N={
  "使い方":"Help","工程マスをタップ":"Tap a stage cell","長押し＋スライド":"Long press + slide",
  "ページ番号をタップ":"Tap a page number","マーカー":"Legend",
  "💾 バックアップ":"💾 Backup","📂 復元":"📂 Restore","工程":"Stages","工程名":"Stage name","上へ":"Up","下へ":"Down",
- "言語":"Language","アプリ設定":"App Settings","新規作品のデフォルト":"New Project Defaults","設定":"Settings","Libraryの使い方":"Library Help","作品を作る":"Create a project","フォルダで整理":"Organize with folders","作品を編集":"Edit a project","ゴミ箱":"Trash","バックアップ":"Backup","テーマカラー":"Theme Color","完了セルや選択状態などのアクセントカラーに使われます。":"Used for completed cells and selected states.",
+ "言語":"Language","アプリ設定":"App Settings","新規プロジェクトのデフォルト":"New Project Defaults","設定":"Settings","Libraryの使い方":"Library Help","作品を作る":"Create a project","フォルダで整理":"Organize with folders","作品を編集":"Edit a project","ゴミ箱":"Trash","バックアップ":"Backup","テーマカラー":"Theme Color","完了セルや選択状態などのアクセントカラーに使われます。":"Used for completed cells and selected states.",
  "全工程":"All stages","締切":"Deadline","ページ":"Pages","未設定":"Not set","完了":"Done","完成工程":"completed stages",
  "データ収集中":"Collecting data","完成！":"Complete!","変更は自動保存されます":"Changes are saved automatically",
  "保存しました ✓":"Saved ✓","該当するメモはありません。":"No matching notes.","（メモ本文なし）":"(No note text)",
  "修正点・忘れたくないことなど":"Corrections, reminders, etc.",
  "工程名の変更・並び替え・追加・削除":"Rename, reorder, add or delete stages.",
- "新しい作品を作るときの初期値です。作品ごとに変更できます。":"Initial values for new projects. You can change them for each project.",
+ "新しいプロジェクトを作るときの初期値です。プロジェクトごとに変更できます。":"Initial values for new projects. You can change them for each project.",
  "作品ごとの進捗・付箋・作業履歴は端末内に自動保存されます。":"Project progress, notes and work history are saved automatically on this device.",
  "まだ作品がありません。":"No projects yet.","「＋ 新しい作品」から作成できます。":"Create one with “+ New Project”.",
  "着手=0.5工程として直近7日から算出":"Calculated from the last 7 days, counting in-progress as 0.5 stage.",
@@ -2261,11 +2261,11 @@ setTimeout(refreshWholeLanguage,0);
 const JA_STATIC_BY_ID={
   memoListButton:"メモ一覧",
   settingsTitle:"アプリ設定",
-  settingsDefaultsTitle:"新規作品のデフォルト",
+  settingsDefaultsTitle:"新規プロジェクトのデフォルト",
   settingsPagesLabel:"制作ページ",
   settingsStagesLabel:"工程",
   defaultStageAdd:"＋ 工程を追加",
-  settingsNote:"新しい作品を作るときの初期値です。作品ごとに変更できます。",
+  settingsNote:"新しいプロジェクトを作るときの初期値です。プロジェクトごとに変更できます。",
   settingsCancel:"キャンセル",settingsSave:"保存"
 };
 function restoreKnownJapaneseUi(){
@@ -2411,12 +2411,12 @@ function localizeDefaultsSettingsUi(){
  const en=languageSettings.language==="en";
  const set=(id,ja,enText)=>{const el=document.getElementById(id);if(el)el.textContent=en?enText:ja};
  set("settingsTitle","アプリ設定","Default Settings");
- set("settingsDefaultsTitle","新規作品のデフォルト","New Project Defaults");
+ set("settingsDefaultsTitle","新規プロジェクトのデフォルト","New Project Defaults");
  set("settingsPagesLabel","制作ページ","Pages");
  set("settingsStagesLabel","工程","Stages");
  set("defaultStageAdd","＋ 工程を追加","+ Add Stage");
  set("defaultStageReset","工程を初期設定に戻す","Reset Stages");
- set("settingsNote","新しい作品を作るときの初期値です。作品ごとに変更できます。","These initial values are used when creating a new project. You can change them per project.");
+ set("settingsNote","新しいプロジェクトを作るときの初期値です。プロジェクトごとに変更できます。","These initial values are used when creating a new project. You can change them per project.");
  set("settingsCancel","キャンセル","Cancel");
  set("settingsSave","保存","Save");
 }
@@ -2555,7 +2555,7 @@ const CLEAN_EN_EXACT = {
  "1日平均":"Daily average","完成予想":"Estimated Completion","変更は自動保存されます":"Changes are saved automatically",
  "着手中":"In progress","完成済み":"Completed","着手":"Started","完成":"Completed",
  "← 前":"← Prev","次 →":"Next →","閉じる":"Close","言語":"Language","アプリ設定":"App Settings",
- "新規作品のデフォルト":"New Project Defaults","制作ページ":"Pages","工程":"Stages",
+ "新規プロジェクトのデフォルト":"New Project Defaults","制作ページ":"Pages","工程":"Stages",
  "＋ 工程を追加":"+ Add Stage","キャンセル":"Cancel","保存":"Save","データ管理":"Data Management","ページ":"Pages","全工程":"All stages","締切":"Deadline","未設定":"Not set","編集":"Edit","この作品を削除":"Delete this project","作品":"projects",
  "着手=0.5工程として直近7日から算出":"Calculated from the last 7 days, counting in-progress as 0.5 stage."
 };
