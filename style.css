@@ -1234,3 +1234,27 @@ input{border-color:var(--border);border-radius:12px}
 .folder-eject.project-icon-button{width:32px;height:32px;padding:6px;display:grid;place-items:center;border:0;background:transparent;color:var(--muted);border-radius:9px}
 .folder-eject.project-icon-button .icon-line{width:18px;height:18px}
 .folder-eject.project-icon-button:hover{background:var(--soft);color:var(--text)}
+
+/* ===== Library interaction + stage details 2026-09-23 ===== */
+.project-open-title{display:flex;align-items:center;gap:7px;width:100%;min-width:0;padding:0;border:0;background:transparent;color:var(--text);text-align:left;cursor:pointer}
+.project-open-title .icon-line{width:17px;height:17px;flex:0 0 17px;color:var(--muted)}
+.project-open-title .project-item-title{min-width:0;display:block}
+.project-edit-button.project-icon-button{width:34px;height:34px;min-height:34px;padding:7px;display:grid;place-items:center;border:0;background:transparent;color:var(--muted);border-radius:9px}
+.project-edit-button.project-icon-button .icon-line{width:19px;height:19px}
+.project-edit-button.project-icon-button:hover{background:var(--soft);color:var(--text)}
+
+.project-progress-track.dual{position:relative;overflow:hidden}
+.project-progress-track.dual>i{position:absolute;left:0;top:0;height:100%;border-radius:inherit;transition:width .2s ease}
+.project-progress-track.dual>.started{background:color-mix(in srgb,var(--accent) 34%,#dfe2e5)}
+.project-progress-track.dual>.done{background:var(--accent)}
+
+.project-stage-toggle{width:100%;height:34px;margin-top:10px;padding:0 3px;border:0;border-top:1px solid var(--border);border-radius:0;background:transparent;color:var(--muted);display:flex;align-items:flex-end;justify-content:space-between;font-size:11px;font-weight:700;cursor:pointer}
+.project-stage-toggle .icon-line{width:16px;height:16px;transition:transform .18s ease}
+.project-stage-toggle[aria-expanded="true"] .icon-line{transform:rotate(180deg)}
+.project-stage-details{display:none;padding:10px 2px 2px}
+.project-stage-details.open{display:block}
+.project-stage-row{display:grid;grid-template-columns:minmax(70px,1fr) minmax(90px,1.5fr) 38px;gap:9px;align-items:center;min-height:28px}
+.project-stage-name{font-size:11px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.project-stage-row>b{font-size:11px;text-align:right;color:var(--text)}
+.project-stage-track{height:5px;border-radius:999px;background:color-mix(in srgb,var(--accent) 10%,#eceeef);overflow:hidden}
+.project-stage-track>i{display:block;height:100%;border-radius:inherit;background:var(--accent)}

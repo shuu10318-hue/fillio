@@ -391,6 +391,18 @@ function projectDashboardStats(p){
   return {startedPct:Math.round(started/total*100),donePct:Math.round(done/total*100),todayDone,weekDone,forecast};
 }
 
+const expandedStageDetails=new Set();
+function projectStageStats(p){
+  const rows=Array.isArray(p?.progress)?p.progress:[];
+  const names=Array.isArray(p?.stages)&&p.stages.length?p.stages:DEFAULT_STAGES;
+  return names.map((name,stageIndex)=>{
+    const vals=rows.map(row=>Array.isArray(row)?Number(row[stageIndex]||0):0);
+    const total=Math.max(1,vals.length);
+    const done=vals.filter(v=>v===2).length;
+    return {name:String(name||""),pct:Math.round(done/total*100)};
+  });
+}
+
 function renderProjectList(){
   const list=document.getElementById("projectList");
   list.innerHTML="";
@@ -411,18 +423,23 @@ function renderProjectList(){
     const donePages=(p.progress||[]).filter(r=>Array.isArray(r)&&r.every(v=>v===2)).length;
     const dash=projectDashboardStats(p);
     const isEn=languageSettings?.language==="en";
+    const donePct=projectPercent(p);
+    const stageStats=projectStageStats(p);
+    const expanded=expandedStageDetails.has(id);
+    const title=p.title||(isEn?"Untitled":"無題");
+    const detailRows=stageStats.map(st=>`<div class="project-stage-row"><span class="project-stage-name"></span><div class="project-stage-track"><i style="width:${st.pct}%"></i></div><b>${st.pct}%</b></div>`).join("");
     item.innerHTML=`<div class="project-item-main">
       <div style="min-width:0">
-        <div class="project-item-title" data-user-text="1"></div>
+        <button class="project-open-title" type="button" aria-label="${isEn?"Open input page":"入力ページを開く"}" title="${isEn?"Open input page":"入力ページを開く"}"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span class="project-item-title" data-user-text="1"></span></button>
         ${donePages>=p.totalPages ? `
 <div class="project-summary project-summary-complete">
   <div class="project-summary-main"><b>${donePages} / ${p.totalPages}P</b><strong>✓ ${isEn?"Completed":"完成"}</strong></div>
-  <div class="project-progress-track"><i style="width:100%"></i></div>
+  <div class="project-progress-track dual"><i class="started" style="width:100%"></i><i class="done" style="width:100%"></i></div>
   <div class="project-complete-meta"><span>${isEn?"Progress":"全工程"}</span><b>100%</b></div>
 </div>` : `
 <div class="project-summary">
-  <div class="project-summary-main"><b>${donePages} / ${p.totalPages}P</b><strong>${projectPercent(p)}%</strong></div>
-  <div class="project-progress-track"><i style="width:${projectPercent(p)}%"></i></div>
+  <div class="project-summary-main"><b>${donePages} / ${p.totalPages}P</b><strong>${donePct}%</strong></div>
+  <div class="project-progress-track dual"><i class="started" style="width:${dash.startedPct}%"></i><i class="done" style="width:${donePct}%"></i></div>
   <div class="project-plan-row">
     <div><span>${isEn?"Deadline":"締切"}</span><b>${p.deadline?p.deadline.replaceAll("-","/"):(isEn?"None":"未設定")}</b></div>
     <div><span>${isEn?"Forecast":"完成予想"}</span><b>${dash.forecast}</b></div>
@@ -435,19 +452,27 @@ function renderProjectList(){
 </div>`}
       </div>
       <div class="project-item-actions">
-        <button class="project-edit-button project-icon-button" type="button" aria-label="${isEn?"Edit project":"作品を編集"}" title="${isEn?"Edit":"編集"}"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button>
+        <button class="project-edit-button project-icon-button" type="button" aria-label="${isEn?"Project settings":"プロジェクト設定"}" title="${isEn?"Project settings":"プロジェクト設定"}"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.09A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.09A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.09A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.13.37.35.7.64.96.3.27.68.42 1.08.44H21v4h-.09A1.7 1.7 0 0 0 19.4 15z"/></svg></button>
       </div>
-    </div>`;
-    item.querySelector(".project-item-title").textContent=p.title||(languageSettings?.language==="en"?"Untitled":"無題");
-    item.addEventListener("click",e=>{
-      if(Date.now()<(window.__suppressMixedClickUntil||0))return;
-      if(e.target.closest("button,a,input,textarea,select,label"))return;
-      openProject(id);
-    });
+    </div>
+    <button class="project-stage-toggle" type="button" aria-expanded="${expanded}"><span>${isEn?"Stage details":"工程別"}</span><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></button>
+    <div class="project-stage-details${expanded?" open":""}">${detailRows}</div>`;
+    item.querySelector(".project-item-title").textContent=title;
+    item.querySelectorAll(".project-stage-name").forEach((el,i)=>{el.textContent=stageStats[i]?.name||""});
+    item.querySelector(".project-open-title").onclick=e=>{e.stopPropagation();openProject(id)};
     item.querySelector(".project-edit-button").onclick=e=>{e.stopPropagation();openProjectEdit(id)};
+    item.querySelector(".project-stage-toggle").onclick=e=>{
+      e.stopPropagation();
+      if(expandedStageDetails.has(id))expandedStageDetails.delete(id);else expandedStageDetails.add(id);
+      const details=item.querySelector(".project-stage-details");
+      const btn=e.currentTarget;
+      const open=expandedStageDetails.has(id);
+      details.classList.toggle("open",open);btn.setAttribute("aria-expanded",String(open));
+    };
     list.appendChild(item);
   });
 }
+
 function load(){
   loadProjectStore();
 }
@@ -1616,7 +1641,7 @@ function renderFoldersAndFilter(){
        persistProjectStore();
        renderFoldersAndFilter();
      });
-     actions.prepend(btn);
+     actions.append(btn);
    });
  }
  if(!currentFolderId){
