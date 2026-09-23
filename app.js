@@ -780,6 +780,12 @@ document.getElementById("stickySave").onclick=()=>{
   renderPages();
 };
 
+function fillioHaptic(ms){
+  try{
+    if(typeof navigator!=="undefined" && typeof navigator.vibrate==="function")navigator.vibrate(ms);
+  }catch(_e){}
+}
+
 function renderPages(){
   pages.innerHTML="";
   const start=0,end=totalPages;
@@ -800,7 +806,11 @@ function renderPages(){
       b.classList.toggle("state-done",progress[p][s]===2);
       b.onclick=()=>{
         if(Date.now()<suppressCellClickUntil)return;
-        progress[p][s]=(progress[p][s]+1)%3;setCellVisual(b,progress[p][s]);save();requestAnimationFrame(()=>updateSummary())
+        progress[p][s]=(progress[p][s]+1)%3;
+        setCellVisual(b,progress[p][s]);
+        fillioHaptic(8);
+        save();
+        requestAnimationFrame(()=>updateSummary());
       };
       row.appendChild(b);
     }
@@ -955,11 +965,14 @@ function endPaint(commit){
   suppressCellClickUntil=Date.now()+500;
   suppressPageSwipeUntil=Date.now()+500;
   if(commit){
+    let changed=false;
     for(const key of paintPreviewCells){
       const [p,s]=key.split(":").map(Number);
+      if(progress[p][s]!==paintValue)changed=true;
       progress[p][s]=paintValue;
     }
     paintPreviewCells.clear();
+    if(changed)fillioHaptic(18);
     save();
     updateSummary();
   }else{
@@ -989,7 +1002,7 @@ pages.addEventListener('touchstart',e=>{
     cell.classList.add('paint-source');
     suppressCellClickUntil=Date.now()+1000;
     suppressPageSwipeUntil=Date.now()+1000;
-    if(navigator.vibrate)navigator.vibrate(28);
+    fillioHaptic(28);
     startPaintAutoScroll();
   },PAINT_HOLD_MS);
 },{passive:true});
