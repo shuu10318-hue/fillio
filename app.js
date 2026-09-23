@@ -398,8 +398,9 @@ function projectStageStats(p){
   return names.map((name,stageIndex)=>{
     const vals=rows.map(row=>Array.isArray(row)?Number(row[stageIndex]||0):0);
     const total=Math.max(1,vals.length);
+    const started=vals.filter(v=>v>0).length;
     const done=vals.filter(v=>v===2).length;
-    return {name:String(name||""),pct:Math.round(done/total*100)};
+    return {name:String(name||""),startedPct:Math.round(started/total*100),pct:Math.round(done/total*100)};
   });
 }
 
@@ -427,7 +428,7 @@ function renderProjectList(){
     const stageStats=projectStageStats(p);
     const expanded=expandedStageDetails.has(id);
     const title=p.title||(isEn?"Untitled":"無題");
-    const detailRows=stageStats.map(st=>`<div class="project-stage-row"><span class="project-stage-name"></span><div class="project-stage-track"><i style="width:${st.pct}%"></i></div><b>${st.pct}%</b></div>`).join("");
+    const detailRows=stageStats.map(st=>`<div class="project-stage-row"><span class="project-stage-name"></span><div class="project-stage-track dual"><i class="started" style="width:${st.startedPct}%"></i><i class="done" style="width:${st.pct}%"></i></div><b>${st.pct}%</b></div>`).join("");
     item.innerHTML=`<div class="project-item-main">
       <div style="min-width:0">
         <button class="project-open-title" type="button" aria-label="${isEn?"Open input page":"入力ページを開く"}" title="${isEn?"Open input page":"入力ページを開く"}"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span class="project-item-title" data-user-text="1"></span></button>
@@ -458,7 +459,7 @@ function renderProjectList(){
     <button class="project-stage-toggle" type="button" aria-expanded="${expanded}"><span>${isEn?"Stage details":"工程別"}</span><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></button>
     <div class="project-stage-details${expanded?" open":""}">${detailRows}</div>`;
     item.querySelector(".project-item-title").textContent=title;
-    item.querySelectorAll(".project-stage-name").forEach((el,i)=>{el.textContent=stageStats[i]?.name||""});
+    item.querySelectorAll(".project-stage-name").forEach((el,i)=>{el.textContent=stageStats[i]?.name||(isEn?"New stage":"新しい工程")});
     item.querySelector(".project-open-title").onclick=e=>{e.stopPropagation();openProject(id)};
     item.querySelector(".project-edit-button").onclick=e=>{e.stopPropagation();openProjectEdit(id)};
     item.querySelector(".project-stage-toggle").onclick=e=>{
@@ -1634,7 +1635,7 @@ function renderFoldersAndFilter(){
      btn.className="folder-eject project-icon-button";
      btn.setAttribute("aria-label",languageSettings?.language==="en"?"Remove from folder":"フォルダから解除");
      btn.title=languageSettings?.language==="en"?"Remove from folder":"フォルダから解除";
-     btn.innerHTML='<svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7l-5 5 5 5"/><path d="M20 7h-7a4 4 0 0 0-4 4v6"/></svg>';
+     btn.innerHTML='<svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7l-5 5 5 5"/><path d="M4 12h10a6 6 0 0 1 6 6v1"/></svg>';
      btn.addEventListener("click",e=>{
        e.stopPropagation();
        p.folderId=null;

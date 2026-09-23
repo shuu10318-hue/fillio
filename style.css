@@ -1258,3 +1258,12 @@ input{border-color:var(--border);border-radius:12px}
 .project-stage-row>b{font-size:11px;text-align:right;color:var(--text)}
 .project-stage-track{height:5px;border-radius:999px;background:color-mix(in srgb,var(--accent) 10%,#eceeef);overflow:hidden}
 .project-stage-track>i{display:block;height:100%;border-radius:inherit;background:var(--accent)}
+
+/* ===== Library stage-detail polish 2026-09-23 ===== */
+.project-open-title{min-height:34px}
+.project-item-actions{padding-top:0!important}
+.project-edit-button.project-icon-button{margin-top:0!important}
+.project-stage-track.dual{position:relative;overflow:hidden}
+.project-stage-track.dual>i{position:absolute;left:0;top:0;height:100%;border-radius:inherit}
+.project-stage-track.dual>.started{background:color-mix(in srgb,var(--accent) 34%,#dfe2e5)}
+.project-stage-track.dual>.done{background:var(--accent)}
