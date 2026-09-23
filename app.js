@@ -11,8 +11,8 @@ const DEFAULT_STAGES=["ネーム","ペン","背景","トーン","写植"];
 const MAX_STAGES=100;
 
 const UI_TEXT={
- ja:{home:"Library",newProject:"＋ 新しいプロジェクト",settings:"アプリ設定",language:"言語",defaults:"新規プロジェクトのデフォルト",pages:"制作ページ",stages:"工程",addStage:"＋ 工程を追加",cancel:"キャンセル",save:"保存",note:"新しいプロジェクトを作るときの初期値です。プロジェクトごとに変更できます。",folderAdd:"＋ フォルダ",memo:"メモ一覧",backProjects:"作品一覧"},
- en:{home:"Library",newProject:"+ New Project",settings:"App Settings",language:"Language",defaults:"New Project Defaults",pages:"Pages",stages:"Stages",addStage:"+ Add Stage",cancel:"Cancel",save:"Save",note:"These are the initial values for new projects. Each project can be changed separately.",folderAdd:"+ Folder",memo:"Notes",backProjects:"Projects"}
+ ja:{home:"Library",newProject:"＋ プロジェクト",settings:"アプリ設定",language:"言語",defaults:"新規プロジェクトのデフォルト",pages:"制作ページ",stages:"工程",addStage:"＋ 工程を追加",cancel:"キャンセル",save:"保存",note:"新しいプロジェクトを作るときの初期値です。プロジェクトごとに変更できます。",folderAdd:"＋ フォルダ",memo:"メモ一覧",backProjects:"作品一覧"},
+ en:{home:"Library",newProject:"+ Project",settings:"App Settings",language:"Language",defaults:"New Project Defaults",pages:"Pages",stages:"Stages",addStage:"+ Add Stage",cancel:"Cancel",save:"Save",note:"These are the initial values for new projects. Each project can be changed separately.",folderAdd:"+ Folder",memo:"Notes",backProjects:"Projects"}
 };
 function normalizeAppSettings(raw){
  const lang=raw?.language==="en"?"en":"ja";
@@ -2053,7 +2053,7 @@ setTimeout(()=>{
 /* Full-app UI language layer. User-entered titles, folder names, notes and custom stage names are never translated. */
 const FULL_I18N={
  en:{
- "作品一覧":"Projects","プロジェクト":"Projects","＋ 新しいプロジェクト":"+ New Project","＋ フォルダ":"+ Folder","← 戻る":"← Back","名前変更":"Rename","削除":"Delete",
+ "作品一覧":"Projects","プロジェクト":"Projects","＋ プロジェクト":"+ Project","＋ 新しいプロジェクト":"+ New Project","＋ フォルダ":"+ Folder","← 戻る":"← Back","名前変更":"Rename","削除":"Delete",
  "漫画制作進捗":"Manga Production Tracker","メモ一覧":"Notes","作品名":"Project title","制作ページ数":"Pages","制作ページ":"Pages",
  "創作開始日":"Start date","締切予定日":"Deadline","総合進捗":"Overall Progress","制作進捗":"Overall Progress","工程別進捗":"Progress by Stage","工程表":"Production Table",
  "作業履歴":"Work History","今日":"Today","直近7日":"Last 7 days","1日平均":"Daily average","完成予想":"Estimated Completion",
@@ -2841,8 +2841,8 @@ setTimeout(()=>auditDynamicUiLanguage(document),0);
     const hb=$("libraryHelpButton");if(hb)hb.setAttribute("aria-label",en?"Library Help":"Libraryの使い方");
     const hc=$("libraryHelpClose");if(hc)hc.setAttribute("aria-label",en?"Close":"閉じる");
     const items=$("libraryHelpModal")?.querySelectorAll(".help-item");
-    const ja=[["プロジェクトを作る","右上の「＋」から新しいプロジェクトを作成します。制作ページや工程はプロジェクトごとに設定できます。"],["タップして開く","✎プロジェクトをタップすると入力ページへ、📁フォルダをタップするとフォルダが開きます。"],["長押しで整理","プロジェクトやフォルダを長押しすると、並び替え・フォルダ移動・ゴミ箱への移動ができます。"],["フォルダで整理","「＋」からフォルダを作成できます。プロジェクトをフォルダにまとめて整理できます。"],["プロジェクトを編集","プロジェクトの⚙️から、プロジェクト名・ページ・日付・工程を変更できます。"],["ゴミ箱","削除したプロジェクトやフォルダはゴミ箱へ移動します。必要なら復元できます。"],["バックアップ","設定の「データ管理」から、Library全体をJSONファイルにバックアップ・復元できます。"]];
-    const ee=[["Create a project","Use the + button at the top right to create a project. Pages and stages can be set for each project."],["Tap to open","Tap ✎ on a project to open its input page, or tap 📁 on a folder to open the folder."],["Press and hold to organize","Press and hold a project or folder to reorder it, move it to a folder, or move it to Trash."],["Organize with folders","Create folders from the + button and organize projects inside them."],["Edit a project","Use ⚙️ on a project to change its name, pages, dates, and stages."],["Trash","Deleted projects and folders move to Trash and can be restored when needed."],["Backup","Use Data Management in Settings to back up or restore the entire Library as a JSON file."]];
+    const ja=[["プロジェクトを作る","右上の「＋」→「＋ プロジェクト」から新しいプロジェクトを作成します。"],["タップして開く","✎プロジェクトをタップすると入力ページへ、📁フォルダをタップするとフォルダが開きます。"],["長押しで整理","プロジェクトやフォルダを長押しすると、並び替え・フォルダ移動・ゴミ箱への移動ができます。"],["フォルダで整理","「＋」からフォルダを作成できます。プロジェクトをフォルダにまとめて整理できます。"],["プロジェクトを編集","プロジェクトの⚙️から、プロジェクト名・ページ・日付・工程を変更できます。"],["Library設定","Library右上の⚙️からアプリ設定を開けます。新規プロジェクトの初期値やテーマカラー、データ管理などを設定できます。"],["新規プロジェクトのデフォルト","新しく作るプロジェクトの制作ページと工程の初期値を設定できます。作成後はプロジェクトごとに変更できます。"],["テーマカラー","完了セルや選択状態などに使うアクセントカラーを変更できます。"],["ゴミ箱","削除したプロジェクトやフォルダはゴミ箱へ移動します。必要なら復元できます。"],["バックアップ","設定の「データ管理」から、Library全体をJSONファイルにバックアップ・復元できます。"]];
+    const ee=[["Create a project","Use + → + Project at the top right to create a new project."],["Tap to open","Tap ✎ on a project to open its input page, or tap 📁 on a folder to open the folder."],["Press and hold to organize","Press and hold a project or folder to reorder it, move it to a folder, or move it to Trash."],["Organize with folders","Create folders from the + button and organize projects inside them."],["Edit a project","Use ⚙️ on a project to change its name, pages, dates, and stages."],["Library settings","Open App Settings with ⚙️ at the top right of Library. You can set new-project defaults, the theme color, data management, and more."],["New Project Defaults","Set the initial page range and stages for newly created projects. You can change them per project after creation."],["Theme Color","Change the accent color used for completed cells, selected states, and other highlights."],["Trash","Deleted projects and folders move to Trash and can be restored when needed."],["Backup","Use Data Management in Settings to back up or restore the entire Library as a JSON file."]];
     items?.forEach((it,i)=>{const a=(en?ee:ja)[i];if(!a)return;it.querySelector(".help-item-title").textContent=a[0];it.querySelector(".help-item-text").textContent=a[1]});
     document.querySelectorAll(".theme-color-option").forEach(btn=>{const label=en?btn.dataset.en:btn.dataset.ja;btn.setAttribute("aria-label",label);btn.title=label;btn.querySelector(".theme-option-label").textContent=label});
   }
