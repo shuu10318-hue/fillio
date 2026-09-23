@@ -45,6 +45,7 @@
   <div class="project-home-head">
     <div class="brand-head"><button type="button" class="fillio-home-link" aria-label="Libraryへ戻る"><img src="fillio-logo.svg" class="fillio-logo" alt="fillio"></button></div>
     <div class="home-head-actions">
+      <button id="libraryHelpButton" class="settings-button" type="button" aria-label="Libraryの使い方">?</button>
       <button id="languageButton" class="settings-button language-button" type="button" aria-label="Language"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></button>
       <button id="appSettingsButton" class="settings-button" type="button" aria-label="設定"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V21h-4v-.09A1.7 1.7 0 0 0 8.97 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.03H3v-4h.09A1.7 1.7 0 0 0 4.6 8.97a1.7 1.7 0 0 0-.34-1.88l-.06-.06L7.03 4.2l.06.06a1.7 1.7 0 0 0 1.88.34A1.7 1.7 0 0 0 10 3.04V3h4v.09a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06a1.7 1.7 0 0 0-.34 1.88A1.7 1.7 0 0 0 20.96 10H21v4h-.09A1.7 1.7 0 0 0 19.4 15z"/></svg></button>
       <button id="trashOpen" class="settings-button trash-open-button" type="button" aria-label="ゴミ箱"><svg class="icon-line" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg><span class="visually-hidden">ゴミ箱</span></button>
@@ -57,6 +58,18 @@
   <div class="project-backup-note">作品ごとの進捗・付箋・作業履歴は端末内に自動保存されます。</div>
 </div>
 <div id="dragTrashZone" class="drag-trash-zone"><svg class="icon-line" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg><span id="dragTrashLabel">ゴミ箱へ</span></div>
+<div id="libraryHelpModal" class="help-overlay" aria-hidden="true">
+  <div class="help-sheet" role="dialog" aria-modal="true" aria-labelledby="libraryHelpTitle">
+    <div class="help-head"><div id="libraryHelpTitle" class="help-title">Libraryの使い方</div><button id="libraryHelpClose" class="help-close" type="button" aria-label="閉じる">×</button></div>
+    <div class="help-scroll">
+      <div class="help-item"><div class="help-item-title">作品を作る</div><div class="help-item-text">右上の「＋」から新しい作品を作成します。制作ページや工程は作品ごとに設定できます。</div></div>
+      <div class="help-item"><div class="help-item-title">フォルダで整理</div><div class="help-item-text">「＋」からフォルダを作成できます。作品をフォルダにまとめて整理できます。</div></div>
+      <div class="help-item"><div class="help-item-title">作品を編集</div><div class="help-item-text">作品カードの「編集」から作品名・ページ・日付・工程を変更できます。</div></div>
+      <div class="help-item"><div class="help-item-title">ゴミ箱</div><div class="help-item-text">削除した作品やフォルダはゴミ箱へ移動します。必要なら復元できます。</div></div>
+      <div class="help-item"><div class="help-item-title">バックアップ</div><div class="help-item-text">設定の「データ管理」から、Library全体をJSONファイルにバックアップ・復元できます。</div></div>
+    </div>
+  </div>
+</div>
 <div id="trashModal" class="trash-modal"><div class="trash-sheet"><div class="trash-head"><h2 id="trashTitle">ゴミ箱</h2><div class="trash-head-actions"><button id="trashEmpty" class="trash-empty-button" type="button">空にする</button><button id="trashClose" class="modal-icon-close trash-close" type="button" aria-label="閉じる">×</button></div></div><div id="trashList" class="trash-list"></div></div></div>
 
 <div class="app prototype-input-mode" id="editorApp" style="display:none">
@@ -185,6 +198,15 @@
     <button id="defaultStageAdd" class="stage-add-button" type="button">＋ 工程を追加</button>
     <button id="defaultStageReset" class="stage-add-button default-stage-reset" type="button">初期設定に戻す</button>
     <div class="stage-editor-note" id="settingsNote">新しい作品を作るときの初期値です。作品ごとに変更できます。</div>
+    <div class="settings-section-title" id="themeColorTitle">テーマカラー</div>
+    <div id="themeColorPicker" class="theme-color-picker" role="radiogroup" aria-label="テーマカラー">
+      <button type="button" class="theme-color-option" data-theme-color="#222222" aria-label="モノクロ" title="モノクロ"><span style="background:#222222"></span></button>
+      <button type="button" class="theme-color-option" data-theme-color="#4f6bed" aria-label="ブルー" title="ブルー"><span style="background:#4f6bed"></span></button>
+      <button type="button" class="theme-color-option" data-theme-color="#3f8f6b" aria-label="グリーン" title="グリーン"><span style="background:#3f8f6b"></span></button>
+      <button type="button" class="theme-color-option" data-theme-color="#7a5cc7" aria-label="パープル" title="パープル"><span style="background:#7a5cc7"></span></button>
+      <button type="button" class="theme-color-option" data-theme-color="#c7663d" aria-label="オレンジ" title="オレンジ"><span style="background:#c7663d"></span></button>
+    </div>
+    <div class="stage-editor-note" id="themeColorNote">完了セルや選択状態などのアクセントカラーに使われます。</div>
     <div class="settings-section-title data-management-title" id="dataManagementTitle">データ管理</div>
     <div class="backup-actions settings-backup-actions">
       <button id="exportBackup" class="backup-button">💾 バックアップ</button>

@@ -21,7 +21,9 @@ function normalizeAppSettings(raw){
  if(b-a+1>500)b=a+499;
  let ss=Array.isArray(raw?.defaultStages)?raw.defaultStages.map(x=>String(x||"").trim()).filter(Boolean).slice(0,MAX_STAGES):[];
  if(!ss.length)ss=[...DEFAULT_STAGES];
- return {language:lang,defaultStartPage:a,defaultEndPage:b,defaultStages:ss};
+ const allowedColors=["#222222","#4f6bed","#3f8f6b","#7a5cc7","#c7663d"];
+ const themeColor=allowedColors.includes(raw?.themeColor)?raw.themeColor:"#222222";
+ return {language:lang,defaultStartPage:a,defaultEndPage:b,defaultStages:ss,themeColor};
 }
 function syncSplitSettings(){
  languageSettings={language:appSettings?.language==="en"?"en":"ja"};
@@ -39,6 +41,12 @@ function loadAppSettings(){
 function persistAppSettings(){
  syncSplitSettings();
  localStorage.setItem(APP_SETTINGS_KEY,JSON.stringify(appSettings));
+}
+function applyThemeColor(color=appSettings?.themeColor||"#222222"){
+ document.documentElement.style.setProperty("--accent",color);
+ document.querySelectorAll(".theme-color-option").forEach(b=>{
+   const on=b.dataset.themeColor===color;b.classList.toggle("selected",on);b.setAttribute("aria-checked",on?"true":"false");
+ });
 }
 function applyLanguage(){
  const t=UI_TEXT[languageSettings.language]||UI_TEXT.ja;
@@ -65,6 +73,7 @@ function renderDefaultStageEditor(){
 }
 
 loadAppSettings();
+applyThemeColor();
 let stages=[...DEFAULT_STAGES];
 let totalPages=48,startPage=1,currentView=0,progress=createProgress(48);
 let history={day:"",baselineDone:0,days:{}};
@@ -1159,6 +1168,7 @@ document.getElementById("appSettingsButton").onclick=()=>{
  document.getElementById("defaultStartPage").value=projectDefaults.startPage;
  document.getElementById("defaultEndPage").value=projectDefaults.endPage;
  defaultStageDraft=[...projectDefaults.stages];renderDefaultStageEditor();
+ applyThemeColor(appSettings.themeColor);
  lockPageScroll();
  document.getElementById("appSettingsModal").classList.add("open");
 };
@@ -1171,10 +1181,12 @@ document.getElementById("settingsSave").onclick=()=>{
  if(b-a+1>500){alert(appSettings.language==="en"?"Up to 500 pages per project.":"1作品500ページまでです。");return}
  const ss=defaultStageDraft.map(x=>String(x||"").trim()).filter(Boolean);
  if(!ss.length)return;
- appSettings=normalizeAppSettings({language:document.getElementById("appLanguage").value,defaultStartPage:a,defaultEndPage:b,defaultStages:ss});
- persistAppSettings();applyLanguage();
+ appSettings=normalizeAppSettings({language:document.getElementById("appLanguage").value,defaultStartPage:a,defaultEndPage:b,defaultStages:ss,themeColor:document.querySelector(".theme-color-option.selected")?.dataset.themeColor||appSettings.themeColor});
+ persistAppSettings();applyLanguage();applyThemeColor();
  closeAppSettings();
 };
+
+document.querySelectorAll(".theme-color-option").forEach(btn=>btn.addEventListener("click",()=>applyThemeColor(btn.dataset.themeColor)));
 
 document.getElementById("newProjectButton").onclick=()=>{
   document.getElementById("newProjectTitle").value="";
@@ -1409,6 +1421,16 @@ const editOverlay=document.getElementById("editProjectModal");
   editOverlay.addEventListener(type,e=>e.stopPropagation(),{passive:true});
 });
 
+
+// Library help
+const libraryHelpButton=document.getElementById("libraryHelpButton");
+const libraryHelpModal=document.getElementById("libraryHelpModal");
+const libraryHelpClose=document.getElementById("libraryHelpClose");
+function openLibraryHelp(){lockPageScroll();libraryHelpModal.classList.add("open");libraryHelpModal.setAttribute("aria-hidden","false")}
+function closeLibraryHelp(){libraryHelpModal.classList.remove("open");libraryHelpModal.setAttribute("aria-hidden","true");unlockPageScroll()}
+libraryHelpButton?.addEventListener("click",openLibraryHelp);
+libraryHelpClose?.addEventListener("click",closeLibraryHelp);
+libraryHelpModal?.addEventListener("click",e=>{if(e.target===libraryHelpModal)closeLibraryHelp()});
 
 // 使い方ヘルプ
 const helpButton=document.getElementById("helpButton");
@@ -1954,7 +1976,7 @@ const FULL_I18N={
  "使い方":"Help","工程マスをタップ":"Tap a stage cell","長押し＋スライド":"Long press + slide",
  "ページ番号をタップ":"Tap a page number","マーカー":"Legend",
  "💾 バックアップ":"💾 Backup","📂 復元":"📂 Restore","工程":"Stages","工程名":"Stage name","上へ":"Up","下へ":"Down",
- "言語":"Language","アプリ設定":"App Settings","新規作品のデフォルト":"New Project Defaults","設定":"Settings",
+ "言語":"Language","アプリ設定":"App Settings","新規作品のデフォルト":"New Project Defaults","設定":"Settings","Libraryの使い方":"Library Help","作品を作る":"Create a project","フォルダで整理":"Organize with folders","作品を編集":"Edit a project","ゴミ箱":"Trash","バックアップ":"Backup","テーマカラー":"Theme Color","完了セルや選択状態などのアクセントカラーに使われます。":"Used for completed cells and selected states.",
  "全工程":"All stages","締切":"Deadline","ページ":"Pages","未設定":"Not set","完了":"Done","完成工程":"completed stages",
  "データ収集中":"Collecting data","完成！":"Complete!","変更は自動保存されます":"Changes are saved automatically",
  "保存しました ✓":"Saved ✓","該当するメモはありません。":"No matching notes.","（メモ本文なし）":"(No note text)",

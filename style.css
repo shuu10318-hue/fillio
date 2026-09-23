@@ -1,4 +1,4 @@
-:root{--bg:#f6f6f6;--card:#fff;--text:#191919;--muted:#777;--border:#ddd;--soft:#e8e8e8;--started:#aaa;--done:#222}
+:root{--bg:#f6f6f6;--card:#fff;--text:#191919;--muted:#777;--border:#ddd;--soft:#e8e8e8;--started:#aaa;--accent:#222;--done:var(--accent)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif}
 .app{max-width:520px;margin:auto;padding:18px 14px 40px}
@@ -1107,3 +1107,13 @@ input{border-color:var(--border);border-radius:12px}
   #projectHome .fillio-home-link,#editorApp .fillio-home-link{width:104px!important;min-width:104px!important;height:38px!important;min-height:38px!important}
   #projectHome .fillio-logo,#editorApp .fillio-logo{width:104px!important;height:38px!important}
 }
+
+/* Library help + theme color + long create sheet */
+#projectModal{overflow-y:auto;-webkit-overflow-scrolling:touch;align-items:flex-end}
+#projectModal .project-sheet{max-height:88dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.theme-color-picker{display:flex;gap:10px;flex-wrap:wrap}
+.theme-color-option{width:44px;height:44px;border:1px solid var(--border);border-radius:12px;background:#fff;padding:6px;display:grid;place-items:center}
+.theme-color-option span{width:28px;height:28px;border-radius:8px;display:block}
+.theme-color-option.selected{outline:2px solid var(--accent);outline-offset:2px}
+.page-button.active,.progress-cell.state2{background:var(--accent)!important;border-color:var(--accent)!important}
+.history-bar{background:var(--accent)}
