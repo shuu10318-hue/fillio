@@ -1009,7 +1009,10 @@ input{border-color:var(--border);border-radius:12px}
 .drag-ghost{transform:translate(-50%,-50%) scale(1.035)!important}
 @media(max-width:430px){.home-head-actions{gap:6px!important}.home-head-actions .settings-button{width:42px;height:42px}.create-menu{width:184px}}
 
-.trash-head-actions{display:flex;align-items:center;gap:8px}.trash-empty-button{border:0;background:transparent;padding:8px 6px;font-weight:700;color:#666}.trash-empty-button:active{opacity:.55}
+.trash-footer{padding-top:10px;border-top:1px solid var(--border);margin-top:4px}
+.trash-empty-button{width:100%;min-height:44px;border:1px solid #d8a6a6;background:#fff;border-radius:10px;padding:10px 14px;font:inherit;font-size:13px;font-weight:750;color:#a13d3d}
+.trash-empty-button:active{background:#faf1f1}
+.trash-empty-button:disabled{opacity:.42}
 
 /* Unified modal headers: view-only = title + X, commit screens = Cancel / title / action */
 .modal-view-head,
@@ -1025,11 +1028,12 @@ input{border-color:var(--border);border-radius:12px}
 .modal-action-head h2,.modal-action-head h3{margin:0!important;text-align:center;font-size:18px;line-height:1.25}
 .modal-view-head h2,.modal-view-head h3{text-align:left}
 .modal-text-action{
-  appearance:none;border:0;background:transparent;padding:10px 4px;
-  font:inherit;font-size:14px;font-weight:700;line-height:1;color:#555;min-height:44px;
+  appearance:none;border:1px solid var(--border);background:#fff;border-radius:9px;padding:9px 12px;
+  font:inherit;font-size:13px;font-weight:700;line-height:1;color:#555;min-height:40px;
 }
-.modal-cancel-action{justify-self:start;text-align:left}
-.modal-confirm-action{justify-self:end;text-align:right;color:#222}
+.modal-cancel-action{justify-self:start;text-align:center}
+.modal-confirm-action{justify-self:end;text-align:center;color:#fff;background:#222;border-color:#222}
+.modal-text-action:active{opacity:.68}
 .modal-icon-close{
   appearance:none;border:0!important;background:transparent!important;border-radius:50%!important;
   width:44px;height:44px;padding:0!important;display:grid;place-items:center;

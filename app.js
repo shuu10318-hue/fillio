@@ -2108,19 +2108,7 @@ window.confirm=(msg)=>{
  return _confirm(msg);
 };
 
-/* On first switch to English only, translate untouched Japanese default stages.
-   Customized defaults are preserved exactly. */
-const _settingsSaveClick=document.getElementById("settingsSave").onclick;
-document.getElementById("settingsSave").onclick=()=>{
- const oldLang=appSettings.language;
- const selected=document.getElementById("appLanguage").value;
- const untouched=defaultStageDraft.length===JA_STAGE_DEFAULTS.length&&defaultStageDraft.every((x,i)=>x===JA_STAGE_DEFAULTS[i]);
- if(oldLang!=="en"&&selected==="en"&&untouched){
-   defaultStageDraft=[...EN_STAGE_DEFAULTS];
- }
- _settingsSaveClick();
- setTimeout(()=>translateDynamicEnglish(document),0);
-};
+/* Legacy settings-save i18n wrapper removed; final settings handler is authoritative. */
 
 /* ---- extracted script block ---- */
 
@@ -2203,20 +2191,7 @@ function refreshWholeLanguage(){
  }
 }
 
-// 言語変更時、未カスタマイズのデフォルト工程は言語に合わせる。
-// ユーザーが変更した工程セットは勝手に翻訳しない。
-const settingsSaveBtn=document.getElementById("settingsSave");
-const previousSettingsSave=settingsSaveBtn.onclick;
-settingsSaveBtn.onclick=()=>{
- const before=appSettings.language;
- const selected=document.getElementById("appLanguage").value;
- const jaDefault=defaultStageDraft.length===JA_STAGE_DEFAULTS.length&&defaultStageDraft.every((x,i)=>x===JA_STAGE_DEFAULTS[i]);
- const enDefault=defaultStageDraft.length===EN_STAGE_DEFAULTS.length&&defaultStageDraft.every((x,i)=>x===EN_STAGE_DEFAULTS[i]);
- if(selected==="en"&&jaDefault) defaultStageDraft=[...EN_STAGE_DEFAULTS];
- if(selected==="ja"&&enDefault) defaultStageDraft=[...JA_STAGE_DEFAULTS];
- previousSettingsSave();
- setTimeout(refreshWholeLanguage,0);
-};
+// Legacy settings-save language wrapper removed; final settings handler is authoritative.
 
 // 動的再描画後の翻訳漏れも拾う
 const fullLanguageObserver=new MutationObserver(()=>{
@@ -2287,7 +2262,7 @@ document.getElementById("languageButton").onclick=()=>{
 document.getElementById("languageCancel").onclick=()=>document.getElementById("languageModal").classList.remove("open");
 document.getElementById("languageModal").onclick=e=>{if(e.target.id==="languageModal")e.currentTarget.classList.remove("open")};
 
-document.querySelectorAll(".language-option").forEach(btn=>btn.onclick=()=>{
+function handleLanguageOptionClick(btn){
  const selected=btn.dataset.lang;
  const old=languageSettings.language;
  if(selected===old)return;
@@ -2305,17 +2280,38 @@ document.querySelectorAll(".language-option").forEach(btn=>btn.onclick=()=>{
  persistAppSettings();
  document.getElementById("appLanguage").value=selected;
  updateLanguageButtons();
- // A single reload gives both languages a clean render and avoids legacy
- // runtime translation layers fighting over already-rendered text.
+
+ // Preserve the original order: request the clean reload first, then queue the
+ // same maintenance callbacks that the former wrappers queued afterwards.
  location.reload();
+ setTimeout(refreshSettingsLanguage,0);
+ setTimeout(()=>{
+   translateDefaultStageNames(languageSettings.language);
+   localizeDefaultsSettingsUi();
+   if(document.getElementById("appSettingsModal").classList.contains("open")){
+     defaultStageDraft=[...projectDefaults.stages];
+     renderDefaultStageEditor();
+   }
+   folderRendering=false;
+   if(!currentProjectId){
+     renderProjectList();
+     renderFoldersAndFilter();
+   }
+ },0);
+
+}
+document.querySelectorAll(".language-option").forEach(btn=>{
+ btn.onclick=()=>handleLanguageOptionClick(btn);
 });
 
 /* Settings gear now saves ONLY new-project defaults. Language is untouched. */
 document.getElementById("appSettingsButton").onclick=()=>{
+ refreshSettingsLanguage();
  document.getElementById("defaultStartPage").value=projectDefaults.startPage;
  document.getElementById("defaultEndPage").value=projectDefaults.endPage;
  defaultStageDraft=[...projectDefaults.stages];
  renderDefaultStageEditor();
+ localizeDefaultsSettingsUi();
  lockPageScroll();
  document.getElementById("appSettingsModal").classList.add("open");
 };
@@ -2398,19 +2394,6 @@ function refreshSettingsLanguage(){
    renderDefaultStageEditor();
  }
 }
-document.querySelectorAll(".language-option").forEach(btn=>{
- const old=btn.onclick;
- btn.onclick=(e)=>{
-   old.call(btn,e);
-   setTimeout(refreshSettingsLanguage,0);
- };
-});
-const oldSettingsOpen=document.getElementById("appSettingsButton").onclick;
-document.getElementById("appSettingsButton").onclick=(e)=>{
- refreshSettingsLanguage();
- oldSettingsOpen.call(document.getElementById("appSettingsButton"),e);
- localizeDefaultsSettingsUi();
-};
 setTimeout(()=>{syncStockDefaultsToLanguage();localizeDefaultsSettingsUi()},0);
 
 /* ---- extracted script block ---- */
@@ -2452,27 +2435,7 @@ function translateDefaultStageNames(targetLang){
    persistAppSettings();
  }
 }
-document.querySelectorAll(".language-option").forEach(btn=>{
- const previous=btn.onclick;
- btn.onclick=(e)=>{
-   previous.call(btn,e);
-   // previous handler persists the selected language first
-   setTimeout(()=>{
-     translateDefaultStageNames(languageSettings.language);
-     localizeDefaultsSettingsUi();
-     if(document.getElementById("appSettingsModal").classList.contains("open")){
-       defaultStageDraft=[...projectDefaults.stages];
-       renderDefaultStageEditor();
-     }
-     // Always perform a complete folder render after language changes.
-     folderRendering=false;
-     if(!currentProjectId){
-       renderProjectList();
-       renderFoldersAndFilter();
-     }
-   },0);
- };
-});
+/* Language option maintenance is consolidated in handleLanguageOptionClick(). */
 
 /* After startup/reload, force one final folder-aware render after all language
    initialization has finished. This does not change folderId data. */
