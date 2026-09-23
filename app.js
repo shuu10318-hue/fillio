@@ -11,7 +11,7 @@ const DEFAULT_STAGES=["ネーム","ペン","背景","トーン","写植"];
 const MAX_STAGES=100;
 
 const UI_TEXT={
- ja:{home:"Library",newProject:"＋ 新しい作品",settings:"アプリ設定",language:"言語",defaults:"新規プロジェクトのデフォルト",pages:"制作ページ",stages:"工程",addStage:"＋ 工程を追加",cancel:"キャンセル",save:"保存",note:"新しいプロジェクトを作るときの初期値です。プロジェクトごとに変更できます。",folderAdd:"＋ フォルダ",memo:"メモ一覧",backProjects:"作品一覧"},
+ ja:{home:"Library",newProject:"＋ 新しいプロジェクト",settings:"アプリ設定",language:"言語",defaults:"新規プロジェクトのデフォルト",pages:"制作ページ",stages:"工程",addStage:"＋ 工程を追加",cancel:"キャンセル",save:"保存",note:"新しいプロジェクトを作るときの初期値です。プロジェクトごとに変更できます。",folderAdd:"＋ フォルダ",memo:"メモ一覧",backProjects:"作品一覧"},
  en:{home:"Library",newProject:"+ New Project",settings:"App Settings",language:"Language",defaults:"New Project Defaults",pages:"Pages",stages:"Stages",addStage:"+ Add Stage",cancel:"Cancel",save:"Save",note:"These are the initial values for new projects. Each project can be changed separately.",folderAdd:"+ Folder",memo:"Notes",backProjects:"Projects"}
 };
 function normalizeAppSettings(raw){
@@ -136,7 +136,7 @@ function makeProjectData(){
     pageNotes:JSON.parse(JSON.stringify(pageNotes))
   };
 }
-function freshProjectData(title="新しい作品",sp=1,ep=1){
+function freshProjectData(title="新しいプロジェクト",sp=1,ep=1){
   const n=Math.max(1,Math.min(500,ep-sp+1));
   const p=createProgress(n);
   return {
@@ -448,7 +448,7 @@ function renderProjectList(){
   projectStore.projectOrder=orderedIds;
   const entries=orderedIds.map(id=>[id,projectStore.projects[id]]);
   if(!entries.length){
-    list.innerHTML='<div class="project-empty">まだ作品がありません。<br>「＋ 新しい作品」から作成できます。</div>';
+    list.innerHTML='<div class="project-empty">まだ作品がありません。<br>「＋ 新しいプロジェクト」から作成できます。</div>';
     return;
   }
   entries.forEach(([id,p])=>{
@@ -569,7 +569,7 @@ function restoreBackup(data){
     showProjectHome();
     return "all";
   }
-  // v4以前: 1作品バックアップは新しい作品として追加
+  // v4以前: 1作品バックアップは新しいプロジェクトとして追加
   if(!data||!Number.isInteger(data.totalPages)||data.totalPages<1||data.totalPages>500||!Array.isArray(data.progress))throw new Error("invalid");
   const id=newProjectId();
   projectStore.projects[id]=normalizeProjectData(data);
@@ -2053,12 +2053,12 @@ setTimeout(()=>{
 /* Full-app UI language layer. User-entered titles, folder names, notes and custom stage names are never translated. */
 const FULL_I18N={
  en:{
- "作品一覧":"Projects","プロジェクト":"Projects","＋ 新しい作品":"+ New Project","＋ フォルダ":"+ Folder","← 戻る":"← Back","名前変更":"Rename","削除":"Delete",
+ "作品一覧":"Projects","プロジェクト":"Projects","＋ 新しいプロジェクト":"+ New Project","＋ フォルダ":"+ Folder","← 戻る":"← Back","名前変更":"Rename","削除":"Delete",
  "漫画制作進捗":"Manga Production Tracker","メモ一覧":"Notes","作品名":"Project title","制作ページ数":"Pages","制作ページ":"Pages",
  "創作開始日":"Start date","締切予定日":"Deadline","総合進捗":"Overall Progress","制作進捗":"Overall Progress","工程別進捗":"Progress by Stage","工程表":"Production Table",
  "作業履歴":"Work History","今日":"Today","直近7日":"Last 7 days","1日平均":"Daily average","完成予想":"Estimated Completion",
  "← 前":"← Prev","次 →":"Next →","未着手":"Not started","着手中":"In progress","完成済み":"Completed","着手":"Started","完成":"Completed",
- "新しい作品":"New Project","作品編集":"Edit Project","工程設定":"Stage Settings","工程をカスタマイズ":"Customize Stages",
+ "新しいプロジェクト":"New Project","作品編集":"Edit Project","工程設定":"Stage Settings","工程をカスタマイズ":"Customize Stages",
  "＋ 工程を追加":"+ Add Stage","キャンセル":"Cancel","保存":"Save","作成":"Create","編集":"Edit","この作品を削除":"Delete Project",
  "新しいフォルダ":"New Folder","フォルダ名":"Folder name","フォルダ名を変更":"Rename Folder","フォルダから戻す":"Move out of folder",
  "付箋":"Page Note","付箋を削除":"Delete Note","閉じる":"Close","すべて":"All","赤":"Red","黄":"Yellow","青":"Blue","緑":"Green","移動":"Go",
@@ -2073,7 +2073,7 @@ const FULL_I18N={
  "工程名の変更・並び替え・追加・削除":"Rename, reorder, add or delete stages.",
  "新しいプロジェクトを作るときの初期値です。プロジェクトごとに変更できます。":"Initial values for new projects. You can change them for each project.",
  "作品ごとの進捗・付箋・作業履歴は端末内に自動保存されます。":"Project progress, notes and work history are saved automatically on this device.",
- "まだ作品がありません。":"No projects yet.","「＋ 新しい作品」から作成できます。":"Create one with “+ New Project”.",
+ "まだ作品がありません。":"No projects yet.","「＋ 新しいプロジェクト」から作成できます。":"Create one with “+ New Project”.",
  "着手=0.5工程として直近7日から算出":"Calculated from the last 7 days, counting in-progress as 0.5 stage.",
  "全作品のページ数・進捗・付箋・作業履歴を1つのJSONに保存します。":"Save all projects, progress, notes and work history in one JSON file.",
  "Chromeのダウンロード一覧または端末の「Downloads」を確認してください。":"Check Chrome downloads or the device Downloads folder.",
@@ -2396,7 +2396,7 @@ if(defaultStageReset){
    const en=languageSettings.language==="en";
    const ok=confirm(en
      ?"Reset the default stages for new projects?\nExisting projects will not be affected."
-     :"新規作品用の工程を初期設定に戻しますか？\n既存の作品には影響しません。");
+     :"新規プロジェクト用の工程を初期設定に戻しますか？\n既存の作品には影響しません。");
    if(!ok)return;
    defaultStageDraft=[...(en?EN_STAGE_DEFAULTS:JA_STAGE_DEFAULTS)];
    renderDefaultStageEditor();
@@ -2681,7 +2681,7 @@ function auditDynamicUiLanguage(root=document){
       const raw=el.textContent||"", t=raw.trim();
       let x=DYNAMIC_UI_EN[t]||FULL_I18N?.en?.[t]||t;
       x=x.replace(/^まだ作品がありません。$/,"No projects yet.")
-         .replace(/^「＋ 新しい作品」から作成できます。$/,"Create one with “+ New Project”.")
+         .replace(/^「＋ 新しいプロジェクト」から作成できます。$/,"Create one with “+ New Project”.")
          .replace(/^全(\d+)P$/,"$1 pages")
          .replace(/^(\d+)P\s*\/\s*(\d+)P$/,"$1 / $2 pages")
          .replace(/^(\d+)作品$/,"$1 projects")
@@ -2806,7 +2806,7 @@ setTimeout(()=>auditDynamicUiLanguage(document),0);
    toggle.setAttribute("aria-label",isEn()?"Create":"作成");
    trashBtn?.setAttribute("aria-label",isEn()?"Trash":"ゴミ箱");
    const p=projectBtn.querySelector("span"),f=folderBtn.querySelector("span");
-   if(p)p.textContent=isEn()?"New Project":"新しい作品";
+   if(p)p.textContent=isEn()?"New Project":"新しいプロジェクト";
    if(f)f.textContent=isEn()?"New Folder":"新しいフォルダ";
    // One-level folder model: creating another folder while inside one is not available.
    folderBtn.style.display=(typeof currentFolderId!=="undefined"&&currentFolderId)?"none":"flex";

@@ -56,7 +56,7 @@
       <button id="languageButton" class="settings-button language-button" type="button" aria-label="Language"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></button>
       <button id="appSettingsButton" class="settings-button" type="button" aria-label="設定"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V21h-4v-.09A1.7 1.7 0 0 0 8.97 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.03H3v-4h.09A1.7 1.7 0 0 0 4.6 8.97a1.7 1.7 0 0 0-.34-1.88l-.06-.06L7.03 4.2l.06.06a1.7 1.7 0 0 0 1.88.34A1.7 1.7 0 0 0 10 3.04V3h4v.09a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06a1.7 1.7 0 0 0-.34 1.88A1.7 1.7 0 0 0 20.96 10H21v4h-.09A1.7 1.7 0 0 0 19.4 15z"/></svg></button>
       <button id="trashOpen" class="settings-button trash-open-button" type="button" aria-label="ゴミ箱"><svg class="icon-line" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg><span class="visually-hidden">ゴミ箱</span></button>
-      <div class="create-menu-wrap"><button id="createMenuButton" class="settings-button create-menu-button" type="button" aria-label="作成" aria-expanded="false">＋</button><div id="createMenu" class="create-menu"><button id="newProjectButton" type="button"><svg class="icon-line" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>新しい作品</span></button><button id="folderAdd" type="button"><svg class="icon-line" viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3z"/><path d="M12 11v5M9.5 13.5h5"/></svg><span>新しいフォルダ</span></button></div></div>
+      <div class="create-menu-wrap"><button id="createMenuButton" class="settings-button create-menu-button" type="button" aria-label="作成" aria-expanded="false">＋</button><div id="createMenu" class="create-menu"><button id="newProjectButton" type="button"><svg class="icon-line" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span>新しいプロジェクト</span></button><button id="folderAdd" type="button"><svg class="icon-line" viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3z"/><path d="M12 11v5M9.5 13.5h5"/></svg><span>新しいフォルダ</span></button></div></div>
     </div>
   </div>
   <div id="folderHead" class="folder-head"><div id="folderHeadTitle" class="folder-head-title"></div><button id="folderRename" class="folder-rename" type="button">名前変更</button><button id="folderDelete" class="folder-remove" type="button">削除</button></div>
@@ -230,7 +230,7 @@
 
 <div id="projectModal" class="project-modal">
   <div class="project-sheet">
-    <div class="modal-action-head"><button id="cancelNewProject" class="modal-text-action modal-cancel-action" type="button">キャンセル</button><h2>新しい作品</h2><button id="createNewProject" class="modal-text-action modal-confirm-action" type="button">作成</button></div>
+    <div class="modal-action-head"><button id="cancelNewProject" class="modal-text-action modal-cancel-action" type="button">キャンセル</button><h2>新しいプロジェクト</h2><button id="createNewProject" class="modal-text-action modal-confirm-action" type="button">作成</button></div>
     <div class="label">作品名</div>
     <input id="newProjectTitle" value="" placeholder="作品名">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;margin-bottom:7px">
