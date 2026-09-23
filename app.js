@@ -788,13 +788,20 @@ function paintAutoScrollStep(){
   if(!paintMode)return;
   let dx=0,dy=0;
   if(paintAxis==="vertical"){
-    const h=window.innerHeight;
-    if(paintLastY<PAINT_SCROLL_EDGE){
-      const strength=(PAINT_SCROLL_EDGE-paintLastY)/PAINT_SCROLL_EDGE;
-      dy=-Math.max(1,Math.round(PAINT_SCROLL_MAX*Math.min(1,strength)));
-    }else if(paintLastY>h-PAINT_SCROLL_EDGE){
-      const strength=(paintLastY-(h-PAINT_SCROLL_EDGE))/PAINT_SCROLL_EDGE;
-      dy=Math.max(1,Math.round(PAINT_SCROLL_MAX*Math.min(1,strength)));
+    const scroller=document.getElementById("stageTableScroll");
+    if(scroller){
+      const r=scroller.getBoundingClientRect();
+      // Excel型では縦方向も工程表自身がスクロールする。長押し中も同じ領域を動かす。
+      const topEdge=Math.max(r.top,0);
+      const bottomEdge=Math.min(r.bottom,window.innerHeight);
+      if(paintLastY<topEdge+PAINT_SCROLL_EDGE){
+        const strength=(topEdge+PAINT_SCROLL_EDGE-paintLastY)/PAINT_SCROLL_EDGE;
+        dy=-Math.max(1,Math.round(PAINT_SCROLL_MAX*Math.min(1,strength)));
+      }else if(paintLastY>bottomEdge-PAINT_SCROLL_EDGE){
+        const strength=(paintLastY-(bottomEdge-PAINT_SCROLL_EDGE))/PAINT_SCROLL_EDGE;
+        dy=Math.max(1,Math.round(PAINT_SCROLL_MAX*Math.min(1,strength)));
+      }
+      if(dy)scroller.scrollTop+=dy;
     }
   }else if(paintAxis==="horizontal"){
     const scroller=document.getElementById("stageTableScroll");
@@ -814,7 +821,6 @@ function paintAutoScrollStep(){
       if(dx)scroller.scrollLeft+=dx;
     }
   }
-  if(dy)window.scrollBy(0,dy);
   if(dx||dy)updatePaintPoint(paintLastX,paintLastY);
   paintScrollRaf=requestAnimationFrame(paintAutoScrollStep);
 }
@@ -1251,6 +1257,21 @@ function updateInitialTableCellSize(){
   if(available>0){
     document.documentElement.style.setProperty("--progress-cell-size",`${available/visibleStages}px`);
   }
+  // 縦方向もセルの途中で切れない高さに丸める。
+  requestAnimationFrame(updateInitialTableViewportHeight);
+}
+function updateInitialTableViewportHeight(){
+  const scroller=document.getElementById("stageTableScroll");
+  const anchor=document.getElementById("tableHeadAnchor");
+  if(!scroller||!anchor)return;
+  const root=getComputedStyle(document.documentElement);
+  const cell=parseFloat(root.getPropertyValue("--progress-cell-size"))||58;
+  const rowGap=5; // .page-row の margin-bottom
+  const header=Math.ceil(anchor.getBoundingClientRect().height);
+  const cap=Math.min(window.innerHeight*0.72,760);
+  const rows=Math.max(3,Math.floor((cap-header)/(cell+rowGap)));
+  const exact=header+rows*(cell+rowGap);
+  scroller.style.maxHeight=`${exact}px`;
 }
 
 // Excel-style grid: vertical and horizontal header following are native CSS sticky.
