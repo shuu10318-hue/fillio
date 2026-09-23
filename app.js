@@ -1183,7 +1183,7 @@ document.getElementById("newProjectButton").onclick=()=>{
   document.getElementById("newStageToggle").classList.remove("open");
   lockPageScroll();
   document.getElementById("projectModal").classList.add("open");
-  setTimeout(()=>document.getElementById("newProjectTitle").focus(),50);
+  // Do not auto-focus: opening the create sheet should not summon the mobile keyboard.
 };
 function closeNewProjectModal(){
   document.getElementById("projectModal").classList.remove("open");
@@ -1611,7 +1611,7 @@ function createFolder(){
  persistProjectStore();input.value="";document.getElementById("folderModal").classList.remove("open");document.body.style.overflow="";
  renderFoldersAndFilter();
 }
-document.getElementById("folderAdd")?.addEventListener("click",()=>{document.getElementById("folderModal").classList.add("open");document.body.style.overflow="hidden";setTimeout(()=>document.getElementById("folderNameInput").focus(),50)});
+document.getElementById("folderAdd")?.addEventListener("click",()=>{document.getElementById("folderModal").classList.add("open");document.body.style.overflow="hidden";});
 document.getElementById("folderCancel")?.addEventListener("click",()=>{document.getElementById("folderModal").classList.remove("open");document.body.style.overflow=""});
 document.getElementById("folderCreate")?.addEventListener("click",createFolder);
 // Android/file://でも確実に反応する予備の委譲ハンドラ
@@ -2641,7 +2641,8 @@ setTimeout(()=>auditDynamicUiLanguage(document),0);
   const list=document.getElementById("trashList");
   const open=document.getElementById("trashOpen");
   const close=document.getElementById("trashClose");
-  if(!zone||!modal||!list||!open||!close)return;
+  const empty=document.getElementById("trashEmpty");
+  if(!zone||!modal||!list||!open||!close||!empty)return;
   const isEn=()=>languageSettings?.language==="en";
   function renderTrash(){
     list.innerHTML="";
@@ -2665,10 +2666,25 @@ setTimeout(()=>auditDynamicUiLanguage(document),0);
       list.appendChild(row);
     });
   }
+  empty.onclick=()=>{
+    const folderIds=Object.keys(projectStore.folders||{}).filter(id=>projectStore.folders[id]?.trashedAt);
+    const projectIds=Object.keys(projectStore.projects||{}).filter(id=>projectStore.projects[id]?.trashedAt);
+    if(!folderIds.length&&!projectIds.length)return;
+    if(!confirm(isEn()?"Permanently delete everything in Trash? This cannot be undone.":"ゴミ箱の中身をすべて完全に削除しますか？\nこの操作は元に戻せません。"))return;
+    const childIds=new Set();
+    folderIds.forEach(fid=>Object.keys(projectStore.projects||{}).forEach(pid=>{if(projectStore.projects[pid]?.folderId===fid)childIds.add(pid)}));
+    const allProjectIds=new Set([...projectIds,...childIds]);
+    allProjectIds.forEach(id=>delete projectStore.projects[id]);
+    folderIds.forEach(id=>delete projectStore.folders[id]);
+    projectStore.projectOrder=(projectStore.projectOrder||[]).filter(id=>!allProjectIds.has(id));
+    projectStore.rootOrder=(projectStore.rootOrder||[]).filter(k=>!folderIds.some(id=>k==="f:"+id)&&!allProjectIds.has(k.slice(2)));
+    if(allProjectIds.has(projectStore.activeProjectId))projectStore.activeProjectId=null;
+    persistProjectStore();renderTrash();renderProjectList();renderFoldersAndFilter();
+  };
   open.onclick=()=>{renderTrash();modal.classList.add("open");lockPageScroll()};
   close.onclick=()=>{modal.classList.remove("open");unlockPageScroll()};
   modal.addEventListener("click",e=>{if(e.target===modal)close.click()});
-  function setZoneText(){document.getElementById("trashTitle").textContent=isEn()?"Trash":"ゴミ箱";document.getElementById("dragTrashLabel").textContent=isEn()?"Move to Trash":"ゴミ箱へ";open.querySelector("span").textContent=isEn()?"Trash":"ゴミ箱";close.textContent=isEn()?"Close":"閉じる"}
+  function setZoneText(){document.getElementById("trashTitle").textContent=isEn()?"Trash":"ゴミ箱";document.getElementById("dragTrashLabel").textContent=isEn()?"Hold to move to Trash":"長押しでゴミ箱へ";open.querySelector("span").textContent=isEn()?"Trash":"ゴミ箱";empty.textContent=isEn()?"Empty Trash":"空にする";close.textContent=isEn()?"Close":"閉じる"}
   setZoneText();
   const langObserver=new MutationObserver(setZoneText);langObserver.observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
 

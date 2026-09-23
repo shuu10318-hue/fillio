@@ -1006,3 +1006,5 @@ input{border-color:var(--border);border-radius:12px}
 .drag-trash-zone.over{transform:translate(-50%,0) scale(1.045)!important}
 .drag-ghost{transform:translate(-50%,-50%) scale(1.035)!important}
 @media(max-width:430px){.home-head-actions{gap:6px!important}.home-head-actions .settings-button{width:42px;height:42px}.create-menu{width:184px}}
+
+.trash-head-actions{display:flex;align-items:center;gap:8px}.trash-empty-button{border:0;background:transparent;padding:8px 6px;font-weight:700;color:#666}.trash-empty-button:active{opacity:.55}
