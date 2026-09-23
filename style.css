@@ -861,3 +861,23 @@ input{border-color:var(--border);border-radius:12px}
 }
 /* Vertical movement is applied only to the anchor. Horizontal movement stays native. */
 .table-head-anchor.is-vertically-following{z-index:120!important;}
+
+
+/* --- 2026-09-23 header return polish --- */
+.table-head-anchor{
+  padding:7px 0 8px!important;
+  margin-bottom:4px!important;
+  box-sizing:border-box!important;
+  transition:none!important;
+  animation:none!important;
+}
+#tableHead .head{
+  min-height:22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  line-height:1.25!important;
+}
+.table-head-anchor.is-vertically-following{
+  background:var(--card)!important;
+}
