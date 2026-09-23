@@ -11,7 +11,7 @@ const DEFAULT_STAGES=["ネーム","ペン","背景","トーン","写植"];
 const MAX_STAGES=100;
 
 const UI_TEXT={
- ja:{home:"作品一覧",newProject:"＋ 新しい作品",settings:"アプリ設定",language:"言語",defaults:"新規作品のデフォルト",pages:"制作ページ",stages:"工程",addStage:"＋ 工程を追加",cancel:"キャンセル",save:"保存",note:"新しい作品を作るときの初期値です。作品ごとに変更できます。",folderAdd:"＋ フォルダ",memo:"メモ一覧",backProjects:"作品一覧"},
+ ja:{home:"プロジェクト",newProject:"＋ 新しい作品",settings:"アプリ設定",language:"言語",defaults:"新規作品のデフォルト",pages:"制作ページ",stages:"工程",addStage:"＋ 工程を追加",cancel:"キャンセル",save:"保存",note:"新しい作品を作るときの初期値です。作品ごとに変更できます。",folderAdd:"＋ フォルダ",memo:"メモ一覧",backProjects:"作品一覧"},
  en:{home:"Projects",newProject:"+ New Project",settings:"App Settings",language:"Language",defaults:"New Project Defaults",pages:"Pages",stages:"Stages",addStage:"+ Add Stage",cancel:"Cancel",save:"Save",note:"These are the initial values for new projects. Each project can be changed separately.",folderAdd:"+ Folder",memo:"Notes",backProjects:"Projects"}
 };
 function normalizeAppSettings(raw){
@@ -240,7 +240,7 @@ function renderRootBreadcrumb(){
   const title=document.getElementById("folderHeadTitle");
   if(!head||!title||currentFolderId)return;
   head.style.display="";
-  title.innerHTML=`<span class="crumb-current">${languageSettings?.language==="en"?"Projects":"作品一覧"}</span>`;
+  title.innerHTML=`<span class="crumb-current">${languageSettings?.language==="en"?"Projects":"プロジェクト"}</span>`;
   const rename=document.getElementById("folderRename");
   const del=document.getElementById("folderDelete");
   if(rename)rename.style.display="none";
@@ -260,7 +260,7 @@ function renderProjectBreadcrumb(){
   const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
   const rawProjectName=p?.title||"";
   const projectName=esc(rawProjectName||(languageSettings?.language==="en"?"Untitled":"無題"));
-  const rootLabel=languageSettings?.language==="en"?"Projects":"作品一覧";
+  const rootLabel=languageSettings?.language==="en"?"Projects":"プロジェクト";
   if(fid){
     el.innerHTML=`<button type="button" class="crumb-link" data-nav="root">${rootLabel}</button><span class="crumb-sep">›</span><button type="button" class="crumb-link" data-nav="folder" data-folder-id="${esc(fid)}">${esc(projectStore.folders[fid].name)}</button><span class="crumb-sep">›</span><span class="crumb-current" data-user-text="1">${projectName}</span>`;
   }else{
@@ -1540,7 +1540,7 @@ function renderFoldersAndFilter(){
  const head=document.getElementById("folderHead"),toolbar=document.getElementById("folderToolbar");
  if(currentFolderId&&projectStore.folders[currentFolderId]){
    head?.classList.add("show");if(toolbar)toolbar.style.display="none";
-   document.getElementById("folderHeadTitle").innerHTML=`<button type="button" class="crumb-link" data-nav="root">${languageSettings?.language==="en"?"Projects":"作品一覧"}</button><span class="crumb-sep">›</span><span class="crumb-current">${String(projectStore.folders[currentFolderId].name).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}</span>`;
+   document.getElementById("folderHeadTitle").innerHTML=`<button type="button" class="crumb-link" data-nav="root">${languageSettings?.language==="en"?"Projects":"プロジェクト"}</button><span class="crumb-sep">›</span><span class="crumb-current">${String(projectStore.folders[currentFolderId].name).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}</span>`;
  const renameBtn=document.getElementById("folderRename");
  const deleteBtn=document.getElementById("folderDelete");
  if(renameBtn)renameBtn.style.display="";
@@ -1936,7 +1936,7 @@ setTimeout(()=>{
 /* Full-app UI language layer. User-entered titles, folder names, notes and custom stage names are never translated. */
 const FULL_I18N={
  en:{
- "作品一覧":"Projects","＋ 新しい作品":"+ New Project","＋ フォルダ":"+ Folder","← 戻る":"← Back","名前変更":"Rename","削除":"Delete",
+ "作品一覧":"Projects","プロジェクト":"Projects","＋ 新しい作品":"+ New Project","＋ フォルダ":"+ Folder","← 戻る":"← Back","名前変更":"Rename","削除":"Delete",
  "漫画制作進捗":"Manga Production Tracker","メモ一覧":"Notes","作品名":"Project title","制作ページ数":"Pages","制作ページ":"Pages",
  "創作開始日":"Start date","締切予定日":"Deadline","総合進捗":"Overall Progress","制作進捗":"Overall Progress","工程別進捗":"Progress by Stage","工程表":"Production Table",
  "作業履歴":"Work History","今日":"Today","直近7日":"Last 7 days","1日平均":"Daily average","完成予想":"Estimated Completion",
@@ -2469,7 +2469,7 @@ try{ fullLanguageObserver.disconnect(); }catch(e){}
 
 const CLEAN_EN_EXACT = {
  "全体":"OVERALL",
- "作品一覧":"Projects","メモ一覧":"Notes","総合進捗":"Overall Progress","制作進捗":"Overall Progress",
+ "作品一覧":"Projects","プロジェクト":"Projects","メモ一覧":"Notes","総合進捗":"Overall Progress","制作進捗":"Overall Progress",
  "制作中":"In progress","完成率":"Completion","工程別進捗":"Progress by Stage","工程表":"Production Table",
  "作業履歴":"Work History","今日":"Today","直近7日":"Last 7 days","直近7日間":"Last 7 days",
  "1日平均":"Daily average","完成予想":"Estimated Completion","変更は自動保存されます":"Changes are saved automatically",

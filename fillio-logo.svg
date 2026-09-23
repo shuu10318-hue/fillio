@@ -5,5 +5,5 @@
   <rect x="4" y="42" width="31" height="24" rx="7" fill="#6b6b6b"/>
   <rect x="41" y="42" width="27" height="24" rx="7" fill="#a6a6a6"/>
   <rect x="4" y="72" width="27" height="20" rx="6" fill="#cfcfcf"/>
-  <text x="90" y="69" fill="#1a1a1a" font-family="Arial,Helvetica,sans-serif" font-size="58" font-weight="700" letter-spacing="-3">fillio</text>
+  <text x="90" y="69" fill="#1a1a1a" font-family="Nunito,Quicksand,Arial Rounded MT Bold,Arial,sans-serif" font-size="58" font-weight="600" letter-spacing="-2">fillio</text>
 </g></svg>
