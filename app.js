@@ -633,16 +633,46 @@ function renderHistory(){
 
 }
 
-let stickyPage=null,stickyColor="";
+let stickyPage=null,stickyColor="",stickyTodos=[];
 function openSticky(page){
   stickyPage=page;
   const n=pageNotes[String(page)]||{text:"",color:""};
   stickyColor=n.color||"";
+  stickyTodos=Array.isArray(n.todos)?n.todos.map((t,i)=>({id:t.id||(`${Date.now()}-${i}`),text:String(t.text||""),done:!!t.done})):[];
   document.getElementById("stickyTitle").textContent=`${page}P 付箋`;
   document.getElementById("stickyText").value=n.text||"";
+  document.getElementById("stickyTodoInput").value="";
+  renderStickyTodos();
   document.querySelectorAll(".color-pick").forEach(b=>b.classList.toggle("selected",b.dataset.color===stickyColor));
   document.getElementById("stickyModal").classList.add("open");
 }
+
+function renderStickyTodos(){
+  const list=document.getElementById("stickyTodoList");
+  const count=document.getElementById("stickyTodoCount");
+  if(!list||!count)return;
+  list.innerHTML="";
+  const done=stickyTodos.filter(t=>t.done).length;
+  count.textContent=`${done}/${stickyTodos.length}`;
+  stickyTodos.forEach((todo,i)=>{
+    const row=document.createElement("div"); row.className="sticky-todo-item"+(todo.done?" done":"");
+    const check=document.createElement("input"); check.type="checkbox"; check.checked=todo.done; check.setAttribute("aria-label","TODO完了");
+    check.onchange=()=>{stickyTodos[i].done=check.checked;renderStickyTodos();};
+    const text=document.createElement("span"); text.textContent=todo.text;
+    const del=document.createElement("button"); del.type="button";del.className="sticky-todo-remove";del.textContent="×";del.setAttribute("aria-label","TODOを削除");
+    del.onclick=()=>{stickyTodos.splice(i,1);renderStickyTodos();};
+    row.append(check,text,del);list.appendChild(row);
+  });
+}
+function addStickyTodo(){
+  const input=document.getElementById("stickyTodoInput");
+  const text=(input?.value||"").trim();if(!text)return;
+  stickyTodos.push({id:`${Date.now()}-${Math.random().toString(36).slice(2,7)}`,text,done:false});
+  input.value="";renderStickyTodos();input.focus();
+}
+document.getElementById("stickyTodoAdd").onclick=addStickyTodo;
+document.getElementById("stickyTodoInput").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();addStickyTodo();}});
+
 document.querySelectorAll(".color-pick").forEach(b=>b.onclick=()=>{
   stickyColor=b.dataset.color||"";
   document.querySelectorAll(".color-pick").forEach(x=>x.classList.toggle("selected",x===b));
@@ -652,8 +682,9 @@ document.getElementById("stickyModal").onclick=e=>{if(e.target.id==="stickyModal
 document.getElementById("stickyDelete").onclick=()=>{
   if(stickyPage===null)return;
   delete pageNotes[String(stickyPage)];
-  stickyColor="";
+  stickyColor="";stickyTodos=[];
   document.getElementById("stickyText").value="";
+  renderStickyTodos();
   save();
   document.getElementById("stickyModal").classList.remove("open");
   renderPages();
@@ -661,7 +692,7 @@ document.getElementById("stickyDelete").onclick=()=>{
 document.getElementById("stickySave").onclick=()=>{
   const text=document.getElementById("stickyText").value.trim();
   if(!stickyColor)stickyColor="#f4dc8a";
-  pageNotes[String(stickyPage)]={text,color:stickyColor};
+  pageNotes[String(stickyPage)]={text,color:stickyColor,todos:stickyTodos.map(t=>({id:t.id,text:t.text,done:!!t.done}))};
   save();
   document.getElementById("stickyModal").classList.remove("open");
   renderPages();

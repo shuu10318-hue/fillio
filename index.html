@@ -7,7 +7,7 @@
 <title>漫画制作進捗</title>
 
 
-<link rel="stylesheet" href="style.css?v=20260923-notecolor1">
+<link rel="stylesheet" href="style.css?v=20260923-todoproto1">
 </head>
 <body>
 
@@ -237,6 +237,9 @@
  <div class="sticky-sheet">
   <div class="sticky-head"><h2 id="stickyTitle">付箋</h2><button id="stickyClose" class="sticky-close">×</button></div>
   <textarea id="stickyText" placeholder="修正点・忘れたくないことなど"></textarea>
+  <div class="sticky-todo-head"><div class="label">TODO</div><span id="stickyTodoCount">0/0</span></div>
+  <div id="stickyTodoList" class="sticky-todo-list"></div>
+  <div class="sticky-todo-add"><input id="stickyTodoInput" type="text" maxlength="80" placeholder="チェック項目を追加"><button id="stickyTodoAdd" type="button">＋</button></div>
   <div class="label" style="margin-top:12px">マーカー</div>
   <div class="color-picks">
    <button type="button" class="color-pick" data-color="#f4a6a6" style="background:#f4a6a6"></button>
@@ -267,7 +270,7 @@
 </div>
 
 
-<script src="app.js?v=20260923-notecolor1"></script>
+<script src="app.js?v=20260923-todoproto1"></script>
 </body>
 </html>
 
