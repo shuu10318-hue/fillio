@@ -21,8 +21,10 @@ function normalizeAppSettings(raw){
  if(b-a+1>500)b=a+499;
  let ss=Array.isArray(raw?.defaultStages)?raw.defaultStages.map(x=>String(x||"").trim()).filter(Boolean).slice(0,MAX_STAGES):[];
  if(!ss.length)ss=[...DEFAULT_STAGES];
- const allowedColors=["#222222","#4f6bed","#3f8f6b","#7a5cc7","#c7663d"];
- const themeColor=allowedColors.includes(raw?.themeColor)?raw.themeColor:"#222222";
+ const allowedColors=["#222222","#d9788d","#6e9fd0","#70ad98","#9a83c6","#dc9878"];
+ const legacyThemeMap={"#4f6bed":"#6e9fd0","#3f8f6b":"#70ad98","#7a5cc7":"#9a83c6","#c7663d":"#dc9878"};
+ const requested=legacyThemeMap[raw?.themeColor]||raw?.themeColor;
+ const themeColor=allowedColors.includes(requested)?requested:"#222222";
  return {language:lang,defaultStartPage:a,defaultEndPage:b,defaultStages:ss,themeColor};
 }
 function syncSplitSettings(){
@@ -44,6 +46,9 @@ function persistAppSettings(){
 }
 function applyThemeColor(color=appSettings?.themeColor||"#222222"){
  document.documentElement.style.setProperty("--accent",color);
+ document.documentElement.dataset.theme=color==="#222222"?"mono":"color";
+ const meta=document.querySelector('meta[name="theme-color"]');
+ if(meta) meta.content=color==="#222222"?"#f6f6f6":`color-mix(in srgb, ${color} 8%, #f8f8f8)`;
  document.querySelectorAll(".theme-color-option").forEach(b=>{
    const on=b.dataset.themeColor===color;b.classList.toggle("selected",on);b.setAttribute("aria-checked",on?"true":"false");
  });

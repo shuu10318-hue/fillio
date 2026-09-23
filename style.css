@@ -1164,3 +1164,48 @@ input{border-color:var(--border);border-radius:12px}
 }
 .state-swatch.done,.help-swatch.done{background:var(--accent)!important;border-color:var(--accent)!important}
 #themeColorPicker .theme-color-option.selected{border-color:var(--accent)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)!important}
+
+/* ===== Soft full-app themes 2026-09-23 ===== */
+#themeColorPicker.theme-color-picker{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+#themeColorPicker .theme-color-option{height:70px!important}
+#themeColorPicker .theme-option-label{font-size:10px!important}
+
+/* In color themes, tint the whole interface softly while keeping text readable. */
+:root[data-theme="color"]{
+  --bg:color-mix(in srgb,var(--accent) 7%,#f8f8f8);
+  --card:color-mix(in srgb,var(--accent) 2.5%,#fff);
+  --border:color-mix(in srgb,var(--accent) 16%,#dedede);
+  --soft:color-mix(in srgb,var(--accent) 12%,#eeeeee);
+  --started:color-mix(in srgb,var(--accent) 34%,#d7d7d7);
+  --muted:color-mix(in srgb,var(--accent) 20%,#777);
+}
+:root[data-theme="color"] body,
+:root[data-theme="color"] #projectHome,
+:root[data-theme="color"] #editorApp{background:var(--bg)!important}
+:root[data-theme="color"] .card,
+:root[data-theme="color"] .project-card,
+:root[data-theme="color"] .folder-card,
+:root[data-theme="color"] .project-sheet,
+:root[data-theme="color"] .settings-sheet,
+:root[data-theme="color"] .help-sheet,
+:root[data-theme="color"] .sticky-sheet,
+:root[data-theme="color"] .memo-sheet{background:var(--card)!important;border-color:var(--border)!important}
+:root[data-theme="color"] input,
+:root[data-theme="color"] select,
+:root[data-theme="color"] textarea,
+:root[data-theme="color"] button:not(.progress-cell):not(.page-button.active):not(.state-done){border-color:var(--border)}
+:root[data-theme="color"] .icon-button,
+:root[data-theme="color"] .project-add-button,
+:root[data-theme="color"] .project-list-button,
+:root[data-theme="color"] .memo-list-button,
+:root[data-theme="color"] .stage-mini-button,
+:root[data-theme="color"] .backup-button{background:color-mix(in srgb,var(--accent) 3%,#fff)!important}
+:root[data-theme="color"] .progress-cell{border-color:color-mix(in srgb,var(--accent) 20%,#d7d7d7)}
+:root[data-theme="color"] .progress-cell.state1{background:color-mix(in srgb,var(--accent) 38%,#d7d7d7)!important}
+:root[data-theme="color"] .history-stat,
+:root[data-theme="color"] .project-stat{background:color-mix(in srgb,var(--accent) 7%,#f6f6f6)!important}
+:root[data-theme="color"] .dual-bar{background:color-mix(in srgb,var(--accent) 10%,#e9e9e9)!important}
+:root[data-theme="color"] .note-badge{background:var(--accent)!important}
+:root[data-theme="color"] a{color:color-mix(in srgb,var(--accent) 82%,#222)}
+/* Brand stays monochrome intentionally: stable identity across every theme. */
+.fillio-logo{filter:none!important}
