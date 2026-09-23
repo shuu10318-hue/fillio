@@ -938,3 +938,28 @@ input{border-color:var(--border);border-radius:12px}
 
 /* Memo list: show page TODOs */
 .memo-content{min-width:0}.memo-todos{display:grid;gap:5px;margin-top:7px}.memo-todo-item{display:grid;grid-template-columns:20px 1fr;align-items:start;gap:6px;font-size:11px;line-height:1.4}.memo-todo-item input{width:16px;height:16px;margin:0}.memo-todo-item.done span{text-decoration:line-through;color:var(--muted)}.memo-todo-summary{font-size:10px;color:var(--muted);font-weight:700;margin-top:5px}
+
+/* --- Home design prototype: monochrome icon language + drag trash --- */
+.icon-line{width:20px;height:20px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.home-head-actions .settings-button,.folder-add,.project-icon-button,.trash-open-button{color:var(--text);background:#fff}
+.project-icon-button{width:38px;height:38px;min-width:38px;padding:0;border:1px solid var(--border);border-radius:10px;display:inline-flex;align-items:center;justify-content:center}
+.project-icon-button:active{background:#f3f3f3}
+.project-item-actions{align-self:flex-start}
+.project-actions{display:none!important}
+.folder-name{display:flex;align-items:center;gap:8px}
+.folder-icon{width:21px;height:21px;display:inline-flex;align-items:center;justify-content:center;color:var(--text);flex:none}
+.folder-icon .icon-line{width:21px;height:21px}
+.folder-toolbar{gap:8px;align-items:center}
+.folder-add{display:inline-flex;align-items:center;gap:7px}
+.folder-add .icon-line{width:17px;height:17px}
+.home-head-actions .language-button,.home-head-actions #appSettingsButton{font-size:0;display:inline-flex;align-items:center;justify-content:center}
+.drag-trash-zone{position:fixed;left:50%;bottom:18px;transform:translate(-50%,18px);width:min(360px,calc(100% - 28px));height:64px;border:1.5px dashed #888;border-radius:16px;background:rgba(255,255,255,.96);display:flex;align-items:center;justify-content:center;gap:9px;font-size:13px;font-weight:800;color:#555;z-index:3000;opacity:0;pointer-events:none;transition:opacity .12s ease,transform .12s ease,background .12s ease}
+.drag-trash-zone.show{opacity:1;transform:translate(-50%,0)}
+.drag-trash-zone.over{background:#f0f0f0;border-style:solid;color:#111}
+.drag-trash-zone .icon-line{width:22px;height:22px}
+.trash-open-button{height:38px;padding:0 11px;border:1px solid var(--border);border-radius:9px;display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:12px}
+.trash-open-button .icon-line{width:17px;height:17px}
+.trash-modal{position:fixed;inset:0;background:rgba(0,0,0,.32);display:none;align-items:flex-end;justify-content:center;z-index:3200}.trash-modal.open{display:flex}
+.trash-sheet{width:min(520px,100%);max-height:72dvh;background:#fff;border-radius:18px 18px 0 0;padding:16px 14px 22px;box-sizing:border-box;display:flex;flex-direction:column}
+.trash-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.trash-head h2{font-size:18px;margin:0}.trash-close{border:0;background:#f1f1f1;border-radius:9px;padding:8px 12px;font-weight:700}
+.trash-list{overflow:auto;min-height:80px}.trash-item{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--border);border-radius:12px;padding:11px 12px;margin-bottom:8px}.trash-item-name{font-weight:750;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.trash-item-actions{display:flex;gap:6px;flex:none}.trash-item-actions button{border:1px solid var(--border);background:#fff;border-radius:8px;padding:7px 9px;font-size:11px;font-weight:700}.trash-item-actions .danger{color:#777}.trash-empty{text-align:center;color:var(--muted);padding:28px 10px;font-size:12px}

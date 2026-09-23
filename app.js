@@ -369,7 +369,7 @@ function projectDashboardStats(p){
 function renderProjectList(){
   const list=document.getElementById("projectList");
   list.innerHTML="";
-  const ids=Object.keys(projectStore.projects);
+  const ids=Object.keys(projectStore.projects).filter(id=>!projectStore.projects[id]?.trashedAt);
   const savedOrder=Array.isArray(projectStore.projectOrder)?projectStore.projectOrder:[];
   const orderedIds=savedOrder.filter(id=>ids.includes(id));
   ids.forEach(id=>{if(!orderedIds.includes(id))orderedIds.push(id)});
@@ -404,10 +404,9 @@ function renderProjectList(){
 </div>
       </div>
       <div class="project-item-actions">
-        <button class="project-edit-button">編集</button>
+        <button class="project-edit-button project-icon-button" type="button" aria-label="${isEn?"Edit project":"作品を編集"}" title="${isEn?"Edit":"編集"}"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button>
       </div>
-    </div>
-    <div class="project-actions"><button class="project-delete-button">この作品を削除</button></div>`;
+    </div>`;
     item.querySelector(".project-item-title").textContent=p.title||(languageSettings?.language==="en"?"Untitled":"無題");
     item.addEventListener("click",e=>{
       if(Date.now()<(window.__suppressMixedClickUntil||0))return;
@@ -415,14 +414,6 @@ function renderProjectList(){
       openProject(id);
     });
     item.querySelector(".project-edit-button").onclick=e=>{e.stopPropagation();openProjectEdit(id)};
-    item.querySelector(".project-delete-button").onclick=()=>{
-      const name=p.title||(languageSettings?.language==="en"?"Untitled":"無題");
-      if(!confirm(`「${name}」を削除しますか？\nこの操作は元に戻せません。`))return;
-      delete projectStore.projects[id];
-      if(projectStore.activeProjectId===id)projectStore.activeProjectId=null;
-      persistProjectStore();
-      renderProjectList();
-    };
     list.appendChild(item);
   });
 }
@@ -1443,7 +1434,7 @@ function finishReorder(){
  if(!reorderDragging)return;
  reorderDragging.classList.remove("reorder-dragging");clearReorderMarks();reorderDragging=null;
  document.querySelectorAll(".folder-item.drag-over").forEach(x=>x.classList.remove("drag-over"));
- document.querySelectorAll(".folder-icon").forEach(x=>x.textContent="📁");
+ 
  saveProjectOrderFromDOM();
  setTimeout(renderFoldersAndFilter,0);
 }
@@ -1579,7 +1570,7 @@ function renderFoldersAndFilter(){
  if(!currentFolderId){
    Object.entries(projectStore.folders).forEach(([fid,f])=>{
      const el=document.createElement("div");el.className="folder-item";el.dataset.folderId=fid;el.dataset.orderKey="f:"+fid;
-     el.innerHTML=`<div class="folder-row"><div><div class="folder-name"><span class="folder-icon">📁</span> ${String(f.name).replace(/[&<>"\']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","\'":"&#39;"}[c]))}</div><div class="folder-meta">${folderCount(fid)}${languageSettings?.language==="en"?" projects":"作品"}</div></div></div>`;
+     el.innerHTML=`<div class="folder-row"><div><div class="folder-name"><span class="folder-icon"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h7l2 2h9v11H3z"/></svg></span><span data-user-text="1">${String(f.name).replace(/[&<>"\']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","\'":"&#39;"}[c]))}</span></div><div class="folder-meta">${folderCount(fid)}${languageSettings?.language==="en"?" projects":"作品"}</div></div></div>`;
      const openFolder=()=>{
        currentFolderId=fid;
        renderFoldersAndFilter();
@@ -1740,13 +1731,12 @@ document.addEventListener("touchmove",e=>{
  const bothEmpty=!folderDropTarget&&!nextTarget;
  if(!sameTarget&&!bothEmpty){
    document.querySelectorAll(".folder-item.drag-over").forEach(x=>x.classList.remove("drag-over"));
-   document.querySelectorAll(".folder-icon").forEach(x=>x.textContent="📁");
+   
    folderDropTarget=nextTarget;
    if(folderDropTarget?.type==="folder"){
      const targetFolder=document.querySelector(`.folder-item[data-folder-id="${CSS.escape(folderDropTarget.id)}"]`);
      targetFolder?.classList.add("drag-over");
-     const icon=targetFolder?.querySelector(".folder-icon");
-     if(icon)icon.textContent="📂";
+     
    }
  }
 },{passive:true});
@@ -1758,7 +1748,7 @@ document.addEventListener("touchend",()=>{
    persistProjectStore();
  }
  document.querySelectorAll(".folder-item.drag-over").forEach(x=>x.classList.remove("drag-over"));
- document.querySelectorAll(".folder-icon").forEach(x=>x.textContent="📁");
+ 
  folderDropTarget=null;
  setTimeout(renderFoldersAndFilter,0);
 },{capture:true,passive:true});
@@ -1791,7 +1781,7 @@ document.addEventListener("touchend",()=>{
    }
    drag.classList.remove("mixed-root-dragging");
    document.querySelectorAll(".folder-item.drag-over").forEach(x=>x.classList.remove("drag-over"));
-   document.querySelectorAll(".folder-icon").forEach(x=>x.textContent="📁");
+   
    drag=null;dropFolderId=null;window.__mixedRootDragging=false;
    setTimeout(renderFoldersAndFilter,0);
  }
@@ -1834,7 +1824,7 @@ document.addEventListener("touchend",()=>{
    // 作品をフォルダ中央へ重ねた時だけ「格納」扱い。
    dropFolderId=null;
    document.querySelectorAll(".folder-item.drag-over").forEach(x=>x.classList.remove("drag-over"));
-   document.querySelectorAll(".folder-icon").forEach(x=>x.textContent="📁");
+   
    if(drag.classList.contains("project-item")){
      const folder=others.find(el=>{
        if(!el.classList.contains("folder-item"))return false;
@@ -1846,7 +1836,7 @@ document.addEventListener("touchend",()=>{
      if(folder){
        dropFolderId=folder.dataset.folderId;
        folder.classList.add("drag-over");
-       const icon=folder.querySelector(".folder-icon");if(icon)icon.textContent="📂";
+       
        return;
      }
    }
@@ -2608,3 +2598,55 @@ const dynamicAuditObserver=new MutationObserver(muts=>{
 if(uiLang()==="en")dynamicAuditObserver.observe(document.body,{subtree:true,childList:true,characterData:true});
 setTimeout(()=>auditDynamicUiLanguage(document),0);
 /* ===== /Dynamic UI i18n audit patch ===== */
+
+
+/* --- Home design prototype: soft trash + monochrome controls --- */
+(function setupSoftTrashPrototype(){
+  const zone=document.getElementById("dragTrashZone");
+  const modal=document.getElementById("trashModal");
+  const list=document.getElementById("trashList");
+  const open=document.getElementById("trashOpen");
+  const close=document.getElementById("trashClose");
+  if(!zone||!modal||!list||!open||!close)return;
+  const isEn=()=>languageSettings?.language==="en";
+  function renderTrash(){
+    list.innerHTML="";
+    const entries=Object.entries(projectStore.projects||{}).filter(([,p])=>p?.trashedAt);
+    if(!entries.length){list.innerHTML=`<div class="trash-empty">${isEn()?"Trash is empty.":"ゴミ箱は空です。"}</div>`;return;}
+    entries.sort((a,b)=>(b[1].trashedAt||0)-(a[1].trashedAt||0)).forEach(([id,p])=>{
+      const row=document.createElement("div");row.className="trash-item";
+      row.innerHTML=`<div class="trash-item-name" data-user-text="1"></div><div class="trash-item-actions"><button type="button" data-act="restore">${isEn()?"Restore":"元に戻す"}</button><button type="button" class="danger" data-act="delete">${isEn()?"Delete":"完全削除"}</button></div>`;
+      row.querySelector(".trash-item-name").textContent=p.title||(isEn()?"Untitled":"無題");
+      row.querySelector('[data-act="restore"]').onclick=()=>{delete p.trashedAt;p.folderId=null;persistProjectStore();renderProjectList();renderFoldersAndFilter();renderTrash()};
+      row.querySelector('[data-act="delete"]').onclick=()=>{const name=p.title||(isEn()?"Untitled":"無題");if(!confirm(isEn()?`Permanently delete “${name}”? This cannot be undone.`:`「${name}」を完全に削除しますか？\nこの操作は元に戻せません。`))return;delete projectStore.projects[id];projectStore.projectOrder=(projectStore.projectOrder||[]).filter(x=>x!==id);projectStore.rootOrder=(projectStore.rootOrder||[]).filter(x=>x!=="p:"+id);if(projectStore.activeProjectId===id)projectStore.activeProjectId=null;persistProjectStore();renderTrash();renderProjectList();renderFoldersAndFilter()};
+      list.appendChild(row);
+    });
+  }
+  open.onclick=()=>{renderTrash();modal.classList.add("open");lockPageScroll()};
+  close.onclick=()=>{modal.classList.remove("open");unlockPageScroll()};
+  modal.addEventListener("click",e=>{if(e.target===modal)close.click()});
+  function setZoneText(){document.getElementById("trashTitle").textContent=isEn()?"Trash":"ゴミ箱";document.getElementById("dragTrashLabel").textContent=isEn()?"Move to Trash":"ゴミ箱へ";open.querySelector("span").textContent=isEn()?"Trash":"ゴミ箱";close.textContent=isEn()?"Close":"閉じる"}
+  setZoneText();
+  const langObserver=new MutationObserver(setZoneText);langObserver.observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
+
+  // Existing long-press drag remains the source of truth. This layer only exposes a trash drop target.
+  document.addEventListener("touchmove",e=>{
+    const active=window.__mixedRootDragging || (typeof reorderDragging!=="undefined"&&reorderDragging);
+    if(!active||e.touches.length!==1){zone.classList.remove("show","over");return;}
+    zone.classList.add("show");
+    const t=e.touches[0],r=zone.getBoundingClientRect();
+    zone.classList.toggle("over",t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top-12&&t.clientY<=r.bottom+12);
+  },{passive:true});
+  document.addEventListener("touchend",()=>{
+    const over=zone.classList.contains("over");
+    let el=null;
+    if(window.__mixedRootDragging){el=document.querySelector(".project-item.mixed-root-dragging[data-project-id]")}
+    if(!el&&typeof reorderDragging!=="undefined"&&reorderDragging?.dataset?.projectId)el=reorderDragging;
+    if(over&&el?.dataset?.projectId){
+      const id=el.dataset.projectId,p=projectStore.projects[id];
+      if(p){p.trashedAt=Date.now();p.folderId=null;projectStore.rootOrder=(projectStore.rootOrder||[]).filter(k=>k!=="p:"+id);persistProjectStore();setTimeout(()=>{renderProjectList();renderFoldersAndFilter()},0)}
+    }
+    zone.classList.remove("show","over");
+  },{capture:true,passive:true});
+  document.addEventListener("touchcancel",()=>zone.classList.remove("show","over"),{passive:true});
+})();
