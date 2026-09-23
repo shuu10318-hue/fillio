@@ -413,19 +413,25 @@ function renderProjectList(){
     item.innerHTML=`<div class="project-item-main">
       <div style="min-width:0">
         <div class="project-item-title" data-user-text="1"></div>
-        <div class="project-item-meta">
-<div class="project-meta-row"><span>ページ</span><b>全${p.totalPages}P</b></div>
-<div class="project-meta-row"><span>完成</span><b>${donePages}P / ${p.totalPages}P</b></div>
-<div class="project-meta-row"><span>全工程</span><b>${projectPercent(p)}%</b></div>
-<div class="project-meta-row"><span>${isEn?"Deadline":"締切"}</span><b>${p.deadline?p.deadline.replaceAll("-","/"):(isEn?"None":"未設定")}</b></div>
-</div>
-<div class="project-dashboard-strip">
-  <div><span>${isEn?"Started":"着手"}</span><b>${dash.startedPct}%</b></div>
-  <div><span>${isEn?"Completed":"完成率"}</span><b>${dash.donePct}%</b></div>
-  <div><span>${isEn?"Today":"今日"}</span><b>${dash.todayDone>=0?"+":""}${dash.todayDone}</b></div>
-  <div><span>${isEn?"7 days":"7日"}</span><b>${dash.weekDone}</b></div>
-  <div><span>${isEn?"Forecast":"完成予想"}</span><b>${dash.forecast}</b></div>
-</div>
+        ${donePages>=p.totalPages ? `
+<div class="project-summary project-summary-complete">
+  <div class="project-summary-main"><b>${donePages} / ${p.totalPages}P</b><strong>✓ ${isEn?"Completed":"完成"}</strong></div>
+  <div class="project-progress-track"><i style="width:100%"></i></div>
+  <div class="project-complete-meta"><span>${isEn?"Progress":"全工程"}</span><b>100%</b></div>
+</div>` : `
+<div class="project-summary">
+  <div class="project-summary-main"><b>${donePages} / ${p.totalPages}P</b><strong>${projectPercent(p)}%</strong></div>
+  <div class="project-progress-track"><i style="width:${projectPercent(p)}%"></i></div>
+  <div class="project-plan-row">
+    <div><span>${isEn?"Deadline":"締切"}</span><b>${p.deadline?p.deadline.replaceAll("-","/"):(isEn?"None":"未設定")}</b></div>
+    <div><span>${isEn?"Forecast":"完成予想"}</span><b>${dash.forecast}</b></div>
+  </div>
+  <div class="project-dashboard-strip project-dashboard-compact">
+    <div><span>${isEn?"Started":"着手"}</span><b>${dash.startedPct}%</b></div>
+    <div><span>${isEn?"Today":"今日"}</span><b>${dash.todayDone>=0?"+":""}${dash.todayDone}</b></div>
+    <div><span>${isEn?"7 days":"7日"}</span><b>${dash.weekDone}</b></div>
+  </div>
+</div>`}
       </div>
       <div class="project-item-actions">
         <button class="project-edit-button project-icon-button" type="button" aria-label="${isEn?"Edit project":"作品を編集"}" title="${isEn?"Edit":"編集"}"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button>
