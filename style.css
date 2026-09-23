@@ -870,7 +870,9 @@ input{border-color:var(--border);border-radius:12px}
   position:relative!important;
   width:100%!important;
   max-width:100%!important;
-  max-height:min(72dvh,760px)!important;
+  height:var(--stage-grid-height,min(72dvh,760px))!important;
+  max-height:var(--stage-grid-height,min(72dvh,760px))!important;
+  box-sizing:border-box!important;
   overflow:auto!important;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:auto contain;

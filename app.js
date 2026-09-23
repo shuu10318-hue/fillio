@@ -675,7 +675,7 @@ function renderPages(){
     const num=document.createElement("div");num.className="page-number";
     const actualPage=startPage+p, note=pageNotes[String(actualPage)]||{text:"",color:""};
     num.textContent=actualPage;
-    if(note.color)num.style.background=note.color;
+    if(note.color)num.style.setProperty("background",note.color,"important");
     num.onclick=()=>openSticky(actualPage);
     row.appendChild(num);
     for(let s=0;s<stages.length;s++){
@@ -1264,14 +1264,21 @@ function updateInitialTableViewportHeight(){
   const scroller=document.getElementById("stageTableScroll");
   const anchor=document.getElementById("tableHeadAnchor");
   if(!scroller||!anchor)return;
-  const root=getComputedStyle(document.documentElement);
-  const cell=parseFloat(root.getPropertyValue("--progress-cell-size"))||58;
-  const rowGap=5; // .page-row の margin-bottom
   const header=Math.ceil(anchor.getBoundingClientRect().height);
+  const firstRow=scroller.querySelector("#pages .page-row");
+  if(!firstRow)return;
+  const rowStyle=getComputedStyle(firstRow);
+  const rowHeight=Math.ceil(firstRow.getBoundingClientRect().height);
+  const rowGap=parseFloat(rowStyle.marginBottom)||0;
+  const rowOuter=rowHeight+rowGap;
+  const scrollerStyle=getComputedStyle(scroller);
+  const padTop=parseFloat(scrollerStyle.paddingTop)||0;
+  const padBottom=parseFloat(scrollerStyle.paddingBottom)||0;
   const cap=Math.min(window.innerHeight*0.72,760);
-  const rows=Math.max(3,Math.floor((cap-header)/(cell+rowGap)));
-  const exact=header+rows*(cell+rowGap);
-  scroller.style.maxHeight=`${exact}px`;
+  const rows=Math.max(3,Math.floor((cap-header-padTop-padBottom)/rowOuter));
+  // ヘッダー + 完全な行だけで表示高を構成し、次の行が途中で見えないようにする。
+  const exact=Math.ceil(header+padTop+padBottom+rows*rowOuter);
+  document.documentElement.style.setProperty("--stage-grid-height",`${exact}px`);
 }
 
 // Excel-style grid: vertical and horizontal header following are native CSS sticky.
