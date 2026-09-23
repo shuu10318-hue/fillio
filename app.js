@@ -1253,32 +1253,15 @@ function updateInitialTableCellSize(){
   }
 }
 
-(function setupVerticalStageHeaderFollow(){
+// Excel-style grid: vertical and horizontal header following are native CSS sticky.
+// No scroll-position synchronization is required.
+(function setupNativeGridSizing(){
   const scroller=document.getElementById("stageTableScroll");
-  const anchor=document.getElementById("tableHeadAnchor");
-  if(!scroller||!anchor)return;
-
-  // 横方向は同じスクロール領域のネイティブ移動に任せる。
-  // 縦方向だけをその場で補正する。rAFを挟まないことで、上方向へ戻す時の
-  // 「工程見出しが一瞬セルの途中に残る」追従遅れを出さない。
-  function update(){
-    const naturalTop=scroller.getBoundingClientRect().top+anchor.offsetTop;
-    const maxY=Math.max(0,scroller.scrollHeight-anchor.offsetTop-anchor.offsetHeight);
-    const y=Math.max(0,Math.min(maxY,-naturalTop));
-    anchor.style.transform=y>0?`translate3d(0,${Math.round(y)}px,0)`:"none";
-    anchor.classList.toggle("is-vertically-following",y>0);
-  }
-
-  window.addEventListener("scroll",update,{passive:true});
-  window.addEventListener("resize",()=>{updateInitialTableCellSize();update()},{passive:true});
-  if(window.visualViewport){
-    window.visualViewport.addEventListener("resize",update,{passive:true});
-  }
-  if(window.ResizeObserver){
-    new ResizeObserver(()=>{updateInitialTableCellSize();update()}).observe(scroller);
-  }
-  updateInitialTableCellSize();
-  update();
+  if(!scroller)return;
+  const resize=()=>updateInitialTableCellSize();
+  window.addEventListener("resize",resize,{passive:true});
+  if(window.ResizeObserver)new ResizeObserver(resize).observe(scroller);
+  resize();
 })();
 
 let editingProjectId=null;
