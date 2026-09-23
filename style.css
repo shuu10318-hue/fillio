@@ -1008,3 +1008,36 @@ input{border-color:var(--border);border-radius:12px}
 @media(max-width:430px){.home-head-actions{gap:6px!important}.home-head-actions .settings-button{width:42px;height:42px}.create-menu{width:184px}}
 
 .trash-head-actions{display:flex;align-items:center;gap:8px}.trash-empty-button{border:0;background:transparent;padding:8px 6px;font-weight:700;color:#666}.trash-empty-button:active{opacity:.55}
+
+/* Unified modal headers: view-only = title + X, commit screens = Cancel / title / action */
+.modal-view-head,
+.modal-action-head{
+  display:grid;
+  align-items:center;
+  min-height:44px;
+  margin-bottom:14px;
+}
+.modal-view-head{grid-template-columns:1fr 44px;gap:8px}
+.modal-action-head{grid-template-columns:minmax(72px,1fr) auto minmax(72px,1fr);gap:8px}
+.modal-view-head h2,.modal-view-head h3,
+.modal-action-head h2,.modal-action-head h3{margin:0!important;text-align:center;font-size:18px;line-height:1.25}
+.modal-view-head h2,.modal-view-head h3{text-align:left}
+.modal-text-action{
+  appearance:none;border:0;background:transparent;padding:10px 4px;
+  font:inherit;font-size:14px;font-weight:700;line-height:1;color:#555;min-height:44px;
+}
+.modal-cancel-action{justify-self:start;text-align:left}
+.modal-confirm-action{justify-self:end;text-align:right;color:#222}
+.modal-icon-close{
+  appearance:none;border:0!important;background:transparent!important;border-radius:50%!important;
+  width:44px;height:44px;padding:0!important;display:grid;place-items:center;
+  font-size:28px!important;font-weight:400!important;line-height:1;color:#222;justify-self:end;
+}
+/* Existing modal-specific heads now inherit the common geometry. */
+.project-edit-head,.sticky-head{margin-bottom:14px}
+.sticky-head{display:grid}
+/* Sticky delete is destructive content action, not a close/save action. */
+.sticky-actions{display:block}
+.sticky-delete{width:100%}
+/* Folder inputs no longer need footer-action spacing. */
+.folder-sheet input{margin-top:2px}

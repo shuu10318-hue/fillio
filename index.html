@@ -7,7 +7,7 @@
 <title>漫画制作進捗</title>
 
 
-<link rel="stylesheet" href="style.css?v=20260923-foldertrash1">
+<link rel="stylesheet" href="style.css?v=20260923-modalheaders1">
 </head>
 <body>
 
@@ -57,7 +57,7 @@
   <div class="project-backup-note">作品ごとの進捗・付箋・作業履歴は端末内に自動保存されます。</div>
 </div>
 <div id="dragTrashZone" class="drag-trash-zone"><svg class="icon-line" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg><span id="dragTrashLabel">ゴミ箱へ</span></div>
-<div id="trashModal" class="trash-modal"><div class="trash-sheet"><div class="trash-head"><h2 id="trashTitle">ゴミ箱</h2><div class="trash-head-actions"><button id="trashEmpty" class="trash-empty-button" type="button">空にする</button><button id="trashClose" class="trash-close" type="button">閉じる</button></div></div><div id="trashList" class="trash-list"></div></div></div>
+<div id="trashModal" class="trash-modal"><div class="trash-sheet"><div class="trash-head"><h2 id="trashTitle">ゴミ箱</h2><div class="trash-head-actions"><button id="trashEmpty" class="trash-empty-button" type="button">空にする</button><button id="trashClose" class="modal-icon-close trash-close" type="button" aria-label="閉じる">×</button></div></div><div id="trashList" class="trash-list"></div></div></div>
 
 <div class="app prototype-input-mode" id="editorApp" style="display:none">
 <div class="top-title"><h1>漫画制作進捗</h1><div class="top-actions"><button id="memoListButton" class="memo-list-button">メモ一覧</button></div></div>
@@ -120,7 +120,7 @@
   <div class="memo-sheet">
     <div class="memo-head">
       <h2>メモ一覧</h2>
-      <button id="closeMemoList" class="memo-close">閉じる</button>
+      <button id="closeMemoList" class="modal-icon-close memo-close" aria-label="閉じる">×</button>
     </div>
     <div class="memo-filters">
       <button class="memo-filter active" data-filter="all">すべて</button>
@@ -135,7 +135,7 @@
 
 <div id="editProjectModal" class="project-modal">
   <div class="project-sheet project-edit-sheet">
-    <div class="project-edit-head"><h2>作品編集</h2></div>
+    <div class="modal-action-head project-edit-head"><button id="cancelEditProject" class="modal-text-action modal-cancel-action" type="button">キャンセル</button><h2>作品編集</h2><button id="saveEditProject" class="modal-text-action modal-confirm-action" type="button">保存</button></div>
     <div class="project-edit-scroll">
     <div class="label">作品名</div>
     <input id="editProjectTitle" placeholder="作品名">
@@ -157,30 +157,23 @@
     <button id="stageAddButton" class="stage-add-button" type="button">＋ 工程を追加</button>
     <div class="stage-editor-note">工程名の変更・並び替え・追加・削除</div>
     </div>
-    <div class="project-modal-actions project-edit-actions">
-      <button id="cancelEditProject" class="project-cancel-button">キャンセル</button>
-      <button id="saveEditProject" class="project-create-button">保存</button>
-    </div>
   </div>
 </div>
 
 <select id="appLanguage" style="display:none"><option value="ja">日本語</option><option value="en">English</option></select>
 <div id="languageModal" class="project-modal">
   <div class="project-sheet language-sheet">
-    <h2 id="languageModalTitle">Language</h2>
+    <div class="modal-view-head"><h2 id="languageModalTitle">Language</h2><button id="languageCancel" class="modal-icon-close" type="button" aria-label="閉じる">×</button></div>
     <div class="language-choice">
       <button type="button" class="language-option" data-lang="ja">日本語</button>
       <button type="button" class="language-option" data-lang="en">English</button>
-    </div>
-    <div class="project-modal-actions">
-      <button id="languageCancel" class="project-cancel-button">キャンセル</button>
     </div>
   </div>
 </div>
 
 <div id="appSettingsModal" class="project-modal">
   <div class="project-sheet settings-sheet">
-    <h2 id="settingsTitle">アプリ設定</h2>
+    <div class="modal-action-head"><button id="settingsCancel" class="modal-text-action modal-cancel-action" type="button">キャンセル</button><h2 id="settingsTitle">アプリ設定</h2><button id="settingsSave" class="modal-text-action modal-confirm-action" type="button">保存</button></div>
     <div class="settings-section-title settings-first-section" id="settingsDefaultsTitle">新規作品のデフォルト</div>
     <div class="label" id="settingsPagesLabel">制作ページ</div>
     <div class="page-range">
@@ -200,16 +193,12 @@
     <input id="backupFile" type="file" accept=".json,application/json" hidden>
     <div class="backup-note" id="dataManagementNote">全作品・フォルダ・進捗・付箋・作業履歴を1つのJSONに保存します。</div>
     <div id="backupStatus" class="backup-status" style="display:none"></div>
-    <div class="project-modal-actions">
-      <button id="settingsCancel" class="project-cancel-button">キャンセル</button>
-      <button id="settingsSave" class="project-create-button">保存</button>
-    </div>
   </div>
 </div>
 
 <div id="projectModal" class="project-modal">
   <div class="project-sheet">
-    <h2>新しい作品</h2>
+    <div class="modal-action-head"><button id="cancelNewProject" class="modal-text-action modal-cancel-action" type="button">キャンセル</button><h2>新しい作品</h2><button id="createNewProject" class="modal-text-action modal-confirm-action" type="button">作成</button></div>
     <div class="label">作品名</div>
     <input id="newProjectTitle" value="" placeholder="作品名">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;margin-bottom:7px">
@@ -233,16 +222,12 @@
       <button id="newStageAddButton" class="stage-add-button" type="button">＋ 工程を追加</button>
       <div class="stage-editor-note">変更しなければ「ネーム・ペン・背景・トーン・写植」で作成されます</div>
     </div>
-    <div class="project-modal-actions">
-      <button id="cancelNewProject" class="project-cancel-button">キャンセル</button>
-      <button id="createNewProject" class="project-create-button">作成</button>
-    </div>
   </div>
 </div>
 
 <div id="stickyModal" class="sticky-modal">
  <div class="sticky-sheet">
-  <div class="sticky-head"><h2 id="stickyTitle">付箋</h2><button id="stickyClose" class="sticky-close">×</button></div>
+  <div class="modal-action-head sticky-head"><button id="stickyClose" class="modal-text-action modal-cancel-action" type="button">キャンセル</button><h2 id="stickyTitle">付箋</h2><button type="button" id="stickySave" class="modal-text-action modal-confirm-action">保存</button></div>
   <textarea id="stickyText" placeholder="修正点・忘れたくないことなど"></textarea>
   <div class="sticky-todo-head"><div class="label">TODO</div><span id="stickyTodoCount">0/0</span></div>
   <div id="stickyTodoList" class="sticky-todo-list"></div>
@@ -256,28 +241,25 @@
   </div>
   <div class="sticky-actions">
    <button type="button" id="stickyDelete" class="sticky-delete">付箋を削除</button>
-   <button type="button" id="stickySave" class="sticky-save">保存</button>
   </div>
  </div>
 </div>
 
 <div id="folderModal" class="folder-modal">
   <div class="folder-sheet">
-    <h3>新しいフォルダ</h3>
+    <div class="modal-action-head"><button id="folderCancel" class="modal-text-action modal-cancel-action" type="button">キャンセル</button><h3>新しいフォルダ</h3><button id="folderCreate" class="modal-text-action modal-confirm-action" type="button">作成</button></div>
     <input id="folderNameInput" type="text" maxlength="40" placeholder="フォルダ名">
-    <div class="folder-sheet-actions"><button id="folderCancel" type="button">キャンセル</button><button id="folderCreate" type="button">作成</button></div>
   </div>
 </div>
 <div id="folderRenameModal" class="folder-modal">
   <div class="folder-sheet">
-    <h3>フォルダ名を変更</h3>
+    <div class="modal-action-head"><button id="folderRenameCancel" class="modal-text-action modal-cancel-action" type="button">キャンセル</button><h3>フォルダ名を変更</h3><button id="folderRenameSave" class="modal-text-action modal-confirm-action" type="button">保存</button></div>
     <input id="folderRenameInput" type="text" maxlength="40" placeholder="フォルダ名">
-    <div class="folder-sheet-actions"><button id="folderRenameCancel" type="button">キャンセル</button><button id="folderRenameSave" type="button">保存</button></div>
   </div>
 </div>
 
 
-<script src="app.js?v=20260923-foldertrash1"></script>
+<script src="app.js?v=20260923-modalheaders1"></script>
 </body>
 </html>
 
