@@ -2789,8 +2789,8 @@ setTimeout(()=>auditDynamicUiLanguage(document),0);
     const hb=$("libraryHelpButton");if(hb)hb.setAttribute("aria-label",en?"Library Help":"Libraryの使い方");
     const hc=$("libraryHelpClose");if(hc)hc.setAttribute("aria-label",en?"Close":"閉じる");
     const items=$("libraryHelpModal")?.querySelectorAll(".help-item");
-    const ja=[["作品を作る","右上の「＋」から新しい作品を作成します。制作ページや工程は作品ごとに設定できます。"],["フォルダで整理","「＋」からフォルダを作成できます。作品をフォルダにまとめて整理できます。"],["作品を編集","作品カードの「編集」から作品名・ページ・日付・工程を変更できます。"],["ゴミ箱","削除した作品やフォルダはゴミ箱へ移動します。必要なら復元できます。"],["バックアップ","設定の「データ管理」から、Library全体をJSONファイルにバックアップ・復元できます。"]];
-    const ee=[["Create a project","Use the + button at the top right to create a project. Pages and stages can be set for each project."],["Organize with folders","Create folders from the + button and organize projects inside them."],["Edit a project","Use Edit on a project card to change its name, pages, dates, and stages."],["Trash","Deleted projects and folders move to Trash and can be restored when needed."],["Backup","Use Data Management in Settings to back up or restore the entire Library as a JSON file."]];
+    const ja=[["プロジェクトを作る","右上の「＋」から新しいプロジェクトを作成します。制作ページや工程はプロジェクトごとに設定できます。"],["タップして開く","項目をタップすると、プロジェクトは入力ページ、フォルダはフォルダ内を開きます。"],["長押しで整理","プロジェクトやフォルダを長押しすると、並び替え・フォルダ移動・ゴミ箱への移動ができます。"],["フォルダで整理","「＋」からフォルダを作成できます。プロジェクトをフォルダにまとめて整理できます。"],["プロジェクトを編集","プロジェクトカードの「編集」からプロジェクト名・ページ・日付・工程を変更できます。"],["ゴミ箱","削除したプロジェクトやフォルダはゴミ箱へ移動します。必要なら復元できます。"],["バックアップ","設定の「データ管理」から、Library全体をJSONファイルにバックアップ・復元できます。"]];
+    const ee=[["Create a project","Use the + button at the top right to create a project. Pages and stages can be set for each project."],["Tap to open","Tap an item to open a project's input page or enter a folder."],["Press and hold to organize","Press and hold a project or folder to reorder it, move it to a folder, or move it to Trash."],["Organize with folders","Create folders from the + button and organize projects inside them."],["Edit a project","Use Edit on a project card to change its name, pages, dates, and stages."],["Trash","Deleted projects and folders move to Trash and can be restored when needed."],["Backup","Use Data Management in Settings to back up or restore the entire Library as a JSON file."]];
     items?.forEach((it,i)=>{const a=(en?ee:ja)[i];if(!a)return;it.querySelector(".help-item-title").textContent=a[0];it.querySelector(".help-item-text").textContent=a[1]});
     document.querySelectorAll(".theme-color-option").forEach(btn=>{const label=en?btn.dataset.en:btn.dataset.ja;btn.setAttribute("aria-label",label);btn.title=label;btn.querySelector(".theme-option-label").textContent=label});
   }
@@ -2804,8 +2804,9 @@ setTimeout(()=>auditDynamicUiLanguage(document),0);
   document.querySelectorAll(".theme-color-option").forEach(btn=>btn.addEventListener("click",e=>{
     e.preventDefault();
     const color=btn.dataset.themeColor;
+    appSettings.themeColor=color;
     applyThemeColor(color);
-    // keep the choice as a draft; Settings Save persists it with the other settings.
+    persistAppSettings();
   },{capture:true}));
 
   const langSelect=$("appLanguage");

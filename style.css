@@ -1156,3 +1156,11 @@ input{border-color:var(--border);border-radius:12px}
   padding-bottom:max(24px,env(safe-area-inset-bottom))!important;
 }
 #projectModal .modal-action-head{position:sticky;top:-18px;z-index:5;background:#fff;padding-top:18px;padding-bottom:10px;margin-bottom:4px}
+
+/* Theme color: apply the selected accent to progress/completion and selected UI states. */
+.progress-cell.state2,.page-button.active,.done-bar,.history-bar,.ring-key.done,
+.memo-filter.active,.project-reorder-toggle.active,.language-option.active{
+  background:var(--accent)!important;border-color:var(--accent)!important;
+}
+.state-swatch.done,.help-swatch.done{background:var(--accent)!important;border-color:var(--accent)!important}
+#themeColorPicker .theme-color-option.selected{border-color:var(--accent)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)!important}
