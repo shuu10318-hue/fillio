@@ -1517,7 +1517,7 @@ function ensureFolders(){
  Object.values(projectStore.projects||{}).forEach(p=>{if(!("folderId" in p))p.folderId=null});
  if(!Array.isArray(projectStore.rootOrder))projectStore.rootOrder=[];
  const keys=[];
- Object.keys(projectStore.folders).forEach(id=>keys.push("f:"+id));
+ Object.keys(projectStore.folders).forEach(id=>{if(!projectStore.folders[id]?.trashedAt)keys.push("f:"+id)});
  (projectStore.projectOrder||[]).forEach(id=>{
    if(projectStore.projects[id]&&!projectStore.projects[id].folderId)keys.push("p:"+id);
  });
@@ -1537,12 +1537,12 @@ function renderFoldersAndFilter(){
  list.querySelectorAll(".folder-item").forEach(x=>x.remove());
  const head=document.getElementById("folderHead"),toolbar=document.getElementById("folderToolbar");
  if(currentFolderId&&projectStore.folders[currentFolderId]){
-   head.classList.add("show");toolbar.style.display="none";
+   head?.classList.add("show");if(toolbar)toolbar.style.display="none";
    document.getElementById("folderHeadTitle").innerHTML=`<button type="button" class="crumb-link" data-nav="root">${languageSettings?.language==="en"?"Projects":"作品一覧"}</button><span class="crumb-sep">›</span><span class="crumb-current">${String(projectStore.folders[currentFolderId].name).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}</span>`;
  const renameBtn=document.getElementById("folderRename");
  const deleteBtn=document.getElementById("folderDelete");
  if(renameBtn)renameBtn.style.display="";
- if(deleteBtn)deleteBtn.style.display="";
+ if(deleteBtn){deleteBtn.style.display="";deleteBtn.textContent=languageSettings?.language==="en"?"Remove":"解除";}
  }else{
    currentFolderId=null;head?.classList.remove("show");if(toolbar)toolbar.style.display="flex";
    const renameBtn=document.getElementById("folderRename");
@@ -1565,7 +1565,7 @@ function renderFoldersAndFilter(){
      const btn=document.createElement("button");
      btn.type="button";
      btn.className="folder-eject";
-     btn.textContent="フォルダから戻す";
+     btn.textContent=languageSettings?.language==="en"?"Remove":"解除";
      btn.addEventListener("click",e=>{
        e.stopPropagation();
        p.folderId=null;
@@ -1576,7 +1576,7 @@ function renderFoldersAndFilter(){
    });
  }
  if(!currentFolderId){
-   Object.entries(projectStore.folders).forEach(([fid,f])=>{
+   Object.entries(projectStore.folders).filter(([,f])=>!f?.trashedAt).forEach(([fid,f])=>{
      const el=document.createElement("div");el.className="folder-item";el.dataset.folderId=fid;el.dataset.orderKey="f:"+fid;
      el.innerHTML=`<div class="folder-row"><div><div class="folder-name"><span class="folder-icon"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h7l2 2h9v11H3z"/></svg></span><span data-user-text="1">${String(f.name).replace(/[&<>"\']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","\'":"&#39;"}[c]))}</span></div><div class="folder-meta">${folderCount(fid)}${languageSettings?.language==="en"?" projects":"作品"}</div></div></div>`;
      const openFolder=()=>{
@@ -1655,7 +1655,7 @@ document.getElementById("folderRenameModal")?.addEventListener("click",e=>{if(e.
 document.getElementById("folderDelete")?.addEventListener("click",()=>{
  if(!currentFolderId)return;
  const f=projectStore.folders[currentFolderId];if(!f)return;
- if(!confirm(`「${f.name}」を削除しますか？\n中の作品は作品一覧へ戻ります。`))return;
+ if(!confirm(languageSettings?.language==="en"?`Remove folder “${f.name}”?\nProjects inside will return to Projects.`:`「${f.name}」を解除しますか？\n中の作品は作品一覧へ戻ります。`))return;
  const deletedFolderId=currentFolderId;
  Object.values(projectStore.projects).forEach(p=>{if(p.folderId===deletedFolderId)p.folderId=null});
  delete projectStore.folders[deletedFolderId];
@@ -1783,14 +1783,19 @@ document.addEventListener("touchend",()=>{
    if(!zone)return;
    zone.classList.add("show");
    const r=zone.getBoundingClientRect();
-   trashOver=!!(drag?.classList.contains("project-item")&&t.clientX>=r.left-10&&t.clientX<=r.right+10&&t.clientY>=r.top-28&&t.clientY<=r.bottom+18);
+   trashOver=!!(drag&&t.clientX>=r.left-10&&t.clientX<=r.right+10&&t.clientY>=r.top-28&&t.clientY<=r.bottom+18);
    zone.classList.toggle("over",trashOver);
  }
  function finish(){
    clearTimeout(hold);hold=null;
    if(!drag)return;
    const pid=drag.dataset.projectId;
-   if(trashOver&&pid&&projectStore.projects[pid]){
+   const fid=drag.dataset.folderId;
+   if(trashOver&&fid&&projectStore.folders?.[fid]){
+     projectStore.folders[fid].trashedAt=Date.now();
+     projectStore.rootOrder=(projectStore.rootOrder||[]).filter(k=>k!=="f:"+fid);
+     persistProjectStore();
+   }else if(trashOver&&pid&&projectStore.projects[pid]){
      const p=projectStore.projects[pid];p.trashedAt=Date.now();p.folderId=null;
      projectStore.rootOrder=(projectStore.rootOrder||[]).filter(k=>k!=="p:"+pid);
      projectStore.projectOrder=(projectStore.projectOrder||[]).filter(id=>id!==pid);
@@ -2640,8 +2645,17 @@ setTimeout(()=>auditDynamicUiLanguage(document),0);
   const isEn=()=>languageSettings?.language==="en";
   function renderTrash(){
     list.innerHTML="";
+    const folderEntries=Object.entries(projectStore.folders||{}).filter(([,f])=>f?.trashedAt);
     const entries=Object.entries(projectStore.projects||{}).filter(([,p])=>p?.trashedAt);
-    if(!entries.length){list.innerHTML=`<div class="trash-empty">${isEn()?"Trash is empty.":"ゴミ箱は空です。"}</div>`;return;}
+    if(!entries.length&&!folderEntries.length){list.innerHTML=`<div class="trash-empty">${isEn()?"Trash is empty.":"ゴミ箱は空です。"}</div>`;return;}
+    folderEntries.sort((a,b)=>(b[1].trashedAt||0)-(a[1].trashedAt||0)).forEach(([id,f])=>{
+      const row=document.createElement("div");row.className="trash-item";
+      row.innerHTML=`<div class="trash-item-name" data-user-text="1"></div><div class="trash-item-actions"><button type="button" data-act="restore">${isEn()?"Restore":"元に戻す"}</button><button type="button" class="danger" data-act="delete">${isEn()?"Delete":"完全削除"}</button></div>`;
+      row.querySelector(".trash-item-name").textContent=(isEn()?"Folder: ":"フォルダ：")+(f.name||"");
+      row.querySelector('[data-act="restore"]').onclick=()=>{delete f.trashedAt;if(!projectStore.rootOrder.includes("f:"+id))projectStore.rootOrder.unshift("f:"+id);persistProjectStore();renderProjectList();renderFoldersAndFilter();renderTrash()};
+      row.querySelector('[data-act="delete"]').onclick=()=>{if(!confirm(isEn()?`Permanently delete folder “${f.name}” and all projects inside? This cannot be undone.`:`フォルダ「${f.name}」と中の作品を完全に削除しますか？\nこの操作は元に戻せません。`))return;const childIds=Object.keys(projectStore.projects||{}).filter(pid=>projectStore.projects[pid]?.folderId===id);childIds.forEach(pid=>delete projectStore.projects[pid]);projectStore.projectOrder=(projectStore.projectOrder||[]).filter(pid=>!childIds.includes(pid));projectStore.rootOrder=(projectStore.rootOrder||[]).filter(k=>k!=="f:"+id&&!childIds.some(pid=>k==="p:"+pid));delete projectStore.folders[id];persistProjectStore();renderTrash();renderProjectList();renderFoldersAndFilter()};
+      list.appendChild(row);
+    });
     entries.sort((a,b)=>(b[1].trashedAt||0)-(a[1].trashedAt||0)).forEach(([id,p])=>{
       const row=document.createElement("div");row.className="trash-item";
       row.innerHTML=`<div class="trash-item-name" data-user-text="1"></div><div class="trash-item-actions"><button type="button" data-act="restore">${isEn()?"Restore":"元に戻す"}</button><button type="button" class="danger" data-act="delete">${isEn()?"Delete":"完全削除"}</button></div>`;
