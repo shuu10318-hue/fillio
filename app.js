@@ -2,8 +2,11 @@ const STORAGE_KEY="manga-progress-v1"; // 旧版データ。移行元として�
 const PROJECTS_KEY="manga-progress-projects-v2";
 const VIEW_STATE_KEY="manga-progress-view-state-v1";
 const APP_SETTINGS_KEY="manga-progress-app-settings-v1";
-const STAGE_VALUE_MODE_KEY="fillio-stage-value-mode-v1";
-let stageValueMode=localStorage.getItem(STAGE_VALUE_MODE_KEY)==="steps"?"steps":"percent";
+const STAGE_VALUE_MODE_KEY="fillio-stage-value-mode-v2";
+let stageValueModes={};
+try{stageValueModes=JSON.parse(localStorage.getItem(STAGE_VALUE_MODE_KEY)||"{}")||{}}catch{stageValueModes={}}
+function projectStageValueMode(id){return stageValueModes[id]==="steps"?"steps":"percent"}
+function saveProjectStageValueModes(){localStorage.setItem(STAGE_VALUE_MODE_KEY,JSON.stringify(stageValueModes))}
 let appSettings=null;
 let languageSettings={language:"ja"};
 let projectDefaults={startPage:1,endPage:48,stages:[]};
@@ -463,8 +466,9 @@ function renderProjectList(){
     const donePct=projectPercent(p);
     const stageStats=projectStageStats(p);
     const expanded=expandedStageDetails.has(id);
+    const stageValueMode=projectStageValueMode(id);
     const title=p.title||(isEn?"Untitled":"無題");
-    const detailRows=stageStats.map(st=>`<div class="project-stage-row"><span class="project-stage-name"></span><div class="project-stage-track dual"><i class="started" style="width:${st.startedPct}%"></i><i class="done" style="width:${st.pct}%"></i></div><button class="project-stage-value" type="button" aria-label="${isEn?"Switch percent / steps":"パーセント / Step 表示を切り替え"}">${stageValueMode==="steps"?`${st.done} / ${st.total}`:`${st.pct}%`}</button></div>`).join("");
+    const detailRows=stageStats.map(st=>`<div class="project-stage-row"><span class="project-stage-name"></span><div class="project-stage-track dual"><i class="started" style="width:${st.startedPct}%"></i><i class="done" style="width:${st.pct}%"></i></div><button class="project-stage-value" type="button" data-pct="${st.pct}" data-done="${st.done}" data-total="${st.total}" aria-label="${isEn?"Switch percent / steps":"パーセント / Step 表示を切り替え"}">${stageValueMode==="steps"?`${st.done} / ${st.total}`:`${st.pct}%`}</button></div>`).join("");
     item.innerHTML=`<div class="project-item-main">
       <div style="min-width:0">
         <button class="project-open-title" type="button" aria-label="${isEn?"Open input page":"入力ページを開く"}" title="${isEn?"Open input page":"入力ページを開く"}"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span class="project-item-title" data-user-text="1"></span></button>
@@ -500,9 +504,12 @@ function renderProjectList(){
     item.querySelector(".project-edit-button").onclick=e=>{e.stopPropagation();openProjectEdit(id)};
     item.querySelectorAll(".project-stage-value").forEach(btn=>btn.onclick=e=>{
       e.stopPropagation();
-      stageValueMode=stageValueMode==="percent"?"steps":"percent";
-      localStorage.setItem(STAGE_VALUE_MODE_KEY,stageValueMode);
-      renderProjectList();
+      const next=projectStageValueMode(id)==="percent"?"steps":"percent";
+      stageValueModes[id]=next;
+      saveProjectStageValueModes();
+      item.querySelectorAll(".project-stage-value").forEach(valueEl=>{
+        valueEl.textContent=next==="steps"?`${valueEl.dataset.done} / ${valueEl.dataset.total}`:`${valueEl.dataset.pct}%`;
+      });
     });
     item.querySelector(".project-stage-toggle").onclick=e=>{
       e.stopPropagation();
