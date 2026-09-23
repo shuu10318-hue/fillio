@@ -834,6 +834,7 @@ let paintSourcePage=-1;
 let paintSourceCell=null;
 let paintPreviewCells=new Set();
 let paintLastX=0,paintLastY=0;
+let paintLastHapticKey=null;
 let paintScrollRaf=0;
 const PAINT_HOLD_MS=480;
 const PAINT_CANCEL_MOVE=12;
@@ -903,8 +904,18 @@ function updatePaintPoint(x,y){
   if(!cell || !pages.contains(cell))return;
   const p=Number(cell.dataset.pageIndex),s=Number(cell.dataset.stageIndex);
   if(!Number.isInteger(p)||!Number.isInteger(s))return;
-  if(paintAxis==="vertical")showPaintPreview(p,paintStage);
-  else if(paintAxis==="horizontal")showPaintPreview(paintSourcePage,s);
+  let endpointKey=null;
+  if(paintAxis==="vertical"){
+    endpointKey=paintKey(p,paintStage);
+    showPaintPreview(p,paintStage);
+  }else if(paintAxis==="horizontal"){
+    endpointKey=paintKey(paintSourcePage,s);
+    showPaintPreview(paintSourcePage,s);
+  }
+  if(endpointKey && endpointKey!==paintLastHapticKey){
+    paintLastHapticKey=endpointKey;
+    fillioHaptic(6);
+  }
 }
 function paintAutoScrollStep(){
   paintScrollRaf=0;
@@ -959,6 +970,7 @@ function endPaint(commit){
   const wasPaintMode=paintMode;
   paintMode=false;
   paintAxis=null;
+  paintLastHapticKey=null;
   if(paintSourceCell)paintSourceCell.classList.remove('paint-source');
   paintSourceCell=null;
   if(!wasPaintMode){paintPreviewCells.clear();return}
@@ -987,6 +999,7 @@ pages.addEventListener('touchstart',e=>{
   stopPaintAutoScroll();
   paintMode=false;
   paintAxis=null;
+  paintLastHapticKey=null;
   paintPreviewCells.clear();
   paintStartX=paintLastX=e.touches[0].clientX;
   paintStartY=paintLastY=e.touches[0].clientY;
@@ -998,6 +1011,7 @@ pages.addEventListener('touchstart',e=>{
     paintStage=s;
     paintValue=progress[p][s];
     paintSourcePage=p;
+    paintLastHapticKey=paintKey(p,s);
     paintPreviewCells=new Set([paintKey(p,s)]);
     cell.classList.add('paint-source');
     suppressCellClickUntil=Date.now()+1000;
@@ -2827,8 +2841,8 @@ setTimeout(()=>auditDynamicUiLanguage(document),0);
     const hb=$("libraryHelpButton");if(hb)hb.setAttribute("aria-label",en?"Library Help":"Libraryの使い方");
     const hc=$("libraryHelpClose");if(hc)hc.setAttribute("aria-label",en?"Close":"閉じる");
     const items=$("libraryHelpModal")?.querySelectorAll(".help-item");
-    const ja=[["プロジェクトを作る","右上の「＋」から新しいプロジェクトを作成します。制作ページや工程はプロジェクトごとに設定できます。"],["タップして開く","項目をタップすると、プロジェクトは入力ページ、フォルダはフォルダ内を開きます。"],["長押しで整理","プロジェクトやフォルダを長押しすると、並び替え・フォルダ移動・ゴミ箱への移動ができます。"],["フォルダで整理","「＋」からフォルダを作成できます。プロジェクトをフォルダにまとめて整理できます。"],["プロジェクトを編集","プロジェクトカードの「編集」からプロジェクト名・ページ・日付・工程を変更できます。"],["ゴミ箱","削除したプロジェクトやフォルダはゴミ箱へ移動します。必要なら復元できます。"],["バックアップ","設定の「データ管理」から、Library全体をJSONファイルにバックアップ・復元できます。"]];
-    const ee=[["Create a project","Use the + button at the top right to create a project. Pages and stages can be set for each project."],["Tap to open","Tap an item to open a project's input page or enter a folder."],["Press and hold to organize","Press and hold a project or folder to reorder it, move it to a folder, or move it to Trash."],["Organize with folders","Create folders from the + button and organize projects inside them."],["Edit a project","Use Edit on a project card to change its name, pages, dates, and stages."],["Trash","Deleted projects and folders move to Trash and can be restored when needed."],["Backup","Use Data Management in Settings to back up or restore the entire Library as a JSON file."]];
+    const ja=[["プロジェクトを作る","右上の「＋」から新しいプロジェクトを作成します。制作ページや工程はプロジェクトごとに設定できます。"],["タップして開く","✎プロジェクトをタップすると入力ページへ、📁フォルダをタップするとフォルダが開きます。"],["長押しで整理","プロジェクトやフォルダを長押しすると、並び替え・フォルダ移動・ゴミ箱への移動ができます。"],["フォルダで整理","「＋」からフォルダを作成できます。プロジェクトをフォルダにまとめて整理できます。"],["プロジェクトを編集","プロジェクトの⚙️から、プロジェクト名・ページ・日付・工程を変更できます。"],["ゴミ箱","削除したプロジェクトやフォルダはゴミ箱へ移動します。必要なら復元できます。"],["バックアップ","設定の「データ管理」から、Library全体をJSONファイルにバックアップ・復元できます。"]];
+    const ee=[["Create a project","Use the + button at the top right to create a project. Pages and stages can be set for each project."],["Tap to open","Tap ✎ on a project to open its input page, or tap 📁 on a folder to open the folder."],["Press and hold to organize","Press and hold a project or folder to reorder it, move it to a folder, or move it to Trash."],["Organize with folders","Create folders from the + button and organize projects inside them."],["Edit a project","Use ⚙️ on a project to change its name, pages, dates, and stages."],["Trash","Deleted projects and folders move to Trash and can be restored when needed."],["Backup","Use Data Management in Settings to back up or restore the entire Library as a JSON file."]];
     items?.forEach((it,i)=>{const a=(en?ee:ja)[i];if(!a)return;it.querySelector(".help-item-title").textContent=a[0];it.querySelector(".help-item-text").textContent=a[1]});
     document.querySelectorAll(".theme-color-option").forEach(btn=>{const label=en?btn.dataset.en:btn.dataset.ja;btn.setAttribute("aria-label",label);btn.title=label;btn.querySelector(".theme-option-label").textContent=label});
   }
