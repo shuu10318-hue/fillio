@@ -1257,9 +1257,10 @@ input{border-color:var(--border);border-radius:12px}
 .project-stage-toggle[aria-expanded="true"] .icon-line{transform:rotate(180deg)}
 .project-stage-details{display:none;padding:10px 2px 2px}
 .project-stage-details.open{display:block}
-.project-stage-row{display:grid;grid-template-columns:minmax(70px,1fr) minmax(90px,1.5fr) 38px;gap:9px;align-items:center;min-height:28px}
+.project-stage-row{display:grid;grid-template-columns:minmax(70px,1fr) minmax(90px,1.5fr) 52px;gap:9px;align-items:center;min-height:28px}
 .project-stage-name{font-size:11px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .project-stage-row>b{font-size:11px;text-align:right;color:var(--text)}
+.project-stage-value{width:52px;padding:4px 0;border:0;background:transparent;color:var(--text);font:inherit;font-size:11px;font-weight:700;text-align:right;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .project-stage-track{height:5px;border-radius:999px;background:color-mix(in srgb,var(--accent) 10%,#eceeef);overflow:hidden}
 .project-stage-track>i{display:block;height:100%;border-radius:inherit;background:var(--accent)}
 
