@@ -1757,7 +1757,7 @@ document.addEventListener("touchend",()=>{
 // フォルダ＋作品 共通並び替え（ルート一覧）
 (function(){
  const list=document.getElementById("projectList"); if(!list)return;
- let drag=null,hold=null,sx=0,sy=0,dropFolderId=null;
+ let drag=null,hold=null,sx=0,sy=0,dropFolderId=null,dragGhost=null,trashOver=false;
  const HOLD=480,CANCEL=12;
  const visibleItems=()=>[...list.querySelectorAll(":scope > .folder-item,:scope > .project-item")]
    .filter(el=>el.classList.contains("folder-item")||el.style.display!=="none");
@@ -1768,11 +1768,26 @@ document.addEventListener("touchend",()=>{
    projectStore.projectOrder=projectStore.rootOrder.filter(k=>k.startsWith("p:")).map(k=>k.slice(2));
    persistProjectStore();
  }
+ function removeGhost(){if(dragGhost){dragGhost.remove();dragGhost=null}}
+ function updateGhost(t){if(!dragGhost)return;dragGhost.style.left=t.clientX+"px";dragGhost.style.top=t.clientY+"px"}
+ function setTrashState(t){
+   const zone=document.getElementById("dragTrashZone");
+   if(!zone)return;
+   zone.classList.add("show");
+   const r=zone.getBoundingClientRect();
+   trashOver=!!(drag?.classList.contains("project-item")&&t.clientX>=r.left-10&&t.clientX<=r.right+10&&t.clientY>=r.top-28&&t.clientY<=r.bottom+18);
+   zone.classList.toggle("over",trashOver);
+ }
  function finish(){
    clearTimeout(hold);hold=null;
    if(!drag)return;
    const pid=drag.dataset.projectId;
-   if(dropFolderId&&pid&&projectStore.projects[pid]){
+   if(trashOver&&pid&&projectStore.projects[pid]){
+     const p=projectStore.projects[pid];p.trashedAt=Date.now();p.folderId=null;
+     projectStore.rootOrder=(projectStore.rootOrder||[]).filter(k=>k!=="p:"+pid);
+     projectStore.projectOrder=(projectStore.projectOrder||[]).filter(id=>id!==pid);
+     persistProjectStore();
+   }else if(dropFolderId&&pid&&projectStore.projects[pid]){
      projectStore.projects[pid].folderId=dropFolderId;
      projectStore.rootOrder=(projectStore.rootOrder||[]).filter(k=>k!=="p:"+pid);
      persistProjectStore();
@@ -1781,8 +1796,9 @@ document.addEventListener("touchend",()=>{
    }
    drag.classList.remove("mixed-root-dragging");
    document.querySelectorAll(".folder-item.drag-over").forEach(x=>x.classList.remove("drag-over"));
-   
-   drag=null;dropFolderId=null;window.__mixedRootDragging=false;
+   const trashZone=document.getElementById("dragTrashZone");trashZone?.classList.remove("show","over");
+   removeGhost();
+   drag=null;dropFolderId=null;trashOver=false;window.__mixedRootDragging=false;
    setTimeout(renderFoldersAndFilter,0);
  }
  list.addEventListener("touchstart",e=>{
@@ -1794,7 +1810,10 @@ document.addEventListener("touchend",()=>{
    const t=e.touches[0];sx=t.clientX;sy=t.clientY;
    clearTimeout(hold);
    hold=setTimeout(()=>{
-     drag=item; dropFolderId=null; item.classList.add("mixed-root-dragging");
+     drag=item; dropFolderId=null; trashOver=false; item.classList.add("mixed-root-dragging");
+     dragGhost=item.cloneNode(true);dragGhost.classList.remove("mixed-root-dragging");dragGhost.classList.add("drag-ghost");
+     dragGhost.querySelectorAll("button").forEach(b=>b.setAttribute("tabindex","-1"));document.body.appendChild(dragGhost);updateGhost(t);
+     document.getElementById("dragTrashZone")?.classList.add("show");
      window.__mixedRootDragging=true;
      window.__suppressMixedClickUntil=Date.now()+800;
      // 既存の作品ドラッグ処理とは排他的にする
@@ -1818,6 +1837,8 @@ document.addEventListener("touchend",()=>{
      return;
    }
    e.preventDefault(); e.stopImmediatePropagation();
+   updateGhost(t);setTrashState(t);
+   if(trashOver){dropFolderId=null;document.querySelectorAll(".folder-item.drag-over").forEach(x=>x.classList.remove("drag-over"));return;}
    const others=visibleItems().filter(x=>x!==drag);
    if(!others.length)return;
 
@@ -2631,7 +2652,7 @@ setTimeout(()=>auditDynamicUiLanguage(document),0);
 
   // Existing long-press drag remains the source of truth. This layer only exposes a trash drop target.
   document.addEventListener("touchmove",e=>{
-    const active=window.__mixedRootDragging || (typeof reorderDragging!=="undefined"&&reorderDragging);
+    const active=(typeof reorderDragging!=="undefined"&&reorderDragging) && !window.__mixedRootDragging;
     if(!active||e.touches.length!==1){zone.classList.remove("show","over");return;}
     zone.classList.add("show");
     const t=e.touches[0],r=zone.getBoundingClientRect();

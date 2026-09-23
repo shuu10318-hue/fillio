@@ -963,3 +963,26 @@ input{border-color:var(--border);border-radius:12px}
 .trash-sheet{width:min(520px,100%);max-height:72dvh;background:#fff;border-radius:18px 18px 0 0;padding:16px 14px 22px;box-sizing:border-box;display:flex;flex-direction:column}
 .trash-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.trash-head h2{font-size:18px;margin:0}.trash-close{border:0;background:#f1f1f1;border-radius:9px;padding:8px 12px;font-weight:700}
 .trash-list{overflow:auto;min-height:80px}.trash-item{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--border);border-radius:12px;padding:11px 12px;margin-bottom:8px}.trash-item-name{font-weight:750;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.trash-item-actions{display:flex;gap:6px;flex:none}.trash-item-actions button{border:1px solid var(--border);background:#fff;border-radius:8px;padding:7px 9px;font-size:11px;font-weight:700}.trash-item-actions .danger{color:#777}.trash-empty{text-align:center;color:var(--muted);padding:28px 10px;font-size:12px}
+
+/* Stronger tactile drag feedback */
+#projectHome .project-item.mixed-root-dragging,
+#projectHome .folder-item.mixed-root-dragging{
+  opacity:.28!important;
+  transform:scale(.985)!important;
+  box-shadow:none!important;
+}
+.drag-ghost{
+  position:fixed!important;
+  z-index:5000!important;
+  width:min(420px,calc(100vw - 32px))!important;
+  max-width:calc(100vw - 32px)!important;
+  margin:0!important;
+  pointer-events:none!important;
+  opacity:.96!important;
+  transform:translate(-50%,-50%) scale(1.035) rotate(-1deg)!important;
+  transform-origin:center!important;
+  box-shadow:0 18px 44px rgba(0,0,0,.22),0 3px 10px rgba(0,0,0,.12)!important;
+  transition:none!important;
+}
+.drag-trash-zone.show{opacity:1;transform:translate(-50%,0) scale(1)}
+.drag-trash-zone.over{transform:translate(-50%,0) scale(1.045);background:#ededed;border:2px solid #555;color:#111}
