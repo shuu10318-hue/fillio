@@ -639,7 +639,7 @@ function openSticky(page){
   const n=pageNotes[String(page)]||{text:"",color:""};
   stickyColor=n.color||"";
   stickyTodos=Array.isArray(n.todos)?n.todos.map((t,i)=>({id:t.id||(`${Date.now()}-${i}`),text:String(t.text||""),done:!!t.done})):[];
-  document.getElementById("stickyTitle").textContent=`${page}P 付箋`;
+  document.getElementById("stickyTitle").textContent=uiLang()==="en"?`Page ${page} note`:`${page}P 付箋`;
   document.getElementById("stickyText").value=n.text||"";
   document.getElementById("stickyTodoInput").value="";
   renderStickyTodos();
@@ -656,10 +656,10 @@ function renderStickyTodos(){
   count.textContent=`${done}/${stickyTodos.length}`;
   stickyTodos.forEach((todo,i)=>{
     const row=document.createElement("div"); row.className="sticky-todo-item"+(todo.done?" done":"");
-    const check=document.createElement("input"); check.type="checkbox"; check.checked=todo.done; check.setAttribute("aria-label","TODO完了");
+    const check=document.createElement("input"); check.type="checkbox"; check.checked=todo.done; check.setAttribute("aria-label",uiLang()==="en"?"Complete TODO":"TODO完了");
     check.onchange=()=>{stickyTodos[i].done=check.checked;renderStickyTodos();};
     const text=document.createElement("span"); text.textContent=todo.text;
-    const del=document.createElement("button"); del.type="button";del.className="sticky-todo-remove";del.textContent="×";del.setAttribute("aria-label","TODOを削除");
+    const del=document.createElement("button"); del.type="button";del.className="sticky-todo-remove";del.textContent="×";del.setAttribute("aria-label",uiLang()==="en"?"Delete TODO":"TODOを削除");
     del.onclick=()=>{stickyTodos.splice(i,1);renderStickyTodos();};
     row.append(check,text,del);list.appendChild(row);
   });
@@ -990,7 +990,7 @@ function renderMemoList(){
     .filter(x=>memoListFilter==="all"||x.note.color===memoListFilter)
     .sort((a,b)=>a.page-b.page);
   if(!entries.length){
-    body.innerHTML='<div class="memo-empty">該当するメモはありません。</div>';
+    body.innerHTML=`<div class="memo-empty">${uiLang()==="en"?"No matching notes.":"該当するメモはありません。"}</div>`;
     return;
   }
   entries.forEach(({index,page,note})=>{
@@ -1000,12 +1000,34 @@ function renderMemoList(){
     pg.className="memo-page";
     pg.style.background=note.color||"#f4dc8a";
     pg.textContent=page+"P";
+    const content=document.createElement("div");
+    content.className="memo-content";
     const tx=document.createElement("div");
     tx.className="memo-text";
-    tx.textContent=(note.text||"").trim()||"（メモ本文なし）";
+    tx.textContent=(note.text||"").trim()||(uiLang()==="en"?"(No note text)":"（メモ本文なし）");
+    content.appendChild(tx);
+    const todos=Array.isArray(note.todos)?note.todos:[];
+    if(todos.length){
+      const todoBox=document.createElement("div");todoBox.className="memo-todos";
+      todos.forEach((todo,todoIndex)=>{
+        const item=document.createElement("label");item.className="memo-todo-item"+(todo.done?" done":"");
+        const check=document.createElement("input");check.type="checkbox";check.checked=!!todo.done;
+        check.setAttribute("aria-label",uiLang()==="en"?"Toggle TODO":"TODOを切り替え");
+        const label=document.createElement("span");label.textContent=String(todo.text||"");
+        check.onchange=()=>{
+          note.todos[todoIndex].done=check.checked;item.classList.toggle("done",check.checked);
+          save();renderMemoList();
+        };
+        item.append(check,label);todoBox.appendChild(item);
+      });
+      const done=todos.filter(t=>t.done).length;
+      const summary=document.createElement("div");summary.className="memo-todo-summary";
+      summary.textContent=`TODO ${done}/${todos.length}`;
+      content.append(todoBox,summary);
+    }
     const jump=document.createElement("button");
     jump.className="memo-jump";
-    jump.textContent="移動";
+    jump.textContent=uiLang()==="en"?"Go":"移動";
     jump.onclick=()=>{
       if(index<0||index>=totalPages)return;
       document.getElementById("memoListModal").classList.remove("open");
@@ -1015,7 +1037,7 @@ function renderMemoList(){
       const targetRow=pages?.children?.[index];
       if(targetRow)targetRow.scrollIntoView({behavior:"smooth",block:"center"});
     };
-    row.append(pg,tx,jump);
+    row.append(pg,content,jump);
     body.appendChild(row);
   });
 }
@@ -2506,3 +2528,83 @@ document.querySelectorAll(".language-option").forEach(btn=>{
  };
 });
 /* ===== /I18N CLEAN AUTHORITY ===== */
+
+
+/* ---- Modal/list i18n consistency patch ---- */
+function localizeOpenUi(){
+ const en=uiLang()==="en";
+ const set=(sel,ja,enText)=>{const el=document.querySelector(sel);if(el)el.textContent=en?enText:ja};
+ const ph=(sel,ja,enText)=>{const el=document.querySelector(sel);if(el)el.placeholder=en?enText:ja};
+ set("#memoListModal .memo-head h2","メモ一覧","Notes");
+ set("#closeMemoList","閉じる","Close");
+ const filters=[["all","すべて","All"],["#f4a6a6","赤","Red"],["#f4dc8a","黄","Yellow"],["#9ec8f4","青","Blue"],["#a9ddb0","緑","Green"]];
+ filters.forEach(([key,ja,enText])=>{const el=document.querySelector(`.memo-filter[data-filter="${key}"]`);if(el)el.textContent=en?enText:ja});
+ ph("#stickyText","修正点・忘れたくないことなど","Corrections, reminders, etc.");
+ ph("#stickyTodoInput","チェック項目を追加","Add checklist item");
+ set("#stickyDelete","付箋を削除","Delete Note");
+ set("#stickySave","保存","Save");
+ // fixed UI in any currently open JS modal is normalized on every call.
+ document.querySelectorAll('.project-modal.open,.folder-modal.open,.memo-modal.open,.sticky-modal.open').forEach(root=>{
+   if(en){translateExactText(root);translateUiPatterns(root)}
+ });
+}
+const _openStickyI18n=openSticky;
+openSticky=function(page){_openStickyI18n(page);localizeOpenUi();};
+const _renderMemoListI18n=renderMemoList;
+renderMemoList=function(){_renderMemoListI18n();localizeOpenUi();};
+const _applyCurrentLanguageNowI18n=applyCurrentLanguageNow;
+applyCurrentLanguageNow=function(){_applyCurrentLanguageNowI18n();localizeOpenUi();};
+setTimeout(localizeOpenUi,0);
+
+
+/* ===== Dynamic UI i18n audit patch 2026-09-23 =====
+   Covers UI created/re-rendered by JavaScript. User-authored text is never translated. */
+const DYNAMIC_UI_EN={
+  "ページ":"Pages","完成":"Completed","全工程":"All stages","編集":"Edit","この作品を削除":"Delete this project",
+  "フォルダから戻す":"Move out of folder","移動":"Go","付箋を削除":"Delete Note","保存":"Save","閉じる":"Close",
+  "すべて":"All","赤":"Red","黄":"Yellow","青":"Blue","緑":"Green","今日":"Today",
+  "全工程完了":"All stages complete","データ収集中":"Collecting data","完成！":"Complete!"
+};
+function auditDynamicUiLanguage(root=document){
+  if(uiLang()!=="en")return;
+  const scope=root?.querySelectorAll?root:document;
+  const all=(root===document?[...document.querySelectorAll("*")]:[root,...root.querySelectorAll("*")]);
+  for(const el of all){
+    if(!el || el.matches?.("script,style,input,textarea,option") || el.closest?.("[data-user-text],.memo-text,.sticky-todo-item span,.memo-todo-item span"))continue;
+    if(el.children.length===0){
+      const raw=el.textContent||"", t=raw.trim();
+      let x=DYNAMIC_UI_EN[t]||FULL_I18N?.en?.[t]||t;
+      x=x.replace(/^まだ作品がありません。$/,"No projects yet.")
+         .replace(/^「＋ 新しい作品」から作成できます。$/,"Create one with “+ New Project”.")
+         .replace(/^全(\d+)P$/,"$1 pages")
+         .replace(/^(\d+)P\s*\/\s*(\d+)P$/,"$1 / $2 pages")
+         .replace(/^(\d+)作品$/,"$1 projects")
+         .replace(/^あと約(\d+)日$/,"About $1 days")
+         .replace(/^完成予想は締切より\s*(\d+)日早いペース$/,"Forecast is $1 days before deadline")
+         .replace(/^完成予想は締切より\s*(\d+)日超過するペース$/,"Forecast is $1 days after deadline")
+         .replace(/^完成予想は締切予定日と同日$/,"Forecast matches the deadline")
+         .replace(/^必要ペース\s*1日([\d.]+)工程$/,"Required pace: $1 stages/day");
+      if(x!==t)el.textContent=raw.replace(t,x);
+    }
+  }
+  // Dynamic controls inside memo list are intentionally outside the generic text pass
+  // because memo bodies are user-authored.
+  document.querySelectorAll('#memoList .memo-jump,[data-action="memo-jump"]').forEach(el=>{el.textContent="Go"});
+  // Project cards are frequently rebuilt wholesale.
+  document.querySelectorAll('.project-item').forEach(card=>{
+    const rows=card.querySelectorAll('.project-meta-row span');
+    rows.forEach(el=>{const t=el.textContent.trim(); if(DYNAMIC_UI_EN[t])el.textContent=DYNAMIC_UI_EN[t]});
+    const edit=card.querySelector('.project-edit-button');if(edit)edit.textContent="Edit";
+    const del=card.querySelector('.project-delete-button');if(del)del.textContent="Delete this project";
+  });
+  localizeOpenUi?.();
+}
+let dynamicAuditTimer=0;
+const dynamicAuditObserver=new MutationObserver(muts=>{
+  if(uiLang()!=="en")return;
+  clearTimeout(dynamicAuditTimer);
+  dynamicAuditTimer=setTimeout(()=>auditDynamicUiLanguage(document),0);
+});
+if(uiLang()==="en")dynamicAuditObserver.observe(document.body,{subtree:true,childList:true,characterData:true});
+setTimeout(()=>auditDynamicUiLanguage(document),0);
+/* ===== /Dynamic UI i18n audit patch ===== */
