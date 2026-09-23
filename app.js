@@ -1301,7 +1301,9 @@ function updateInitialTableCellSize(){
   const gap=parseFloat(root.getPropertyValue("--progress-grid-gap"))||3;
   // 初期5工程 + ページ番号が、端数なく表示幅に収まるサイズ。
   const visibleStages=5;
-  const available=scroller.clientWidth-pageCol-gap*visibleStages;
+  const scrollerStyle=getComputedStyle(scroller);
+  const sidePadding=(parseFloat(scrollerStyle.paddingLeft)||0)+(parseFloat(scrollerStyle.paddingRight)||0);
+  const available=scroller.clientWidth-sidePadding-pageCol-gap*visibleStages;
   if(available>0){
     document.documentElement.style.setProperty("--progress-cell-size",`${available/visibleStages}px`);
   }
@@ -2208,7 +2210,7 @@ function applyCurrentLanguageNow(){
 function updateLanguageButtons(){
  document.querySelectorAll(".language-option").forEach(b=>b.classList.toggle("active",b.dataset.lang===languageSettings.language));
  const cancel=document.getElementById("languageCancel");
- if(cancel)cancel.textContent=languageSettings.language==="en"?"Close":"閉じる";
+ if(cancel){cancel.textContent="×";cancel.setAttribute("aria-label",languageSettings.language==="en"?"Close":"閉じる");}
 }
 document.getElementById("languageButton").onclick=()=>{
  updateLanguageButtons();
@@ -2560,7 +2562,7 @@ function localizeOpenUi(){
  const set=(sel,ja,enText)=>{const el=document.querySelector(sel);if(el)el.textContent=en?enText:ja};
  const ph=(sel,ja,enText)=>{const el=document.querySelector(sel);if(el)el.placeholder=en?enText:ja};
  set("#memoListModal .memo-head h2","メモ一覧","Notes");
- set("#closeMemoList","閉じる","Close");
+ {const el=document.querySelector("#closeMemoList");if(el){el.textContent="×";el.setAttribute("aria-label",en?"Close":"閉じる");}}
  const filters=[["all","すべて","All"],["#f4a6a6","赤","Red"],["#f4dc8a","黄","Yellow"],["#9ec8f4","青","Blue"],["#a9ddb0","緑","Green"]];
  filters.forEach(([key,ja,enText])=>{const el=document.querySelector(`.memo-filter[data-filter="${key}"]`);if(el)el.textContent=en?enText:ja});
  ph("#stickyText","修正点・忘れたくないことなど","Corrections, reminders, etc.");
@@ -2684,7 +2686,7 @@ setTimeout(()=>auditDynamicUiLanguage(document),0);
   open.onclick=()=>{renderTrash();modal.classList.add("open");lockPageScroll()};
   close.onclick=()=>{modal.classList.remove("open");unlockPageScroll()};
   modal.addEventListener("click",e=>{if(e.target===modal)close.click()});
-  function setZoneText(){document.getElementById("trashTitle").textContent=isEn()?"Trash":"ゴミ箱";document.getElementById("dragTrashLabel").textContent=isEn()?"Hold to move to Trash":"長押しでゴミ箱へ";open.querySelector("span").textContent=isEn()?"Trash":"ゴミ箱";empty.textContent=isEn()?"Empty Trash":"空にする";close.textContent=isEn()?"Close":"閉じる"}
+  function setZoneText(){document.getElementById("trashTitle").textContent=isEn()?"Trash":"ゴミ箱";document.getElementById("dragTrashLabel").textContent=isEn()?"Hold to move to Trash":"長押しでゴミ箱へ";open.querySelector("span").textContent=isEn()?"Trash":"ゴミ箱";empty.textContent=isEn()?"Empty Trash":"空にする";close.textContent="×";close.setAttribute("aria-label",isEn()?"Close":"閉じる")}
   setZoneText();
   const langObserver=new MutationObserver(setZoneText);langObserver.observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
 
