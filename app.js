@@ -2671,3 +2671,33 @@ setTimeout(()=>auditDynamicUiLanguage(document),0);
   },{capture:true,passive:true});
   document.addEventListener("touchcancel",()=>zone.classList.remove("show","over"),{passive:true});
 })();
+
+/* ===== Home controls v2: unified create menu ===== */
+(function setupUnifiedCreateMenu(){
+ const toggle=document.getElementById("createMenuButton");
+ const menu=document.getElementById("createMenu");
+ const projectBtn=document.getElementById("newProjectButton");
+ const folderBtn=document.getElementById("folderAdd");
+ const trashBtn=document.getElementById("trashOpen");
+ if(!toggle||!menu||!projectBtn||!folderBtn)return;
+ const isEn=()=>languageSettings?.language==="en";
+ const closeMenu=()=>{menu.classList.remove("open");toggle.setAttribute("aria-expanded","false")};
+ const syncLabels=()=>{
+   toggle.setAttribute("aria-label",isEn()?"Create":"作成");
+   trashBtn?.setAttribute("aria-label",isEn()?"Trash":"ゴミ箱");
+   const p=projectBtn.querySelector("span"),f=folderBtn.querySelector("span");
+   if(p)p.textContent=isEn()?"New Project":"新しい作品";
+   if(f)f.textContent=isEn()?"New Folder":"新しいフォルダ";
+   // One-level folder model: creating another folder while inside one is not available.
+   folderBtn.style.display=(typeof currentFolderId!=="undefined"&&currentFolderId)?"none":"flex";
+ };
+ toggle.addEventListener("click",e=>{e.stopPropagation();syncLabels();const open=!menu.classList.contains("open");menu.classList.toggle("open",open);toggle.setAttribute("aria-expanded",String(open))});
+ menu.addEventListener("click",e=>e.stopPropagation());
+ projectBtn.addEventListener("click",closeMenu);
+ folderBtn.addEventListener("click",closeMenu);
+ document.addEventListener("click",closeMenu);
+ document.addEventListener("keydown",e=>{if(e.key==="Escape")closeMenu()});
+ const mo=new MutationObserver(syncLabels);mo.observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
+ syncLabels();
+})();
+/* ===== /Home controls v2 ===== */

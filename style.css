@@ -986,3 +986,23 @@ input{border-color:var(--border);border-radius:12px}
 }
 .drag-trash-zone.show{opacity:1;transform:translate(-50%,0) scale(1)}
 .drag-trash-zone.over{transform:translate(-50%,0) scale(1.045);background:#ededed;border:2px solid #555;color:#111}
+
+/* --- Home controls v2: globe / settings / trash / unified create --- */
+.visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.home-head-actions .settings-button{width:44px;height:44px;padding:0;border:1px solid var(--border);border-radius:11px;background:#fff;color:var(--text);display:inline-flex;align-items:center;justify-content:center;position:relative}
+.home-head-actions .trash-open-button{width:44px;height:44px;padding:0;gap:0;font-size:0}
+.home-head-actions .trash-open-button .icon-line{width:20px;height:20px}
+.create-menu-wrap{position:relative}
+.home-head-actions .create-menu-button{font-size:28px!important;font-weight:300;line-height:1;padding-bottom:3px}
+.create-menu{position:absolute;right:0;top:calc(100% + 8px);width:190px;padding:6px;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.14);z-index:1200;display:none}
+.create-menu.open{display:block}
+.create-menu button{width:100%;height:44px;padding:0 10px;border:0;border-radius:8px;background:transparent;color:var(--text);display:flex;align-items:center;gap:10px;text-align:left;font:inherit;font-size:13px;font-weight:700}
+.create-menu button:active{background:#f2f2f2}
+.create-menu .icon-line{width:18px;height:18px;flex:none}
+#folderToolbar{display:none!important}
+/* Drag target appears at the top; the card stays level while being carried. */
+.drag-trash-zone{top:12px!important;bottom:auto!important;transform:translate(-50%,-18px)!important;width:min(360px,calc(100% - 28px))!important}
+.drag-trash-zone.show{transform:translate(-50%,0) scale(1)!important}
+.drag-trash-zone.over{transform:translate(-50%,0) scale(1.045)!important}
+.drag-ghost{transform:translate(-50%,-50%) scale(1.035)!important}
+@media(max-width:430px){.home-head-actions{gap:6px!important}.home-head-actions .settings-button{width:42px;height:42px}.create-menu{width:184px}}
