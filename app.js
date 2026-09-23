@@ -12,7 +12,7 @@ const MAX_STAGES=100;
 
 const UI_TEXT={
  ja:{home:"Library",newProject:"＋ 新しい作品",settings:"アプリ設定",language:"言語",defaults:"新規作品のデフォルト",pages:"制作ページ",stages:"工程",addStage:"＋ 工程を追加",cancel:"キャンセル",save:"保存",note:"新しい作品を作るときの初期値です。作品ごとに変更できます。",folderAdd:"＋ フォルダ",memo:"メモ一覧",backProjects:"作品一覧"},
- en:{home:"Projects",newProject:"+ New Project",settings:"App Settings",language:"Language",defaults:"New Project Defaults",pages:"Pages",stages:"Stages",addStage:"+ Add Stage",cancel:"Cancel",save:"Save",note:"These are the initial values for new projects. Each project can be changed separately.",folderAdd:"+ Folder",memo:"Notes",backProjects:"Projects"}
+ en:{home:"Library",newProject:"+ New Project",settings:"App Settings",language:"Language",defaults:"New Project Defaults",pages:"Pages",stages:"Stages",addStage:"+ Add Stage",cancel:"Cancel",save:"Save",note:"These are the initial values for new projects. Each project can be changed separately.",folderAdd:"+ Folder",memo:"Notes",backProjects:"Projects"}
 };
 function normalizeAppSettings(raw){
  const lang=raw?.language==="en"?"en":"ja";
@@ -2769,3 +2769,47 @@ setTimeout(()=>auditDynamicUiLanguage(document),0);
  syncLabels();
 })();
 /* ===== /Home controls v2 ===== */
+
+
+/* ===== 2026-09-23 robust help/theme/i18n patch ===== */
+(function fillioUiFixes(){
+  const $=id=>document.getElementById(id);
+  function isEn(){return languageSettings?.language==="en"}
+
+  function syncExtraLanguage(){
+    const en=isEn();
+    const text=(id,ja,enText)=>{const el=$(id);if(el)el.textContent=en?enText:ja};
+    text("themeColorTitle","テーマカラー","Theme Color");
+    text("themeColorNote","完了セルや選択状態などのアクセントカラーに使われます。","Used as the accent color for completed cells and selected states.");
+    text("dataManagementTitle","データ管理","Data Management");
+    text("dataManagementNote","全作品・フォルダ・進捗・付箋・作業履歴を1つのJSONに保存します。","Save all projects, folders, progress, notes, and work history in one JSON file.");
+    text("exportBackup","💾 バックアップ","💾 Backup");
+    text("importBackup","📂 復元","📂 Restore");
+    const hp=$("libraryHelpTitle");if(hp)hp.textContent=en?"Using Library":"Libraryの使い方";
+    const hb=$("libraryHelpButton");if(hb)hb.setAttribute("aria-label",en?"Library Help":"Libraryの使い方");
+    const hc=$("libraryHelpClose");if(hc)hc.setAttribute("aria-label",en?"Close":"閉じる");
+    const items=$("libraryHelpModal")?.querySelectorAll(".help-item");
+    const ja=[["作品を作る","右上の「＋」から新しい作品を作成します。制作ページや工程は作品ごとに設定できます。"],["フォルダで整理","「＋」からフォルダを作成できます。作品をフォルダにまとめて整理できます。"],["作品を編集","作品カードの「編集」から作品名・ページ・日付・工程を変更できます。"],["ゴミ箱","削除した作品やフォルダはゴミ箱へ移動します。必要なら復元できます。"],["バックアップ","設定の「データ管理」から、Library全体をJSONファイルにバックアップ・復元できます。"]];
+    const ee=[["Create a project","Use the + button at the top right to create a project. Pages and stages can be set for each project."],["Organize with folders","Create folders from the + button and organize projects inside them."],["Edit a project","Use Edit on a project card to change its name, pages, dates, and stages."],["Trash","Deleted projects and folders move to Trash and can be restored when needed."],["Backup","Use Data Management in Settings to back up or restore the entire Library as a JSON file."]];
+    items?.forEach((it,i)=>{const a=(en?ee:ja)[i];if(!a)return;it.querySelector(".help-item-title").textContent=a[0];it.querySelector(".help-item-text").textContent=a[1]});
+    document.querySelectorAll(".theme-color-option").forEach(btn=>{const label=en?btn.dataset.en:btn.dataset.ja;btn.setAttribute("aria-label",label);btn.title=label;btn.querySelector(".theme-option-label").textContent=label});
+  }
+
+  const helpBtn=$("libraryHelpButton"), helpModal=$("libraryHelpModal"), helpClose=$("libraryHelpClose");
+  const openHelp=()=>{if(!helpModal)return;lockPageScroll();helpModal.classList.add("open");helpModal.setAttribute("aria-hidden","false")};
+  const closeHelp=()=>{if(!helpModal)return;helpModal.classList.remove("open");helpModal.setAttribute("aria-hidden","true");unlockPageScroll()};
+  helpBtn?.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();openHelp()},{capture:true});
+  helpClose?.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();closeHelp()},{capture:true});
+
+  document.querySelectorAll(".theme-color-option").forEach(btn=>btn.addEventListener("click",e=>{
+    e.preventDefault();
+    const color=btn.dataset.themeColor;
+    applyThemeColor(color);
+    // keep the choice as a draft; Settings Save persists it with the other settings.
+  },{capture:true}));
+
+  const langSelect=$("appLanguage");
+  langSelect?.addEventListener("change",()=>{languageSettings.language=langSelect.value==="en"?"en":"ja";syncExtraLanguage()});
+  new MutationObserver(syncExtraLanguage).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
+  syncExtraLanguage();
+})();

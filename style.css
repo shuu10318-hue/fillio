@@ -1117,3 +1117,42 @@ input{border-color:var(--border);border-radius:12px}
 .theme-color-option.selected{outline:2px solid var(--accent);outline-offset:2px}
 .page-button.active,.progress-cell.state2{background:var(--accent)!important;border-color:var(--accent)!important}
 .history-bar{background:var(--accent)}
+
+
+/* ===== 2026-09-23 help/theme/create-sheet fixes ===== */
+#libraryHelpModal{z-index:4200!important}
+#libraryHelpModal .help-sheet{max-height:min(78dvh,720px);height:min(78dvh,720px)}
+
+/* Theme choices are full tappable rows, not tiny inherited button spans. */
+#themeColorPicker.theme-color-picker{
+  display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:8px!important;
+  margin-top:10px!important;
+}
+#themeColorPicker .theme-color-option{
+  width:auto!important;height:64px!important;min-width:0!important;padding:7px 3px!important;
+  border:1px solid var(--border)!important;border-radius:12px!important;background:#fff!important;
+  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;
+  color:var(--text)!important;box-sizing:border-box!important;
+}
+#themeColorPicker .theme-swatch{
+  display:block!important;width:24px!important;height:24px!important;min-width:24px!important;min-height:24px!important;
+  border-radius:50%!important;background:var(--swatch)!important;border:1px solid rgba(0,0,0,.12)!important;
+}
+#themeColorPicker .theme-option-label{
+  display:block!important;width:100%!important;font-size:9px!important;line-height:1.1!important;white-space:nowrap!important;
+  overflow:hidden!important;text-overflow:ellipsis!important;text-align:center!important;
+}
+#themeColorPicker .theme-color-option.selected{outline:none!important;border:2px solid var(--accent)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)!important}
+
+/* New-project sheet: the overlay never scrolls; the sheet itself always does. */
+#projectModal{
+  position:fixed!important;inset:0!important;overflow:hidden!important;align-items:flex-end!important;
+  touch-action:none!important;overscroll-behavior:none!important;
+}
+#projectModal .project-sheet{
+  width:min(520px,100%)!important;max-height:calc(100dvh - 12px)!important;height:auto!important;
+  box-sizing:border-box!important;overflow-x:hidden!important;overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;overscroll-behavior-y:contain!important;touch-action:pan-y!important;
+  padding-bottom:max(24px,env(safe-area-inset-bottom))!important;
+}
+#projectModal .modal-action-head{position:sticky;top:-18px;z-index:5;background:#fff;padding-top:18px;padding-bottom:10px;margin-bottom:4px}
