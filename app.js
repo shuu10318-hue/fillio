@@ -141,6 +141,7 @@ function save(){
   const oldProject=projectStore.projects[currentProjectId]||{};
   const nextProject=makeProjectData();
   nextProject.folderId=oldProject.folderId||null;
+  if(oldProject.trashedAt)nextProject.trashedAt=oldProject.trashedAt;
   projectStore.projects[currentProjectId]=nextProject;
   projectStore.activeProjectId=currentProjectId;
   persistProjectStore();
@@ -163,6 +164,7 @@ const projectStages=Array.isArray(s?.stages)&&s.stages.length
     deadline:typeof s?.deadline==="string"?s.deadline:"",
     totalPages:n,startPage:sp,progress:pg,
     folderId:typeof s?.folderId==="string"&&s.folderId?s.folderId:null,
+    trashedAt:Number.isFinite(Number(s?.trashedAt))&&Number(s.trashedAt)>0?Number(s.trashedAt):null,
     history:s?.history&&typeof s.history==="object"?s.history:null,
     pageNotes:s?.pageNotes&&typeof s.pageNotes==="object"?s.pageNotes:{}
   };
@@ -311,6 +313,8 @@ function showProjectHome(){
   currentFolderId=null;
   renderFoldersAndFilter();
   renderRootBreadcrumb();
+  const rootHead=document.getElementById("folderHead");
+  rootHead?.classList.remove("show");
   saveViewState("root");
 }
 document.addEventListener("click",e=>{
@@ -1524,7 +1528,7 @@ function ensureFolders(){
  projectStore.rootOrder=projectStore.rootOrder.filter(k=>valid.includes(k));
  valid.forEach(k=>{if(!projectStore.rootOrder.includes(k))projectStore.rootOrder.push(k)});
 }
-function folderCount(fid){return Object.values(projectStore.projects||{}).filter(p=>p.folderId===fid).length}
+function folderCount(fid){return Object.values(projectStore.projects||{}).filter(p=>p.folderId===fid&&!p.trashedAt).length}
 function renderFoldersAndFilter(){
  if(folderRendering)return;
  folderRendering=true;
@@ -1540,7 +1544,11 @@ function renderFoldersAndFilter(){
  if(renameBtn)renameBtn.style.display="";
  if(deleteBtn)deleteBtn.style.display="";
  }else{
-   currentFolderId=null;head.classList.remove("show");toolbar.style.display="flex";
+   currentFolderId=null;head?.classList.remove("show");if(toolbar)toolbar.style.display="flex";
+   const renameBtn=document.getElementById("folderRename");
+   const deleteBtn=document.getElementById("folderDelete");
+   if(renameBtn)renameBtn.style.display="none";
+   if(deleteBtn)deleteBtn.style.display="none";
  }
  [...list.querySelectorAll(".project-item[data-project-id]")].forEach(el=>{
    const p=projectStore.projects[el.dataset.projectId];
