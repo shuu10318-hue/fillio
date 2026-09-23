@@ -1227,3 +1227,10 @@ input{border-color:var(--border);border-radius:12px}
 .project-summary-complete .project-summary-main>strong{font-size:14px}
 .project-complete-meta{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
 @media(max-width:360px){.project-summary-main>b{font-size:18px}.project-summary-main>strong{font-size:17px}.project-plan-row{gap:10px}}
+
+
+/* Folder project action: curved return arrow below edit */
+.project-item-actions{display:flex;flex-direction:column;align-items:center;gap:7px}
+.folder-eject.project-icon-button{width:32px;height:32px;padding:6px;display:grid;place-items:center;border:0;background:transparent;color:var(--muted);border-radius:9px}
+.folder-eject.project-icon-button .icon-line{width:18px;height:18px}
+.folder-eject.project-icon-button:hover{background:var(--soft);color:var(--text)}

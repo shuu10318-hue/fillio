@@ -23,7 +23,8 @@ function normalizeAppSettings(raw){
  if(!ss.length)ss=[...DEFAULT_STAGES];
  const allowedColors=["#222222","#d9788d","#6e9fd0","#70ad98","#9a83c6","#dc9878"];
  const legacyThemeMap={"#4f6bed":"#6e9fd0","#3f8f6b":"#70ad98","#7a5cc7":"#9a83c6","#c7663d":"#dc9878"};
- const requested=legacyThemeMap[raw?.themeColor]||raw?.themeColor;
+ const rawTheme=raw?.themeColor ?? appSettings?.themeColor;
+ const requested=legacyThemeMap[rawTheme]||rawTheme;
  const themeColor=allowedColors.includes(requested)?requested:"#222222";
  return {language:lang,defaultStartPage:a,defaultEndPage:b,defaultStages:ss,themeColor};
 }
@@ -385,7 +386,7 @@ function projectDashboardStats(p){
   if(remaining<=0) forecast=languageSettings?.language==="en"?"Completed":"完成";
   else if(avgWeighted>0){
     const days=Math.ceil(remaining/avgWeighted),d=new Date(); d.setDate(d.getDate()+days);
-    forecast=`${d.getMonth()+1}/${d.getDate()}`;
+    forecast=`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;
   }
   return {startedPct:Math.round(started/total*100),donePct:Math.round(done/total*100),todayDone,weekDone,forecast};
 }
@@ -1602,11 +1603,13 @@ function renderFoldersAndFilter(){
      const p=projectStore.projects[pid];
      if(!p||p.folderId!==currentFolderId)return;
      if(item.querySelector(".folder-eject"))return;
-     const actions=item.querySelector(".project-actions")||item;
+     const actions=item.querySelector(".project-item-actions")||item;
      const btn=document.createElement("button");
      btn.type="button";
-     btn.className="folder-eject";
-     btn.textContent=languageSettings?.language==="en"?"Remove":"解除";
+     btn.className="folder-eject project-icon-button";
+     btn.setAttribute("aria-label",languageSettings?.language==="en"?"Remove from folder":"フォルダから解除");
+     btn.title=languageSettings?.language==="en"?"Remove from folder":"フォルダから解除";
+     btn.innerHTML='<svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7l-5 5 5 5"/><path d="M20 7h-7a4 4 0 0 0-4 4v6"/></svg>';
      btn.addEventListener("click",e=>{
        e.stopPropagation();
        p.folderId=null;
