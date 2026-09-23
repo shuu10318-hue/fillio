@@ -1210,6 +1210,7 @@ input{border-color:var(--border);border-radius:12px}
 /* Brand stays monochrome intentionally: stable identity across every theme. */
 .fillio-logo{filter:none!important}
 
+
 /* Library card redesign: progress-first hierarchy */
 .project-summary{margin-top:10px}
 .project-summary-main{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
