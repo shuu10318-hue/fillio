@@ -1234,9 +1234,50 @@ function renderDynamicTableHead(){
   const head=document.getElementById("tableHead"); if(!head)return;
   document.documentElement.style.setProperty("--stage-count",String(stages.length));
   head.innerHTML=`<div class="table-head-corner"></div>${stages.map((n,i)=>`<div class="head">${escapeStageHtml(displayStageName(n,i))}</div>`).join("")}`;
+  requestAnimationFrame(updateInitialTableCellSize);
 }
 
-// 工程ヘッダーはCSS stickyで縦追従。横方向は同じスクロール領域なのでJS同期不要。
+// 横方向は工程名とセルを同じスクロール領域に置き、ブラウザのネイティブスクロールだけで動かす。
+// JSは工程ヘッダーの「縦方向」の追従だけを担当する。
+function updateInitialTableCellSize(){
+  const scroller=document.getElementById("stageTableScroll");
+  if(!scroller)return;
+  const root=getComputedStyle(document.documentElement);
+  const pageCol=parseFloat(root.getPropertyValue("--progress-page-col"))||28;
+  const gap=parseFloat(root.getPropertyValue("--progress-grid-gap"))||3;
+  // 初期5工程 + ページ番号が、端数なく表示幅に収まるサイズ。
+  const visibleStages=5;
+  const available=scroller.clientWidth-pageCol-gap*visibleStages;
+  if(available>0){
+    document.documentElement.style.setProperty("--progress-cell-size",`${available/visibleStages}px`);
+  }
+}
+
+(function setupVerticalStageHeaderFollow(){
+  const scroller=document.getElementById("stageTableScroll");
+  const anchor=document.getElementById("tableHeadAnchor");
+  if(!scroller||!anchor)return;
+  let raf=0;
+  function update(){
+    raf=0;
+    const scrollY=window.scrollY||document.documentElement.scrollTop||0;
+    // 親の位置から求めるので、anchor自身のtransformの影響を受けない。
+    const scrollerTop=scroller.getBoundingClientRect().top+scrollY;
+    const naturalTop=scrollerTop+anchor.offsetTop;
+    const maxY=Math.max(0,scroller.scrollHeight-anchor.offsetTop-anchor.offsetHeight);
+    const y=Math.max(0,Math.min(maxY,scrollY-naturalTop));
+    anchor.style.transform=`translate3d(0,${y}px,0)`;
+    anchor.classList.toggle("is-vertically-following",y>0);
+  }
+  function schedule(){if(!raf)raf=requestAnimationFrame(update)}
+  window.addEventListener("scroll",schedule,{passive:true});
+  window.addEventListener("resize",()=>{updateInitialTableCellSize();schedule()},{passive:true});
+  if(window.ResizeObserver){
+    new ResizeObserver(()=>{updateInitialTableCellSize();schedule()}).observe(scroller);
+  }
+  updateInitialTableCellSize();
+  schedule();
+})();
 
 let editingProjectId=null;
 function updateEditProjectTotal(){

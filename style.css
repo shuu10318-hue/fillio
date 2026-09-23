@@ -837,3 +837,27 @@ input{border-color:var(--border);border-radius:12px}
 .table-head-anchor{position:sticky!important;top:0!important;z-index:100!important;height:auto!important;margin-bottom:5px!important;background:var(--card)!important;}
 .table-head-anchor.stage-head-fixed-active{height:auto!important;}
 #tableHead,#tableHead.stage-head-fixed{position:relative!important;top:auto!important;left:auto!important;margin:0!important;width:max-content!important;min-width:max-content!important;transform:none!important;}
+
+
+/* --- 2026-09-23: native horizontal + vertical-only header follow --- */
+.stage-table-scroll{
+  position:relative!important;
+  overflow-x:auto!important;
+  overflow-y:auto!important;
+}
+.table-head-anchor{
+  position:relative!important;
+  top:auto!important;
+  z-index:100!important;
+  margin-bottom:5px!important;
+  background:var(--card)!important;
+  will-change:transform;
+}
+#tableHead,#tableHead.stage-head-fixed{
+  position:relative!important;
+  top:auto!important;
+  left:auto!important;
+  transform:none!important;
+}
+/* Vertical movement is applied only to the anchor. Horizontal movement stays native. */
+.table-head-anchor.is-vertically-following{z-index:120!important;}
