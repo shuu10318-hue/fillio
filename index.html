@@ -43,7 +43,7 @@
 
 <div id="projectHome" style="display:none">
   <div class="project-home-head">
-    <div class="brand-head"><img src="fillio-logo.svg" class="fillio-logo" alt="fillio"></div>
+    <div class="brand-head"><button type="button" class="fillio-home-link" aria-label="Libraryへ戻る"><img src="fillio-logo.svg" class="fillio-logo" alt="fillio"></button></div>
     <div class="home-head-actions">
       <button id="languageButton" class="settings-button language-button" type="button" aria-label="Language"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></button>
       <button id="appSettingsButton" class="settings-button" type="button" aria-label="設定"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V21h-4v-.09A1.7 1.7 0 0 0 8.97 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.03H3v-4h.09A1.7 1.7 0 0 0 4.6 8.97a1.7 1.7 0 0 0-.34-1.88l-.06-.06L7.03 4.2l.06.06a1.7 1.7 0 0 0 1.88.34A1.7 1.7 0 0 0 10 3.04V3h4v.09a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06a1.7 1.7 0 0 0-.34 1.88A1.7 1.7 0 0 0 20.96 10H21v4h-.09A1.7 1.7 0 0 0 19.4 15z"/></svg></button>
@@ -60,7 +60,7 @@
 <div id="trashModal" class="trash-modal"><div class="trash-sheet"><div class="trash-head"><h2 id="trashTitle">ゴミ箱</h2><div class="trash-head-actions"><button id="trashEmpty" class="trash-empty-button" type="button">空にする</button><button id="trashClose" class="modal-icon-close trash-close" type="button" aria-label="閉じる">×</button></div></div><div id="trashList" class="trash-list"></div></div></div>
 
 <div class="app prototype-input-mode" id="editorApp" style="display:none">
-<div class="top-title"><div class="editor-brand"><img src="fillio-logo.svg" class="fillio-logo fillio-logo-small" alt="fillio"></div><div class="top-actions"><button id="memoListButton" class="memo-list-button">メモ一覧</button></div></div>
+<div class="top-title"><div class="editor-brand"><button type="button" class="fillio-home-link" aria-label="Libraryへ戻る"><img src="fillio-logo.svg" class="fillio-logo" alt="fillio"></button></div><div class="top-actions"><button id="memoListButton" class="memo-list-button">メモ一覧</button></div></div>
 <div class="current-project-title-wrap"><div class="current-project-title-label" id="currentProjectTitleLabel">作品</div><div id="currentProjectTitle" class="current-project-title"></div></div><div id="projectBreadcrumb" class="project-breadcrumb"></div>
 <div class="card" style="display:none">
 <div class="label">作品名</div><input id="title" value="ばちぼこゾンビランド" placeholder="作品名">

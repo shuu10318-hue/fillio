@@ -1048,6 +1048,8 @@ input{border-color:var(--border);border-radius:12px}
 .brand-head{display:flex;flex-direction:column;align-items:flex-start;gap:9px;min-width:0}
 .brand-head h1{margin:0;font-size:18px}
 .fillio-logo{display:block;width:116px;height:auto}
-.fillio-logo-small{width:94px}
 .editor-brand{display:flex;align-items:center;min-height:32px}
-@media(max-width:360px){.fillio-logo{width:104px}.fillio-logo-small{width:86px}}
+@media(max-width:360px){.fillio-logo{width:104px}}
+
+/* fillio logo: same size on every screen and returns to Library */
+.fillio-home-link{appearance:none;-webkit-appearance:none;border:0;background:transparent;padding:0;margin:0;display:block;line-height:0;cursor:pointer}
