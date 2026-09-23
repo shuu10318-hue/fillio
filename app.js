@@ -250,6 +250,36 @@ function loadViewState(){
 }
 
 
+/* Browser/PWA navigation history: enables Android back-swipe without changing saved project data. */
+let fillioHistoryReady=false;
+let fillioHandlingPop=false;
+function fillioNavState(view,extra={}){
+  return {fillio:true,view,...extra};
+}
+function currentFillioNavState(){
+  if(currentProjectId)return fillioNavState("project",{projectId:currentProjectId});
+  if(currentFolderId)return fillioNavState("folder",{folderId:currentFolderId});
+  return fillioNavState("root");
+}
+function syncFillioHistory(mode="push"){
+  if(fillioHandlingPop)return;
+  const state=currentFillioNavState();
+  const method=(mode==="replace"||!fillioHistoryReady)?"replaceState":"pushState";
+  window.history[method](state,"");
+  fillioHistoryReady=true;
+}
+function restoreFillioHistoryState(state){
+  fillioHandlingPop=true;
+  try{
+    if(state?.view==="project"&&state.projectId&&projectStore.projects[state.projectId])openProject(state.projectId);
+    else if(state?.view==="folder"&&state.folderId&&projectStore.folders?.[state.folderId])showFolderView(state.folderId);
+    else showProjectHome();
+  }finally{fillioHandlingPop=false}
+}
+window.addEventListener("popstate",e=>{
+  restoreFillioHistoryState(e.state?.fillio?e.state:fillioNavState("root"));
+});
+
 function renderRootBreadcrumb(){
   const head=document.getElementById("folderHead");
   const title=document.getElementById("folderHeadTitle");
@@ -282,7 +312,7 @@ function renderProjectBreadcrumb(){
     el.innerHTML=`<button type="button" class="crumb-link" data-nav="root">${rootLabel}</button><span class="crumb-sep">›</span><span class="crumb-current" data-user-text="1">${projectName}</span>`;
   }
 }
-function showFolderView(folderId){
+function showFolderView(folderId,historyMode="push"){
   if(!folderId||!projectStore.folders?.[folderId]){showProjectHome();return}
   if(currentProjectId)save();
   currentProjectId=null;
@@ -294,13 +324,15 @@ function showFolderView(folderId){
   renderProjectList();
   renderFoldersAndFilter();
   saveViewState("folder");
+  syncFillioHistory(historyMode);
 }
 function backFromProject(){
+  if(window.history.state?.fillio){window.history.back();return}
   const fid=projectParentFolderId(currentProjectId);
   if(fid)showFolderView(fid);
   else showProjectHome();
 }
-function openProject(id){
+function openProject(id,historyMode="push"){
   if(!projectStore.projects[id])return;
   currentProjectId=id;
   projectStore.activeProjectId=id;
@@ -311,13 +343,14 @@ function openProject(id){
   render();
   renderProjectBreadcrumb();
   saveViewState("project");
+  syncFillioHistory(historyMode);
   // Android/Chrome: restored project data can finish binding after the first paint.
   // Re-sync only the visual summary on the next frame; storage/touch logic is untouched.
   requestAnimationFrame(()=>{
     if(currentProjectId===id) updateSummary();
   });
 }
-function showProjectHome(){
+function showProjectHome(historyMode="push"){
   if(currentProjectId)save();
   currentProjectId=null;
   document.getElementById("editorApp").style.display="none";
@@ -331,6 +364,7 @@ function showProjectHome(){
   const rootHead=document.getElementById("folderHead");
   rootHead?.classList.remove("show");
   saveViewState("root");
+  syncFillioHistory(historyMode);
 }
 document.addEventListener("click",e=>{
   const homeLogo=e.target.closest?.(".fillio-home-link");
@@ -1649,11 +1683,7 @@ function renderFoldersAndFilter(){
    Object.entries(projectStore.folders).filter(([,f])=>!f?.trashedAt).forEach(([fid,f])=>{
      const el=document.createElement("div");el.className="folder-item";el.dataset.folderId=fid;el.dataset.orderKey="f:"+fid;
      el.innerHTML=`<div class="folder-row"><div><div class="folder-name"><span class="folder-icon"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h7l2 2h9v11H3z"/></svg></span><span data-user-text="1">${String(f.name).replace(/[&<>"\']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","\'":"&#39;"}[c]))}</span></div><div class="folder-meta">${folderCount(fid)}${languageSettings?.language==="en"?" projects":"作品"}</div></div></div>`;
-     const openFolder=()=>{
-       currentFolderId=fid;
-       renderFoldersAndFilter();
-       saveViewState("folder");
-     };
+     const openFolder=()=>{ showFolderView(fid); };
      // カード本体の短いタップでも開く。長押しドラッグ直後のclickは既存の抑制を尊重。
      el.addEventListener("click",e=>{
        if(e.target.closest("button,a,input,textarea,select,label"))return;
@@ -1695,10 +1725,9 @@ document.addEventListener("click",e=>{
 });
 document.getElementById("folderNameInput")?.addEventListener("keydown",e=>{if(e.key==="Enter")createFolder()});
 document.getElementById("folderBack")?.addEventListener("click",e=>{
- e.preventDefault();e.stopPropagation();
- currentFolderId=null;
- renderFoldersAndFilter();
- saveViewState("root");
+  e.preventDefault();e.stopPropagation();
+  if(window.history.state?.fillio&&currentFolderId){window.history.back();return}
+  showProjectHome();
 });
 document.getElementById("folderRename")?.addEventListener("click",()=>{
  if(!currentFolderId)return;
@@ -1979,23 +2008,16 @@ setTimeout(()=>{
   const last=loadViewState();
 
   if(last?.view==="project" && last.projectId && projectStore.projects[last.projectId]){
-    openProject(last.projectId);
+    openProject(last.projectId,"replace");
     return;
   }
 
   if(last?.view==="folder" && last.folderId && projectStore.folders?.[last.folderId]){
-    currentProjectId=null;
-    currentFolderId=last.folderId;
-    document.getElementById("editorApp").style.display="none";
-    document.getElementById("projectHome").style.display="";
-    document.body.style.overflowY="auto";
-    document.body.style.overflowX="hidden";
-    renderProjectList();
-    renderFoldersAndFilter();
+    showFolderView(last.folderId,"replace");
     return;
   }
 
-  showProjectHome();
+  showProjectHome("replace");
   renderFoldersAndFilter();
 },0);
 
