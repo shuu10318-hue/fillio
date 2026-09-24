@@ -322,7 +322,6 @@ body.project-reorder-mode .project-item::before{content:none!important}
 /* ---- extracted block ---- */
 
 .home-head-actions{display:flex;gap:8px;align-items:center}
-.settings-button{width:44px;height:44px;border:1px solid var(--border);border-radius:10px;background:#fff;font-size:18px}
 .settings-sheet{max-height:88dvh;overflow-y:auto;box-sizing:border-box}
 .settings-section-title{font-size:14px;font-weight:800;margin:20px 0 12px;padding-top:14px;border-top:1px solid var(--border)}
 #appLanguage{width:100%;height:44px;border:1px solid var(--border);border-radius:9px;background:#fff;padding:0 10px;font-size:14px}
@@ -334,7 +333,7 @@ body.project-reorder-mode .project-item::before{content:none!important}
 .language-option{height:52px;border:1px solid var(--border);border-radius:11px;background:#fff;font-weight:700;font-size:15px}
 .language-option.active{background:#222;color:#fff;border-color:#222}
 .settings-first-section{margin-top:4px!important;padding-top:0!important;border-top:0!important}
-@media(max-width:430px){.home-head-actions{gap:6px}.settings-button{width:42px}.project-add-button{padding-left:13px!important;padding-right:13px!important}}
+@media(max-width:430px){.project-add-button{padding-left:13px!important;padding-right:13px!important}}
 
 /* ---- extracted block ---- */
 
@@ -1109,12 +1108,6 @@ body.library-drag-active .drag-trash-zone.over{
 }
 
 /* Library help + theme color + long create sheet */
-#projectModal{overflow-y:auto;-webkit-overflow-scrolling:touch;align-items:flex-end}
-#projectModal .project-sheet{max-height:88dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
-.theme-color-picker{display:flex;gap:10px;flex-wrap:wrap}
-.theme-color-option{width:44px;height:44px;border:1px solid var(--border);border-radius:12px;background:#fff;padding:6px;display:grid;place-items:center}
-.theme-color-option span{width:28px;height:28px;border-radius:8px;display:block}
-.theme-color-option.selected{outline:2px solid var(--accent);outline-offset:2px}
 .page-button.active,.progress-cell.state2{background:var(--accent)!important;border-color:var(--accent)!important}
 .history-bar{background:var(--accent)}
 
@@ -1125,11 +1118,11 @@ body.library-drag-active .drag-trash-zone.over{
 
 /* Theme choices are full tappable rows, not tiny inherited button spans. */
 #themeColorPicker.theme-color-picker{
-  display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:8px!important;
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;
   margin-top:10px!important;
 }
 #themeColorPicker .theme-color-option{
-  width:auto!important;height:64px!important;min-width:0!important;padding:7px 3px!important;
+  width:auto!important;height:70px!important;min-width:0!important;padding:7px 3px!important;
   border:1px solid var(--border)!important;border-radius:12px!important;background:#fff!important;
   display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;
   color:var(--text)!important;box-sizing:border-box!important;
@@ -1139,10 +1132,9 @@ body.library-drag-active .drag-trash-zone.over{
   border-radius:50%!important;background:var(--swatch)!important;border:1px solid rgba(0,0,0,.12)!important;
 }
 #themeColorPicker .theme-option-label{
-  display:block!important;width:100%!important;font-size:9px!important;line-height:1.1!important;white-space:nowrap!important;
+  display:block!important;width:100%!important;font-size:10px!important;line-height:1.1!important;white-space:nowrap!important;
   overflow:hidden!important;text-overflow:ellipsis!important;text-align:center!important;
 }
-#themeColorPicker .theme-color-option.selected{outline:none!important;border:2px solid var(--accent)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)!important}
 
 /* New-project sheet: the overlay never scrolls; the sheet itself always does. */
 #projectModal{
@@ -1166,9 +1158,6 @@ body.library-drag-active .drag-trash-zone.over{
 #themeColorPicker .theme-color-option.selected{border-color:var(--accent)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)!important}
 
 /* ===== Soft full-app themes 2026-09-23 ===== */
-#themeColorPicker.theme-color-picker{grid-template-columns:repeat(3,minmax(0,1fr))!important}
-#themeColorPicker .theme-color-option{height:70px!important}
-#themeColorPicker .theme-option-label{font-size:10px!important}
 
 /* In color themes, tint the whole interface softly while keeping text readable. */
 :root[data-theme="color"]{
