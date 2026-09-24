@@ -573,6 +573,7 @@ function renderProjectList(){
       </div>
       <div class="project-item-actions">
         <button class="project-edit-button project-icon-button" type="button" aria-label="${isEn?"Project settings":"プロジェクト設定"}" title="${isEn?"Project settings":"プロジェクト設定"}"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.09A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.09A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.09A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.13.37.35.7.64.96.3.27.68.42 1.08.44H21v4h-.09A1.7 1.7 0 0 0 19.4 15z"/></svg></button>
+        <button class="project-drag-handle project-icon-button" type="button" aria-label="${isEn?"Reorder project":"プロジェクトを並べ替え"}" title="${isEn?"Reorder":"並べ替え"}"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7h8M8 12h8M8 17h8"/></svg></button>
       </div>
     </div>
     <button class="project-stage-toggle" type="button" aria-expanded="${expanded}"><span>${isEn?"Stage details":"工程別"}</span><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></button>
@@ -1607,15 +1608,14 @@ function moveReorderAt(x,y){
 const reorderList=document.getElementById("projectList");
 if(reorderList){
  reorderList.addEventListener("touchstart",e=>{
-  if(e.touches.length!==1||e.target.closest("button,a,input,textarea,select,label"))return;
-  const item=e.target.closest(".project-item[data-project-id]");if(!item)return;
+  if(e.touches.length!==1)return;
+  const handle=e.target.closest(".project-drag-handle");if(!handle)return;
+  const item=handle.closest(".project-item[data-project-id]");if(!item)return;
   const t=e.touches[0];
   reorderStartX=reorderLastX=t.clientX;reorderStartY=reorderLastY=t.clientY;
   clearTimeout(reorderHoldTimer);
-  reorderHoldTimer=setTimeout(()=>{
-   reorderDragging=item;item.classList.add("reorder-dragging");
-   if(navigator.vibrate)navigator.vibrate(28);
-  },REORDER_HOLD_MS);
+  reorderDragging=item;item.classList.add("reorder-dragging");
+  if(navigator.vibrate)navigator.vibrate(20);
  },{passive:true});
  reorderList.addEventListener("touchmove",e=>{
   if(e.touches.length!==1)return;
@@ -1634,11 +1634,12 @@ if(reorderList){
 
  // PCでも確認できるようマウス操作も対応
  reorderList.addEventListener("mousedown",e=>{
-  if(e.button!==0||e.target.closest("button,a,input,textarea,select,label"))return;
-  const item=e.target.closest(".project-item[data-project-id]");if(!item)return;
+  if(e.button!==0)return;
+  const handle=e.target.closest(".project-drag-handle");if(!handle)return;
+  const item=handle.closest(".project-item[data-project-id]");if(!item)return;
   reorderStartX=e.clientX;reorderStartY=e.clientY;
   clearTimeout(reorderHoldTimer);
-  reorderHoldTimer=setTimeout(()=>{reorderDragging=item;item.classList.add("reorder-dragging")},REORDER_HOLD_MS);
+  reorderDragging=item;item.classList.add("reorder-dragging");
  });
  window.addEventListener("mousemove",e=>{
   if(!reorderDragging)return;
@@ -1952,12 +1953,14 @@ document.addEventListener("touchend",()=>{
  list.addEventListener("touchstart",e=>{
    if(currentFolderId||e.touches.length!==1)return;
    const item=e.target.closest(".folder-item,.project-item"); if(!item)return;
-   // 操作ボタン上では長押しドラッグを開始しない。
-   // フォルダの「開く」を押した時にバイブが鳴るのを防ぐ。
-   if(e.target.closest("button,a,input,textarea,select,label"))return;
+   const isProject=item.classList.contains("project-item");
+   const projectHandle=e.target.closest(".project-drag-handle");
+   // プロジェクトは ≡ 専用。フォルダは従来どおりカードの長押し。
+   if(isProject&&!projectHandle)return;
+   if(!isProject&&e.target.closest("button,a,input,textarea,select,label"))return;
    const t=e.touches[0];sx=t.clientX;sy=t.clientY;
    clearTimeout(hold);
-   hold=setTimeout(()=>{
+   const beginDrag=()=>{
      drag=item; dropFolderId=null; trashOver=false; item.classList.add("mixed-root-dragging");
      dragGhost=item.cloneNode(true);dragGhost.classList.remove("mixed-root-dragging");dragGhost.classList.add("drag-ghost");
      dragGhost.querySelectorAll("button").forEach(b=>b.setAttribute("tabindex","-1"));document.body.appendChild(dragGhost);updateGhost(t);
@@ -1971,8 +1974,9 @@ document.addEventListener("touchend",()=>{
      }
      folderDropTarget=null;
      document.querySelectorAll(".folder-item.drag-over").forEach(x=>x.classList.remove("drag-over"));
-     if(navigator.vibrate)navigator.vibrate(28);
-   },HOLD);
+     if(navigator.vibrate)navigator.vibrate(isProject?20:28);
+   };
+   if(isProject)beginDrag(); else hold=setTimeout(beginDrag,HOLD);
  },{capture:true,passive:true});
  list.addEventListener("touchmove",e=>{
    if(currentFolderId||e.touches.length!==1)return;

@@ -1299,3 +1299,8 @@ input{border-color:var(--border);border-radius:12px}
 .stage-drag-handle .stage-grip-icon{width:23px;height:23px}
 .stage-editor-row.dragging{opacity:.68;background:var(--surface,#fff);z-index:4}
 .stage-editor-row.dragging .stage-drag-handle{cursor:grabbing}
+
+/* Project reorder handle — explicit, same visual language as Stage handles */
+.project-drag-handle.project-icon-button{width:34px;height:34px;min-height:34px;padding:7px;display:grid;place-items:center;border:0;background:transparent;color:var(--muted);border-radius:9px;touch-action:none;cursor:grab}
+.project-drag-handle.project-icon-button .icon-line{width:19px;height:19px}
+.project-drag-handle.project-icon-button:active{cursor:grabbing;background:var(--soft);color:var(--text)}
