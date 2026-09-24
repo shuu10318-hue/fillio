@@ -2877,3 +2877,39 @@ setTimeout(()=>auditDynamicUiLanguage(document),0);
   new MutationObserver(syncExtraLanguage).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
   syncExtraLanguage();
 })();
+
+/* v8: finish form editing consistently on mobile */
+(function setupCommitBlurBehavior(){
+  // Project titles: keyboard Done/Enter commits the field and dismisses the keyboard.
+  ["newProjectTitle","editProjectTitle"].forEach(id=>{
+    const el=document.getElementById(id); if(!el)return;
+    el.setAttribute("enterkeyhint","done");
+    el.addEventListener("keydown",e=>{
+      if(e.key==="Enter"){
+        e.preventDefault();
+        el.blur();
+      }
+    });
+  });
+
+  // Page counts: normalize the value, then dismiss the numeric keyboard on Done/Enter.
+  ["defaultPages","newProjectPages","editProjectPages"].forEach(id=>{
+    const el=document.getElementById(id); if(!el)return;
+    el.setAttribute("enterkeyhint","done");
+    el.addEventListener("keydown",e=>{
+      if(e.key==="Enter"){
+        e.preventDefault();
+        el.value=String(clampPageCount(el.value));
+        el.dispatchEvent(new Event("input",{bubbles:true}));
+        el.blur();
+      }
+    });
+  });
+
+  // Native date pickers are already a commit-style control; after a date is chosen,
+  // release focus so the picker/focus state does not linger.
+  ["newProjectCreationStartDate","newProjectDeadline","editProjectCreationStartDate","editProjectDeadline"].forEach(id=>{
+    const el=document.getElementById(id); if(!el)return;
+    el.addEventListener("change",()=>el.blur());
+  });
+})();
