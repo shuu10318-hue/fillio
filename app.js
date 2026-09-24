@@ -1831,10 +1831,10 @@ document.addEventListener("click",e=>{
 // 既存renderProjectHome後にフォルダ表示を重ねる
 let folderRendering=false;
 const folderObserver=new MutationObserver(()=>{
- if(window.__mixedRootDragging||reorderDragging||folderRendering)return;
+ if(window.__mixedRootDragging||window.__libraryStageDragging||reorderDragging||folderRendering)return;
  clearTimeout(window.__folderRenderTimer);
  window.__folderRenderTimer=setTimeout(()=>{
-   if(!window.__mixedRootDragging&&!reorderDragging&&!folderRendering)renderFoldersAndFilter();
+   if(!window.__mixedRootDragging&&!window.__libraryStageDragging&&!reorderDragging&&!folderRendering)renderFoldersAndFilter();
  },0);
 });
 const folderList=document.getElementById("projectList");
@@ -2062,12 +2062,21 @@ document.addEventListener("touchend",()=>{
    const over=x>=r.left-10&&x<=r.right+10&&y>=r.top-28&&y<=r.bottom+18;
    zone.classList.toggle("over",over); return over;
  };
+ // Same crossing rule as the Stage editor: use the current midpoint of every
+ // other visible row and move only when the pointer crosses that midpoint.
  const moveAt=y=>{
    const others=activeItems().filter(el=>el!==drag);
    let before=null;
-   for(const el of others){const r=el.getBoundingClientRect();if(y<r.top+r.height/2){before=el;break}}
-   if(before){if(drag.nextElementSibling!==before)list.insertBefore(drag,before)}
-   else if(activeItems().at(-1)!==drag)list.appendChild(drag);
+   for(const el of others){
+     const r=el.getBoundingClientRect();
+     if(y<r.top+r.height/2){before=el;break}
+   }
+   if(before){
+     if(drag.nextElementSibling!==before)list.insertBefore(drag,before);
+   }else if(others.length){
+     const last=others[others.length-1];
+     if(last.nextElementSibling!==drag)list.insertBefore(drag,last.nextSibling);
+   }
  };
  const saveCurrentOrder=()=>{
    if(currentFolderId){
@@ -2108,7 +2117,7 @@ document.addEventListener("touchend",()=>{
    drag.classList.remove("library-stage-dragging");
    clearTargets();
    document.getElementById("dragTrashZone")?.classList.remove("show","over");
-   cleanup(); drag=null;pointerId=null;dropFolderId=null;trashOver=false;
+   cleanup(); drag=null;pointerId=null;dropFolderId=null;trashOver=false;window.__libraryStageDragging=false;
    window.__suppressMixedClickUntil=Date.now()+250;
    setTimeout(renderFoldersAndFilter,0);
  };
@@ -2136,6 +2145,7 @@ document.addEventListener("touchend",()=>{
    if(currentFolderId&&item.classList.contains("folder-item"))return;
    e.preventDefault();e.stopPropagation();
    drag=item;pointerId=e.pointerId;startIndex=activeItems().indexOf(item);dropFolderId=null;trashOver=false;
+   window.__libraryStageDragging=true;
    drag.classList.add("library-stage-dragging");
    document.getElementById("dragTrashZone")?.classList.add("show");
    window.addEventListener("pointermove",onMove,{passive:false});
