@@ -112,38 +112,47 @@ function makeStageRow(name,i,arr,render,meta){
    arr.splice(idx,1);if(meta)meta.splice(idx,1);render();
  });
 
- // Reordering is DOM-only while the finger is down. The data array is changed
- // once on release. This avoids index drift when crossing several rows.
- let dragging=false,pointerId=null,startIndex=i;
+ // Keep the drag alive at window level. Capturing the pointer on the handle
+ // proved unreliable on Android when the dragged row itself changes DOM position.
+ let dragging=false,pointerId=null,startIndex=i,list=null;
+ const rows=()=>list?[...list.children].filter(el=>el.classList?.contains("stage-editor-row")):[];
  const moveRowAtPointer=y=>{
-   const list=row.parentElement;if(!list)return;
-   const others=[...list.querySelectorAll(":scope > .stage-editor-row")].filter(el=>el!==row);
+   if(!list)return;
+   const others=rows().filter(el=>el!==row);
    let before=null;
    for(const el of others){const r=el.getBoundingClientRect();if(y<r.top+r.height/2){before=el;break}}
-   if(before)list.insertBefore(row,before);else list.appendChild(row);
+   if(before){if(row.nextElementSibling!==before)list.insertBefore(row,before)}
+   else if(list.lastElementChild!==row)list.appendChild(row);
  };
- const finishDrag=()=>{
-   if(!dragging)return;
-   dragging=false;row.classList.remove("dragging");
-   const list=row.parentElement;
-   const finalIndex=list?[...list.querySelectorAll(":scope > .stage-editor-row")].indexOf(row):startIndex;
-   try{if(pointerId!==null&&handle.hasPointerCapture?.(pointerId))handle.releasePointerCapture(pointerId)}catch{}
-   pointerId=null;
+ const cleanupDragListeners=()=>{
+   window.removeEventListener("pointermove",onDragMove);
+   window.removeEventListener("pointerup",finishDrag);
+   window.removeEventListener("pointercancel",finishDrag);
+ };
+ const finishDrag=e=>{
+   if(!dragging||(e?.pointerId!=null&&e.pointerId!==pointerId))return;
+   const finalIndex=rows().indexOf(row);
+   dragging=false;row.classList.remove("dragging");cleanupDragListeners();pointerId=null;
    if(finalIndex>=0&&finalIndex!==startIndex){
      const [item]=arr.splice(startIndex,1);arr.splice(finalIndex,0,item);
      if(meta){const [m]=meta.splice(startIndex,1);meta.splice(finalIndex,0,m)}
    }
    render();
  };
+ const onDragMove=e=>{
+   if(!dragging||e.pointerId!==pointerId)return;
+   e.preventDefault();moveRowAtPointer(e.clientY);
+ };
  handle.addEventListener("pointerdown",e=>{
    if(e.pointerType==="mouse"&&e.button!==0)return;
-   e.preventDefault();dragging=true;pointerId=e.pointerId;startIndex=Number(row.dataset.stageIndex);
-   row.classList.add("dragging");handle.setPointerCapture?.(e.pointerId);
+   e.preventDefault();
+   list=row.parentElement;if(!list)return;
+   dragging=true;pointerId=e.pointerId;startIndex=rows().indexOf(row);
+   row.classList.add("dragging");
+   window.addEventListener("pointermove",onDragMove,{passive:false});
+   window.addEventListener("pointerup",finishDrag);
+   window.addEventListener("pointercancel",finishDrag);
  });
- handle.addEventListener("pointermove",e=>{if(!dragging||e.pointerId!==pointerId)return;e.preventDefault();moveRowAtPointer(e.clientY)});
- handle.addEventListener("pointerup",finishDrag);
- handle.addEventListener("pointercancel",finishDrag);
- handle.addEventListener("lostpointercapture",()=>{if(dragging)finishDrag()});
  return row;
 }
 let defaultStageDraft=[];
