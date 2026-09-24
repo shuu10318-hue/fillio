@@ -1309,3 +1309,18 @@ input{border-color:var(--border);border-radius:12px}
 .folder-drag-handle.project-icon-button{width:34px;height:34px;min-height:34px;padding:7px;display:grid;place-items:center;border:0;background:transparent;color:var(--muted);border-radius:9px;touch-action:none;cursor:grab;flex:none}
 .folder-drag-handle.project-icon-button .icon-line{width:19px;height:19px}
 .folder-drag-handle.project-icon-button:active{cursor:grabbing;background:var(--soft);color:var(--text)}
+
+
+/* Library reorder v11: Stage-equivalent handles and vertical-only real-item drag */
+.project-drag-handle.project-icon-button,
+.folder-drag-handle.project-icon-button{
+  width:40px;height:40px;min-height:40px;padding:0;display:grid;place-items:center;
+  border:0;background:transparent;color:var(--muted);border-radius:0;touch-action:none;cursor:grab;
+}
+.project-drag-handle.project-icon-button .icon-line,
+.folder-drag-handle.project-icon-button .icon-line{
+  width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+}
+#projectHome .library-stage-dragging{opacity:.68;background:var(--surface,#fff);position:relative;z-index:4;transform:none!important}
+#projectHome .library-stage-dragging .project-drag-handle,
+#projectHome .library-stage-dragging .folder-drag-handle{cursor:grabbing}
