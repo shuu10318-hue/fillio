@@ -208,15 +208,6 @@ button.state-done{
 .help-swatch.done{background:#222;border-color:#222}
 
 
-.project-list-toolbar{display:flex;justify-content:flex-end;margin:0 0 10px}
-.project-reorder-toggle{min-height:34px;padding:0 12px;border:1px solid var(--border);border-radius:9px;background:#fff;font-size:12px;font-weight:700}
-.project-reorder-toggle.active{background:#222;color:#fff;border-color:#222}
-body.project-reorder-mode .project-item{cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none}
-body.project-reorder-mode .project-item::before{content:"☰";display:block;text-align:center;color:var(--muted);font-size:18px;line-height:18px;margin:-2px 0 5px}
-body.project-reorder-mode .project-item-actions,body.project-reorder-mode .project-actions{pointer-events:none;opacity:.38}
-.project-item.reorder-dragging{opacity:.7;transform:scale(.985);box-shadow:0 8px 24px rgba(0,0,0,.12)}
-.project-item.reorder-over{}
-
 /* 作品カードは余白を長押しして直接並び替え */
 .project-list-toolbar{display:none!important}
 body.project-reorder-mode .project-item::before{content:none!important}
@@ -230,8 +221,7 @@ body.project-reorder-mode .project-item::before{content:none!important}
 
 .folder-toolbar{display:flex;justify-content:flex-end;margin:0 0 10px}
 .folder-add{min-height:34px;padding:0 12px;border:1px solid var(--border);border-radius:9px;background:#fff;font-size:12px;font-weight:700}
-.folder-item{border:1px solid var(--border);border-radius:12px;padding:13px 14px;margin-bottom:10px;background:#fff;user-select:none;-webkit-user-select:none;touch-action:none}
-.folder-item{transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .18s ease,background .18s ease}
+.folder-item{border:1px solid var(--border);border-radius:12px;padding:13px 14px;margin-bottom:10px;background:#fff;user-select:none;-webkit-user-select:none;touch-action:none;transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .18s ease,background .18s ease}
 .folder-item.drag-over{
   transform:translateY(-2px) scale(1.006);
   box-shadow:0 8px 22px rgba(0,0,0,.10);
@@ -327,8 +317,6 @@ body.project-reorder-mode .project-item::before{content:none!important}
 #editProjectModal .stage-editor-row{gap:7px;margin-bottom:7px}
 #editProjectModal .stage-editor-row input{min-height:42px}
 #editProjectModal .stage-mini-button{min-height:42px}
-#folderHead{gap:7px}
-#folderHeadTitle{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .folder-rename{border:1px solid var(--border);background:#fff;border-radius:8px;padding:7px 9px;font-size:11px;white-space:nowrap}
 
 /* ---- extracted block ---- */
@@ -370,14 +358,6 @@ body.project-reorder-mode .project-item::before{content:none!important}
 }
 
 /* ---- extracted block ---- */
-
-.project-breadcrumb{
-  margin:-2px 2px 12px;
-  font-size:12px;color:var(--muted);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.project-breadcrumb .crumb-sep{padding:0 5px;opacity:.6}
-.project-breadcrumb .crumb-current{font-weight:700;color:var(--text)}
 
 /* ---- extracted block ---- */
 
@@ -1023,7 +1003,6 @@ body.library-drag-active .drag-trash-zone.over{
 .create-menu .icon-line{width:18px;height:18px;flex:none}
 #folderToolbar{display:none!important}
 /* Drag target stays at the top; positioning is defined in the unified trash block above. */
-.drag-ghost{transform:translate(-50%,-50%) scale(1.035)!important}
 @media(max-width:430px){.home-head-actions{gap:6px!important}.home-head-actions .settings-button{width:42px;height:42px}.create-menu{width:184px}}
 
 .trash-footer{padding-top:10px;border-top:1px solid var(--border);margin-top:4px}
@@ -1317,17 +1296,6 @@ body.library-drag-active .drag-trash-zone.over{
 .stage-editor-row.dragging{opacity:.68;background:var(--surface,#fff);z-index:4}
 .stage-editor-row.dragging .stage-drag-handle{cursor:grabbing}
 
-/* Project reorder handle — explicit, same visual language as Stage handles */
-.project-drag-handle.project-icon-button{width:34px;height:34px;min-height:34px;padding:7px;display:grid;place-items:center;border:0;background:transparent;color:var(--muted);border-radius:9px;touch-action:none;cursor:grab}
-.project-drag-handle.project-icon-button .icon-line{width:19px;height:19px}
-.project-drag-handle.project-icon-button:active{cursor:grabbing;background:var(--soft);color:var(--text)}
-
-/* Library reorder v10: same ≡ handle for projects/folders; vertical drag ghost */
-.folder-drag-handle.project-icon-button{width:34px;height:34px;min-height:34px;padding:7px;display:grid;place-items:center;border:0;background:transparent;color:var(--muted);border-radius:9px;touch-action:none;cursor:grab;flex:none}
-.folder-drag-handle.project-icon-button .icon-line{width:19px;height:19px}
-.folder-drag-handle.project-icon-button:active{cursor:grabbing;background:var(--soft);color:var(--text)}
-
-
 /* Library reorder v11: Stage-equivalent handles and vertical-only real-item drag */
 .project-drag-handle.project-icon-button,
 .folder-drag-handle.project-icon-button{
@@ -1338,6 +1306,8 @@ body.library-drag-active .drag-trash-zone.over{
 .folder-drag-handle.project-icon-button .icon-line{
   width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
 }
+.project-drag-handle.project-icon-button:active,
+.folder-drag-handle.project-icon-button:active{cursor:grabbing;background:var(--soft);color:var(--text)}
 #projectHome .library-stage-dragging{opacity:.68;background:var(--surface,#fff);position:relative;z-index:4;transform:none!important}
 #projectHome .library-stage-dragging .project-drag-handle,
 #projectHome .library-stage-dragging .folder-drag-handle{cursor:grabbing}
