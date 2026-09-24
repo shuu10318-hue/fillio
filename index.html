@@ -14,7 +14,7 @@
 <title>fillio</title>
 
 
-<link rel="stylesheet" href="style.css?v=20260924-stage-steps-v2">
+<link rel="stylesheet" href="style.css?v=20260924-settings-ui-v1">
 </head>
 <body>
 
@@ -164,14 +164,11 @@
     <div class="project-edit-scroll">
     <div class="label">作品名</div>
     <input id="editProjectTitle" placeholder="作品名">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;margin-bottom:7px">
-      <div class="label" style="margin:0">制作ページ</div>
-      <div id="editProjectTotal" style="font-size:11px;color:var(--muted)"></div>
-    </div>
-    <div class="page-range">
-      <div><input id="editProjectStart" type="number" min="1" max="999"><span>P</span></div>
-      <b>〜</b>
-      <div><input id="editProjectEnd" type="number" min="1" max="999"><span>P</span></div>
+    <div class="label" style="margin-top:14px">制作ページ</div>
+    <div class="page-stepper" data-stepper="editProjectPages">
+      <button type="button" class="page-step-button" data-step="-1" aria-label="ページ数を減らす">−</button>
+      <input id="editProjectPages" class="page-step-value" type="number" min="1" max="300" inputmode="numeric" aria-label="制作ページ数">
+      <button type="button" class="page-step-button" data-step="1" aria-label="ページ数を増やす">＋</button>
     </div>
     <div class="label" style="margin-top:14px">創作開始日</div>
     <input id="editProjectCreationStartDate" type="date">
@@ -201,9 +198,10 @@
     <div class="modal-action-head"><button id="settingsCancel" class="modal-text-action modal-cancel-action" type="button">キャンセル</button><h2 id="settingsTitle">アプリ設定</h2><button id="settingsSave" class="modal-text-action modal-confirm-action" type="button">保存</button></div>
     <div class="settings-section-title settings-first-section" id="settingsDefaultsTitle">新規プロジェクトのデフォルト</div>
     <div class="label" id="settingsPagesLabel">制作ページ</div>
-    <div class="page-range">
-      <div><select id="defaultStartPage" class="page-select" aria-label="開始ページ"></select><span>P</span></div><b>〜</b>
-      <div><select id="defaultEndPage" class="page-select" aria-label="終了ページ"></select><span>P</span></div>
+    <div class="page-stepper" data-stepper="defaultPages">
+      <button type="button" class="page-step-button" data-step="-1" aria-label="ページ数を減らす">−</button>
+      <input id="defaultPages" class="page-step-value" type="number" min="1" max="300" inputmode="numeric" aria-label="制作ページ数">
+      <button type="button" class="page-step-button" data-step="1" aria-label="ページ数を増やす">＋</button>
     </div>
     <div class="label" id="settingsStagesLabel" style="margin-top:14px">工程</div>
     <div id="defaultStageList" class="stage-editor-list"></div>
@@ -236,27 +234,19 @@
     <div class="modal-action-head"><button id="cancelNewProject" class="modal-text-action modal-cancel-action" type="button">キャンセル</button><h2>新しいプロジェクト</h2><button id="createNewProject" class="modal-text-action modal-confirm-action" type="button">作成</button></div>
     <div class="label">作品名</div>
     <input id="newProjectTitle" value="" placeholder="作品名">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;margin-bottom:7px">
-      <div class="label" style="margin:0">制作ページ</div>
-      <div id="newProjectTotal" style="font-size:11px;color:var(--muted)">全1P</div>
-    </div>
-    <div class="page-range">
-      <div><select id="newProjectStart" class="page-select" aria-label="開始ページ"></select><span>P</span></div>
-      <b>〜</b>
-      <div><select id="newProjectEnd" class="page-select" aria-label="終了ページ"></select><span>P</span></div>
+    <div class="label" style="margin-top:14px">制作ページ</div>
+    <div class="page-stepper" data-stepper="newProjectPages">
+      <button type="button" class="page-step-button" data-step="-1" aria-label="ページ数を減らす">−</button>
+      <input id="newProjectPages" class="page-step-value" type="number" min="1" max="300" inputmode="numeric" aria-label="制作ページ数">
+      <button type="button" class="page-step-button" data-step="1" aria-label="ページ数を増やす">＋</button>
     </div>
     <div class="label" style="margin-top:14px">創作開始日</div>
     <input id="newProjectCreationStartDate" type="date">
     <div class="label" style="margin-top:14px">締切予定日</div>
     <input id="newProjectDeadline" type="date">
-    <button id="newStageToggle" class="new-stage-toggle" type="button">
-      <span>工程をカスタマイズ</span><span id="newStageChevron">⌄</span>
-    </button>
-    <div id="newStagePanel" class="new-stage-panel">
-      <div id="newStageEditorList" class="stage-editor-list"></div>
-      <button id="newStageAddButton" class="stage-add-button" type="button">＋ 工程を追加</button>
-      <div class="stage-editor-note">変更しなければ「ネーム・ペン・背景・トーン・写植」で作成されます</div>
-    </div>
+    <div class="label" style="margin-top:14px">工程</div>
+    <div id="newStageEditorList" class="stage-editor-list"></div>
+    <button id="newStageAddButton" class="stage-add-button" type="button">＋ 工程を追加</button>
   </div>
 </div>
 
@@ -294,7 +284,7 @@
 </div>
 
 
-<script src="app.js?v=20260924-stage-steps-v2"></script>
+<script src="app.js?v=20260924-settings-ui-v1"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

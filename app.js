@@ -68,18 +68,54 @@ function applyLanguage(){
  set("settingsStagesLabel",t.stages);set("defaultStageAdd",t.addStage);set("settingsCancel",t.cancel);set("settingsSave",t.save);set("settingsNote",t.note);
  set("folderAdd",t.folderAdd);set("memoListButton",t.memo);set("backToProjects",t.backProjects);
 }
+const PROJECT_PAGE_MAX=300;
+function clampPageCount(v){return Math.max(1,Math.min(PROJECT_PAGE_MAX,Number(v)||1))}
+function setupPageStepper(inputId){
+ const input=document.getElementById(inputId); if(!input)return;
+ const wrap=input.closest(".page-stepper"); if(!wrap)return;
+ const set=v=>{input.value=String(clampPageCount(v));input.dispatchEvent(new Event("input",{bubbles:true}))};
+ wrap.querySelectorAll(".page-step-button").forEach(btn=>{
+   let timer=null,repeat=null,started=0;
+   const stop=()=>{clearTimeout(timer);clearInterval(repeat);timer=repeat=null};
+   btn.addEventListener("pointerdown",e=>{
+     e.preventDefault(); const d=Number(btn.dataset.step)||0; set(Number(input.value)+d); started=Date.now();
+     timer=setTimeout(()=>{repeat=setInterval(()=>{const held=Date.now()-started;const jump=held>2200?5:1;set(Number(input.value)+d*jump)},heldInterval())},420);
+     function heldInterval(){return 75}
+     btn.setPointerCapture?.(e.pointerId);
+   });
+   ["pointerup","pointercancel","pointerleave"].forEach(t=>btn.addEventListener(t,stop));
+ });
+ input.addEventListener("change",()=>set(input.value));
+}
+function makeStageRow(name,i,arr,render,meta){
+ const row=document.createElement("div"); row.className="stage-editor-row"; row.dataset.stageIndex=String(i);
+ row.innerHTML=`<input type="text" maxlength="12" value="${escapeStageHtml(name)}" aria-label="工程名" readonly><button type="button" class="stage-delete-button" title="削除" aria-label="削除">×</button><button type="button" class="stage-drag-handle" title="並べ替え" aria-label="並べ替え">≡</button>`;
+ const input=row.querySelector("input"),del=row.querySelector(".stage-delete-button"),handle=row.querySelector(".stage-drag-handle");
+ input.addEventListener("click",()=>{input.readOnly=false;row.classList.add("editing");input.focus();input.select()});
+ input.addEventListener("input",()=>arr[i]=input.value);
+ input.addEventListener("blur",()=>setTimeout(()=>{input.readOnly=true;row.classList.remove("editing")},120));
+ del.addEventListener("pointerdown",e=>e.preventDefault());
+ del.addEventListener("click",()=>{if(arr.length<=1){alert(languageSettings?.language==="en"?"At least one stage is required.":"工程は1つ以上必要です。");return}arr.splice(i,1);if(meta)meta.splice(i,1);render()});
+ let from=i,last=i;
+ handle.addEventListener("pointerdown",e=>{e.preventDefault();from=i;last=i;row.classList.add("dragging");handle.setPointerCapture?.(e.pointerId)});
+ handle.addEventListener("pointermove",e=>{
+   if(!row.classList.contains("dragging"))return;
+   const target=document.elementFromPoint(e.clientX,e.clientY)?.closest?.(".stage-editor-row");
+   if(!target||target.parentElement!==row.parentElement)return;
+   const to=Number(target.dataset.stageIndex); if(!Number.isInteger(to)||to===last)return;
+   const [item]=arr.splice(last,1);arr.splice(to,0,item);
+   if(meta){const [m]=meta.splice(last,1);meta.splice(to,0,m)}
+   if(to>last)target.after(row);else target.before(row);
+   [...row.parentElement.children].forEach((el,idx)=>el.dataset.stageIndex=String(idx));
+   last=to;
+ });
+ const end=()=>{row.classList.remove("dragging");render()};handle.addEventListener("pointerup",end);handle.addEventListener("pointercancel",end);
+ return row;
+}
 let defaultStageDraft=[];
 function renderDefaultStageEditor(){
  const box=document.getElementById("defaultStageList"); if(!box)return; box.innerHTML="";
- defaultStageDraft.forEach((name,i)=>{
-   const row=document.createElement("div");row.className="stage-editor-row";
-   row.innerHTML=`<input type="text" maxlength="12"><button type="button" class="stage-mini-button" data-act="up">↑</button><button type="button" class="stage-mini-button" data-act="down">↓</button><button type="button" class="stage-mini-button danger" data-act="del">×</button>`;
-   const input=row.querySelector("input");input.value=name;input.oninput=()=>defaultStageDraft[i]=input.value;
-   row.querySelector('[data-act="up"]').onclick=()=>{if(i){[defaultStageDraft[i-1],defaultStageDraft[i]]=[defaultStageDraft[i],defaultStageDraft[i-1]];renderDefaultStageEditor()}};
-   row.querySelector('[data-act="down"]').onclick=()=>{if(i<defaultStageDraft.length-1){[defaultStageDraft[i+1],defaultStageDraft[i]]=[defaultStageDraft[i],defaultStageDraft[i+1]];renderDefaultStageEditor()}};
-   row.querySelector('[data-act="del"]').onclick=()=>{if(defaultStageDraft.length<=1)return;defaultStageDraft.splice(i,1);renderDefaultStageEditor()};
-   box.appendChild(row);
- });
+ defaultStageDraft.forEach((name,i)=>box.appendChild(makeStageRow(name,i,defaultStageDraft,renderDefaultStageEditor)));
  document.getElementById("defaultStageAdd").disabled=false;
 }
 
@@ -1191,44 +1227,10 @@ document.querySelectorAll(".memo-filter").forEach(btn=>btn.onclick=()=>{
 
 let newProjectStageDraft=[...DEFAULT_STAGES];
 function renderNewProjectStageEditor(){
-  const box=document.getElementById("newStageEditorList"); if(!box)return;
-  box.innerHTML="";
-  newProjectStageDraft.forEach((name,i)=>{
-    const row=document.createElement("div");row.className="stage-editor-row";
-    row.innerHTML=`<input type="text" maxlength="12" value="${escapeStageHtml(name)}" aria-label="工程名">
-      <button type="button" class="stage-mini-button" data-act="up">↑</button>
-      <button type="button" class="stage-mini-button" data-act="down">↓</button>
-      <button type="button" class="stage-mini-button danger" data-act="del">×</button>`;
-    const input=row.querySelector("input");
-    input.addEventListener("input",()=>newProjectStageDraft[i]=input.value);
-    row.querySelector('[data-act="up"]').onclick=()=>{
-      if(!i)return;
-      [newProjectStageDraft[i-1],newProjectStageDraft[i]]=[newProjectStageDraft[i],newProjectStageDraft[i-1]];
-      renderNewProjectStageEditor();
-    };
-    row.querySelector('[data-act="down"]').onclick=()=>{
-      if(i>=newProjectStageDraft.length-1)return;
-      [newProjectStageDraft[i+1],newProjectStageDraft[i]]=[newProjectStageDraft[i],newProjectStageDraft[i+1]];
-      renderNewProjectStageEditor();
-    };
-    row.querySelector('[data-act="del"]').onclick=()=>{
-      if(newProjectStageDraft.length<=1){alert("工程は1つ以上必要です。");return}
-      newProjectStageDraft.splice(i,1);renderNewProjectStageEditor();
-    };
-    box.appendChild(row);
-  });
-  document.getElementById("newStageAddButton").disabled=false;
+ const box=document.getElementById("newStageEditorList"); if(!box)return; box.innerHTML="";
+ newProjectStageDraft.forEach((name,i)=>box.appendChild(makeStageRow(name,i,newProjectStageDraft,renderNewProjectStageEditor)));
+ document.getElementById("newStageAddButton").disabled=false;
 }
-function resetNewProjectStages(){
-  newProjectStageDraft=[...DEFAULT_STAGES];
-  renderNewProjectStageEditor();
-  document.getElementById("newStagePanel").classList.remove("open");
-  document.getElementById("newStageToggle").classList.remove("open");
-}
-document.getElementById("newStageToggle").addEventListener("click",()=>{
-  document.getElementById("newStagePanel").classList.toggle("open");
-  document.getElementById("newStageToggle").classList.toggle("open");
-});
 document.getElementById("newStageAddButton").addEventListener("click",()=>{
   if(newProjectStageDraft.length>=MAX_STAGES){alert(languageSettings?.language==="en"?`Up to ${MAX_STAGES} stages.`:`工程は最大${MAX_STAGES}個までです。`);return}
   newProjectStageDraft.push("");
@@ -1236,19 +1238,7 @@ document.getElementById("newStageAddButton").addEventListener("click",()=>{
 });
 
 
-function populatePageSelect(selectId){
-  const select=document.getElementById(selectId);
-  if(!select||select.options.length)return;
-  const frag=document.createDocumentFragment();
-  for(let page=1;page<=500;page++){
-    const option=document.createElement("option");
-    option.value=String(page);
-    option.textContent=String(page);
-    frag.appendChild(option);
-  }
-  select.appendChild(frag);
-}
-["defaultStartPage","defaultEndPage","newProjectStart","newProjectEnd"].forEach(populatePageSelect);
+["defaultPages","newProjectPages","editProjectPages"].forEach(setupPageStepper);
 
 let modalPageScrollY=0;
 function lockPageScroll(){
@@ -1279,8 +1269,7 @@ function closeAppSettings(){
 }
 
 document.getElementById("appSettingsButton").onclick=()=>{
- document.getElementById("defaultStartPage").value=projectDefaults.startPage;
- document.getElementById("defaultEndPage").value=projectDefaults.endPage;
+ document.getElementById("defaultPages").value=clampPageCount(projectDefaults.endPage-projectDefaults.startPage+1);
  defaultStageDraft=[...projectDefaults.stages];renderDefaultStageEditor();
  applyThemeColor(appSettings.themeColor);
  lockPageScroll();
@@ -1290,9 +1279,8 @@ document.getElementById("settingsCancel").onclick=closeAppSettings;
 document.getElementById("appSettingsModal").onclick=e=>{if(e.target.id==="appSettingsModal")closeAppSettings()};
 document.getElementById("defaultStageAdd").onclick=()=>{if(defaultStageDraft.length>=MAX_STAGES){alert(languageSettings?.language==="en"?`Up to ${MAX_STAGES} stages.`:`工程は最大${MAX_STAGES}個までです。`);return}defaultStageDraft.push(languageSettings.language==="en"?"New Stage":"新しい工程");renderDefaultStageEditor()};
 document.getElementById("settingsSave").onclick=()=>{
- let a=Math.max(1,Math.min(500,Number(document.getElementById("defaultStartPage").value)||1));
- let b=Math.max(a,Math.min(500,Number(document.getElementById("defaultEndPage").value)||a));
- if(b-a+1>500){alert(appSettings.language==="en"?"Up to 500 pages per project.":"1作品500ページまでです。");return}
+ let a=1;
+ let b=clampPageCount(document.getElementById("defaultPages").value);
  const ss=defaultStageDraft.map(x=>String(x||"").trim()).filter(Boolean);
  if(!ss.length)return;
  appSettings=normalizeAppSettings({language:document.getElementById("appLanguage").value,defaultStartPage:a,defaultEndPage:b,defaultStages:ss,themeColor:document.querySelector(".theme-color-option.selected")?.dataset.themeColor||appSettings.themeColor});
@@ -1304,15 +1292,11 @@ document.querySelectorAll(".theme-color-option").forEach(btn=>btn.addEventListen
 
 document.getElementById("newProjectButton").onclick=()=>{
   document.getElementById("newProjectTitle").value="";
-  document.getElementById("newProjectStart").value=projectDefaults.startPage;
-  document.getElementById("newProjectEnd").value=projectDefaults.endPage;
+  document.getElementById("newProjectPages").value=clampPageCount(projectDefaults.endPage-projectDefaults.startPage+1);
   document.getElementById("newProjectCreationStartDate").value="";
   document.getElementById("newProjectDeadline").value="";
-  document.getElementById("newProjectTotal").textContent=`全${projectDefaults.endPage-projectDefaults.startPage+1}P`;
   newProjectStageDraft=[...projectDefaults.stages];
   renderNewProjectStageEditor();
-  document.getElementById("newStagePanel").classList.remove("open");
-  document.getElementById("newStageToggle").classList.remove("open");
   lockPageScroll();
   document.getElementById("projectModal").classList.add("open");
   // Do not auto-focus: opening the create sheet should not summon the mobile keyboard.
@@ -1323,18 +1307,10 @@ function closeNewProjectModal(){
 }
 document.getElementById("cancelNewProject").onclick=closeNewProjectModal;
 document.getElementById("projectModal").onclick=e=>{if(e.target.id==="projectModal")closeNewProjectModal()};
-function updateNewProjectTotal(){
-  let a=Math.max(1,Math.min(500,Number(document.getElementById("newProjectStart").value)||1));
-  let b=Math.max(a,Math.min(500,Number(document.getElementById("newProjectEnd").value)||a));
-  document.getElementById("newProjectTotal").textContent=`全${b-a+1}P`;
-}
-document.getElementById("newProjectStart").addEventListener("change",updateNewProjectTotal);
-document.getElementById("newProjectEnd").addEventListener("change",updateNewProjectTotal);
 document.getElementById("createNewProject").onclick=()=>{
   const title=document.getElementById("newProjectTitle").value.trim();
-  let a=Math.max(1,Math.min(500,Number(document.getElementById("newProjectStart").value)||1));
-  let b=Math.max(a,Math.min(500,Number(document.getElementById("newProjectEnd").value)||a));
-  if(b-a+1>500){alert("1作品500ページまでです。");return;}
+  let a=1;
+  let b=clampPageCount(document.getElementById("newProjectPages").value);
   const id=newProjectId();
   projectStore.projects[id]=freshProjectData(title,a,b);
   // フォルダ内から作成した場合は、そのフォルダに所属させる
@@ -1373,37 +1349,9 @@ function initStageDraft(p){
   stageDraftMeta=arr.map((_,i)=>({originalIndex:i}));
 }
 function renderStageEditor(){
-  const box=document.getElementById("stageEditorList"); if(!box)return;
-  box.innerHTML="";
-  stageDraft.forEach((name,i)=>{
-    const row=document.createElement("div"); row.className="stage-editor-row";
-    row.innerHTML=`<input type="text" maxlength="12" value="${escapeStageHtml(name)}" aria-label="工程名">
-      <button type="button" class="stage-mini-button" data-act="up" title="上へ">↑</button>
-      <button type="button" class="stage-mini-button" data-act="down" title="下へ">↓</button>
-      <button type="button" class="stage-mini-button danger" data-act="del" title="削除">×</button>`;
-    const input=row.querySelector("input");
-    input.addEventListener("input",()=>stageDraft[i]=input.value);
-    row.querySelector('[data-act="up"]').onclick=()=>{
-      if(!i)return;
-      [stageDraft[i-1],stageDraft[i]]=[stageDraft[i],stageDraft[i-1]];
-      [stageDraftMeta[i-1],stageDraftMeta[i]]=[stageDraftMeta[i],stageDraftMeta[i-1]];
-      renderStageEditor();
-    };
-    row.querySelector('[data-act="down"]').onclick=()=>{
-      if(i>=stageDraft.length-1)return;
-      [stageDraft[i+1],stageDraft[i]]=[stageDraft[i],stageDraft[i+1]];
-      [stageDraftMeta[i+1],stageDraftMeta[i]]=[stageDraftMeta[i],stageDraftMeta[i+1]];
-      renderStageEditor();
-    };
-    row.querySelector('[data-act="del"]').onclick=()=>{
-      if(stageDraft.length<=1){alert("工程は1つ以上必要です。");return}
-      if(!confirm(`「${stageDraft[i]||"この工程"}」を削除しますか？\nこの工程の全ページの進捗も削除されます。`))return;
-      stageDraft.splice(i,1); stageDraftMeta.splice(i,1); renderStageEditor();
-    };
-    box.appendChild(row);
-  });
-  const add=document.getElementById("stageAddButton");
-  if(add)add.disabled=false;
+ const box=document.getElementById("stageEditorList"); if(!box)return; box.innerHTML="";
+ stageDraft.forEach((name,i)=>box.appendChild(makeStageRow(name,i,stageDraft,renderStageEditor,stageDraftMeta)));
+ const add=document.getElementById("stageAddButton");if(add)add.disabled=false;
 }
 document.getElementById("stageAddButton")?.addEventListener("click",()=>{
   if(stageDraft.length>=MAX_STAGES){alert(languageSettings?.language==="en"?`Up to ${MAX_STAGES} stages.`:`工程は最大${MAX_STAGES}個までです。`);return}
@@ -1475,19 +1423,14 @@ function updateInitialTableViewportHeight(){
 })();
 
 let editingProjectId=null;
-function updateEditProjectTotal(){
-  const a=Math.max(1,Number(document.getElementById("editProjectStart").value)||1);
-  const b=Math.max(a,Number(document.getElementById("editProjectEnd").value)||a);
-  document.getElementById("editProjectTotal").textContent=`全${b-a+1}P`;
-}
+function updateEditProjectTotal(){}
 function openProjectEdit(id){
   const p=projectStore.projects[id]; if(!p)return;
   editingProjectId=id;
   initStageDraft(p);
   renderStageEditor();
   document.getElementById("editProjectTitle").value=p.title||"";
-  document.getElementById("editProjectStart").value=p.startPage||1;
-  document.getElementById("editProjectEnd").value=(p.startPage||1)+(p.totalPages||1)-1;
+  document.getElementById("editProjectPages").value=Math.min(PROJECT_PAGE_MAX,p.totalPages||1);
   document.getElementById("editProjectCreationStartDate").value=p.creationStartDate||"";
   document.getElementById("editProjectDeadline").value=p.deadline||"";
   updateEditProjectTotal();
@@ -1499,15 +1442,14 @@ function closeProjectEdit(){
   document.body.style.overflow="";
   editingProjectId=null;
 }
-["editProjectStart","editProjectEnd"].forEach(id=>document.getElementById(id).addEventListener("input",updateEditProjectTotal));
+
 document.getElementById("cancelEditProject").addEventListener("click",closeProjectEdit);
 document.getElementById("editProjectModal").addEventListener("click",e=>{if(e.target.id==="editProjectModal")closeProjectEdit();});
 document.getElementById("saveEditProject").addEventListener("click",()=>{
   if(!editingProjectId)return;
   const p=projectStore.projects[editingProjectId];
-  const newStart=Math.max(1,Number(document.getElementById("editProjectStart").value)||1);
-  const newEnd=Math.max(newStart,Number(document.getElementById("editProjectEnd").value)||newStart);
-  const newTotal=newEnd-newStart+1;
+  const newStart=p.startPage||1;
+  const newTotal=clampPageCount(document.getElementById("editProjectPages").value);
   const oldStart=p.startPage||1, oldProgress=Array.isArray(p.progress)?p.progress:[];
   const oldStages=Array.isArray(p.stages)&&p.stages.length?[...p.stages]:[...DEFAULT_STAGES];
   const cleanedStages=stageDraft.map(x=>String(x??"").trim());
@@ -2371,8 +2313,7 @@ document.querySelectorAll(".language-option").forEach(btn=>{
 /* Settings gear now saves ONLY new-project defaults. Language is untouched. */
 document.getElementById("appSettingsButton").onclick=()=>{
  refreshSettingsLanguage();
- document.getElementById("defaultStartPage").value=projectDefaults.startPage;
- document.getElementById("defaultEndPage").value=projectDefaults.endPage;
+ document.getElementById("defaultPages").value=clampPageCount(projectDefaults.endPage-projectDefaults.startPage+1);
  defaultStageDraft=[...projectDefaults.stages];
  renderDefaultStageEditor();
  localizeDefaultsSettingsUi();
@@ -2380,8 +2321,8 @@ document.getElementById("appSettingsButton").onclick=()=>{
  document.getElementById("appSettingsModal").classList.add("open");
 };
 document.getElementById("settingsSave").onclick=()=>{
- let a=Math.max(1,Math.min(500,Number(document.getElementById("defaultStartPage").value)||1));
- let b=Math.max(a,Math.min(500,Number(document.getElementById("defaultEndPage").value)||a));
+ let a=1;
+ let b=clampPageCount(document.getElementById("defaultPages").value);
  if(b-a+1>500){alert(uiLang()==="en"?"Up to 500 pages per project.":"1作品500ページまでです。");return}
  const ss=defaultStageDraft.map(x=>String(x||"").trim()).filter(Boolean);
  if(!ss.length)return;
