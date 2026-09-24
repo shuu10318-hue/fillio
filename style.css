@@ -96,7 +96,7 @@ button.state-done{
 .project-item{background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px}
 .project-item-main{display:flex;justify-content:space-between;gap:12px;align-items:center}
 .project-item-title{font-weight:800;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.project-item-meta{font-size:11px;color:var(--muted);margin-top:5px}
+.project-item-meta{font-size:11px;color:var(--muted);margin-top:5px;display:grid;grid-template-columns:1fr 1fr;gap:5px 12px;line-height:1.4}
 .project-open-button{padding:0 14px;flex:none}
 .project-edit-button{min-height:42px;padding:0 12px;border:1px solid var(--border);border-radius:9px;background:#fff;font-weight:700;flex:none}
 .project-item-actions{display:flex;gap:7px;align-items:center}
@@ -374,11 +374,6 @@ body.project-reorder-mode .project-item::before{content:none!important}
 .crumb-link:active{opacity:.5}
 .crumb-sep{padding:0 7px;color:#aaa;flex:none}
 .crumb-current{font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis}
-#folderHead{display:flex;align-items:center;gap:10px}
-#folderHead .folder-head-title{
-  flex:1;min-width:0;display:flex;align-items:center;
-  white-space:nowrap;overflow:hidden;
-}
 
 /* ---- extracted block ---- */
 
@@ -388,121 +383,45 @@ body.project-reorder-mode .project-item::before{content:none!important}
   display:none!important;
 }
 
-/* 作品一覧：操作ボタンだけ右寄せ */
-#projectHome .project-home-head{
-  display:flex!important;
-  justify-content:flex-end!important;
-  align-items:center!important;
-  min-height:44px!important;
-  margin-bottom:14px!important;
-}
-#projectHome .home-head-actions{
-  margin-left:auto!important;
-}
-
-/* プロジェクト：メモ一覧だけ右寄せ */
-#editorApp .top-title{
-  display:flex!important;
-  justify-content:flex-end!important;
-  align-items:center!important;
-  min-height:44px!important;
-  margin-bottom:10px!important;
-}
-#editorApp .top-actions{
-  margin-left:auto!important;
-}
-
 /* フォルダとプロジェクトのパンくずを同じ見た目・位置へ */
-#folderHead,
-#projectBreadcrumb{
-  box-sizing:border-box!important;
-  min-height:40px!important;
-  margin:0 0 14px 0!important;
-  padding:0 2px!important;
-  font-size:14px!important;
-  line-height:1.4!important;
-  color:var(--muted)!important;
+#projectHome #folderHead,
+#editorApp #projectBreadcrumb{
+  box-sizing:border-box;
+  height:40px;min-height:40px;
+  margin:0 0 14px;padding:0 2px;
+  display:flex;align-items:center;
+  font-size:14px;line-height:20px;color:var(--muted);
 }
-#folderHead{
-  display:flex!important;
-  align-items:center!important;
-}
+#projectHome #folderHead{gap:10px}
+#projectHome #folderHeadTitle,
 #folderHead .folder-head-title{
-  display:flex!important;
-  align-items:center!important;
-  flex:1!important;
-  min-width:0!important;
-  font-size:14px!important;
-  line-height:1.4!important;
-  font-weight:400!important;
+  height:40px;min-height:40px;
+  display:flex;align-items:center;
+  flex:1;min-width:0;
+  font-size:14px;line-height:20px;font-weight:400;
+  white-space:nowrap;overflow:hidden;
 }
-#projectBreadcrumb{
-  display:flex!important;
-  align-items:center!important;
-}
-
-/* パンくずリンクのサイズも完全統一 */
 #folderHead .crumb-link,
-#projectBreadcrumb .crumb-link,
+#projectBreadcrumb .crumb-link{padding:6px 0!important}
 #folderHead .crumb-current,
-#projectBreadcrumb .crumb-current{
-  font-size:14px!important;
-  line-height:1.4!important;
-}
-#folderHead .crumb-link,
-#projectBreadcrumb .crumb-link{
-  padding:6px 0!important;
-}
+#projectBreadcrumb .crumb-current{font-size:14px;line-height:20px}
 
 /* プロジェクト名はパンくずにも出るので、大きい重複タイトルを隠す */
-#editorApp .current-project-title-wrap{
-  display:none!important;
-}
+#editorApp .current-project-title-wrap{display:none!important}
 
 /* フォルダ側の編集操作は同じ行の右側 */
 #folderHead #folderRename,
-#folderHead #folderDelete{
-  flex:none!important;
-}
+#folderHead #folderDelete{flex:none}
 
-/* ---- extracted block ---- */
-
-/* 3画面でパンくずの開始位置・高さ・余白を固定 */
-#projectHome #folderHead,
-#editorApp #projectBreadcrumb{
-  height:40px!important;
-  min-height:40px!important;
-  margin:0 0 14px 0!important;
-  padding:0 2px!important;
-  box-sizing:border-box!important;
-  display:flex!important;
-  align-items:center!important;
-  font-size:14px!important;
-  line-height:20px!important;
-}
-#projectHome #folderHeadTitle{
-  height:40px!important;
-  min-height:40px!important;
-  display:flex!important;
-  align-items:center!important;
-  font-size:14px!important;
-  line-height:20px!important;
-}
 /* 上の操作バーも同じ高さにしてパンくずのY位置を揃える */
 #projectHome .project-home-head,
 #editorApp .top-title{
-  height:44px!important;
-  min-height:44px!important;
-  margin:0 0 10px 0!important;
-  padding:0!important;
-  box-sizing:border-box!important;
+  display:flex;justify-content:flex-end;align-items:center;
+  height:44px;min-height:44px;
+  margin:0 0 10px;padding:0;box-sizing:border-box;
 }
-/* rootではフォルダ操作を隠して作品一覧だけ表示 */
-#projectHome #folderHead .crumb-current,
-#editorApp #projectBreadcrumb .crumb-current{
-  font-size:14px!important;
-  line-height:20px!important;
-}
+#projectHome .home-head-actions,
+#editorApp .top-actions{margin-left:auto}
 
 /* ---- extracted block ---- */
 
@@ -529,7 +448,6 @@ body.project-reorder-mode .project-item::before{content:none!important}
 
 /* ---- extracted block ---- */
 
-.project-item-meta{display:grid!important;grid-template-columns:1fr 1fr;gap:5px 12px;line-height:1.4}
 .project-meta-row{display:flex;justify-content:space-between;gap:7px;min-width:0}
 .project-meta-row span{color:#999;white-space:nowrap}
 .project-meta-row b{font-weight:700;color:#555;white-space:nowrap}
