@@ -572,8 +572,8 @@ function renderProjectList(){
 </div>`}
       </div>
       <div class="project-item-actions">
-        <button class="project-edit-button project-icon-button" type="button" aria-label="${isEn?"Project settings":"プロジェクト設定"}" title="${isEn?"Project settings":"プロジェクト設定"}"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.09A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.09A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.09A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.13.37.35.7.64.96.3.27.68.42 1.08.44H21v4h-.09A1.7 1.7 0 0 0 19.4 15z"/></svg></button>
         <button class="project-drag-handle project-icon-button" type="button" aria-label="${isEn?"Reorder project":"プロジェクトを並べ替え"}" title="${isEn?"Reorder":"並べ替え"}"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7h8M8 12h8M8 17h8"/></svg></button>
+        <button class="project-edit-button project-icon-button" type="button" aria-label="${isEn?"Project settings":"プロジェクト設定"}" title="${isEn?"Project settings":"プロジェクト設定"}"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.09A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.09A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.09A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.13.37.35.7.64.96.3.27.68.42 1.08.44H21v4h-.09A1.7 1.7 0 0 0 19.4 15z"/></svg></button>
       </div>
     </div>
     <button class="project-stage-toggle" type="button" aria-expanded="${expanded}"><span>${isEn?"Stage details":"工程別"}</span><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></button>
@@ -1608,7 +1608,7 @@ function moveReorderAt(x,y){
 const reorderList=document.getElementById("projectList");
 if(reorderList){
  reorderList.addEventListener("touchstart",e=>{
-  if(e.touches.length!==1)return;
+  if(!currentFolderId||e.touches.length!==1)return;
   const handle=e.target.closest(".project-drag-handle");if(!handle)return;
   const item=handle.closest(".project-item[data-project-id]");if(!item)return;
   const t=e.touches[0];
@@ -1634,7 +1634,7 @@ if(reorderList){
 
  // PCでも確認できるようマウス操作も対応
  reorderList.addEventListener("mousedown",e=>{
-  if(e.button!==0)return;
+  if(!currentFolderId||e.button!==0)return;
   const handle=e.target.closest(".project-drag-handle");if(!handle)return;
   const item=handle.closest(".project-item[data-project-id]");if(!item)return;
   reorderStartX=e.clientX;reorderStartY=e.clientY;
@@ -1719,7 +1719,7 @@ function renderFoldersAndFilter(){
  if(!currentFolderId){
    Object.entries(projectStore.folders).filter(([,f])=>!f?.trashedAt).forEach(([fid,f])=>{
      const el=document.createElement("div");el.className="folder-item";el.dataset.folderId=fid;el.dataset.orderKey="f:"+fid;
-     el.innerHTML=`<div class="folder-row"><div><div class="folder-name"><span class="folder-icon"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h7l2 2h9v11H3z"/></svg></span><span data-user-text="1">${String(f.name).replace(/[&<>"\']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","\'":"&#39;"}[c]))}</span></div><div class="folder-meta">${folderCount(fid)}${languageSettings?.language==="en"?" projects":"作品"}</div></div></div>`;
+     el.innerHTML=`<div class="folder-row"><div><div class="folder-name"><span class="folder-icon"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h7l2 2h9v11H3z"/></svg></span><span data-user-text="1">${String(f.name).replace(/[&<>"\']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","\'":"&#39;"}[c]))}</span></div><div class="folder-meta">${folderCount(fid)}${languageSettings?.language==="en"?" projects":"作品"}</div></div><button class="folder-drag-handle project-icon-button" type="button" aria-label="${languageSettings?.language==="en"?"Reorder folder":"フォルダを並べ替え"}" title="${languageSettings?.language==="en"?"Reorder":"並べ替え"}"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7h8M8 12h8M8 17h8"/></svg></button></div>`;
      const openFolder=()=>{ showFolderView(fid); };
      // カード本体の短いタップでも開く。長押しドラッグ直後のclickは既存の抑制を尊重。
      el.addEventListener("click",e=>{
@@ -1901,7 +1901,7 @@ document.addEventListener("touchend",()=>{
 // フォルダ＋作品 共通並び替え（ルート一覧）
 (function(){
  const list=document.getElementById("projectList"); if(!list)return;
- let drag=null,hold=null,sx=0,sy=0,dropFolderId=null,dragGhost=null,trashOver=false;
+ let drag=null,hold=null,sx=0,sy=0,dropFolderId=null,dragGhost=null,trashOver=false,ghostFixedX=0;
  const HOLD=480,CANCEL=12;
  const visibleItems=()=>[...list.querySelectorAll(":scope > .folder-item,:scope > .project-item")]
    .filter(el=>el.classList.contains("folder-item")||el.style.display!=="none");
@@ -1913,7 +1913,7 @@ document.addEventListener("touchend",()=>{
    persistProjectStore();
  }
  function removeGhost(){if(dragGhost){dragGhost.remove();dragGhost=null}}
- function updateGhost(t){if(!dragGhost)return;dragGhost.style.left=t.clientX+"px";dragGhost.style.top=t.clientY+"px"}
+ function updateGhost(t){if(!dragGhost)return;dragGhost.style.left=ghostFixedX+"px";dragGhost.style.top=t.clientY+"px"}
  function setTrashState(t){
    const zone=document.getElementById("dragTrashZone");
    if(!zone)return;
@@ -1954,16 +1954,15 @@ document.addEventListener("touchend",()=>{
    if(currentFolderId||e.touches.length!==1)return;
    const item=e.target.closest(".folder-item,.project-item"); if(!item)return;
    const isProject=item.classList.contains("project-item");
-   const projectHandle=e.target.closest(".project-drag-handle");
-   // プロジェクトは ≡ 専用。フォルダは従来どおりカードの長押し。
-   if(isProject&&!projectHandle)return;
-   if(!isProject&&e.target.closest("button,a,input,textarea,select,label"))return;
+   const dragHandle=e.target.closest(isProject?".project-drag-handle":".folder-drag-handle");
+   // プロジェクトもフォルダも ≡ 専用。同じ操作で即ドラッグ開始。
+   if(!dragHandle)return;
    const t=e.touches[0];sx=t.clientX;sy=t.clientY;
    clearTimeout(hold);
    const beginDrag=()=>{
      drag=item; dropFolderId=null; trashOver=false; item.classList.add("mixed-root-dragging");
      dragGhost=item.cloneNode(true);dragGhost.classList.remove("mixed-root-dragging");dragGhost.classList.add("drag-ghost");
-     dragGhost.querySelectorAll("button").forEach(b=>b.setAttribute("tabindex","-1"));document.body.appendChild(dragGhost);updateGhost(t);
+     dragGhost.querySelectorAll("button").forEach(b=>b.setAttribute("tabindex","-1"));document.body.appendChild(dragGhost);ghostFixedX=item.getBoundingClientRect().left+item.getBoundingClientRect().width/2;updateGhost(t);
      document.getElementById("dragTrashZone")?.classList.add("show");
      window.__mixedRootDragging=true;
      window.__suppressMixedClickUntil=Date.now()+800;
@@ -1976,7 +1975,7 @@ document.addEventListener("touchend",()=>{
      document.querySelectorAll(".folder-item.drag-over").forEach(x=>x.classList.remove("drag-over"));
      if(navigator.vibrate)navigator.vibrate(isProject?20:28);
    };
-   if(isProject)beginDrag(); else hold=setTimeout(beginDrag,HOLD);
+   beginDrag();
  },{capture:true,passive:true});
  list.addEventListener("touchmove",e=>{
    if(currentFolderId||e.touches.length!==1)return;
@@ -2715,7 +2714,6 @@ function auditDynamicUiLanguage(root=document){
   document.querySelectorAll('.project-item').forEach(card=>{
     const rows=card.querySelectorAll('.project-meta-row span');
     rows.forEach(el=>{const t=el.textContent.trim(); if(DYNAMIC_UI_EN[t])el.textContent=DYNAMIC_UI_EN[t]});
-    const edit=card.querySelector('.project-edit-button');if(edit)edit.textContent="Edit";
     const del=card.querySelector('.project-delete-button');if(del)del.textContent="Delete this project";
   });
   localizeOpenUi?.();
@@ -2856,8 +2854,8 @@ setTimeout(()=>auditDynamicUiLanguage(document),0);
     const hb=$("libraryHelpButton");if(hb)hb.setAttribute("aria-label",en?"Library Help":"Libraryの使い方");
     const hc=$("libraryHelpClose");if(hc)hc.setAttribute("aria-label",en?"Close":"閉じる");
     const items=$("libraryHelpModal")?.querySelectorAll(".help-item");
-    const ja=[["プロジェクトを作る","右上の「＋」→「＋ プロジェクト」から新しいプロジェクトを作成します。"],["タップして開く","✎プロジェクトをタップすると入力ページへ、📁フォルダをタップするとフォルダが開きます。"],["長押しで整理","プロジェクトやフォルダを長押しすると、並び替え・フォルダ移動・ゴミ箱への移動ができます。"],["フォルダで整理","「＋」からフォルダを作成できます。プロジェクトをフォルダにまとめて整理できます。"],["プロジェクトを編集","プロジェクトの⚙️から、プロジェクト名・ページ・日付・工程を変更できます。"],["Library設定","Library右上の⚙️からアプリ設定を開けます。新規プロジェクトの初期値やテーマカラー、データ管理などを設定できます。"],["新規プロジェクトのデフォルト","新しく作るプロジェクトの制作ページと工程の初期値を設定できます。作成後はプロジェクトごとに変更できます。"],["テーマカラー","完了セルや選択状態などに使うアクセントカラーを変更できます。"],["ゴミ箱","削除したプロジェクトやフォルダはゴミ箱へ移動します。必要なら復元できます。"],["バックアップ","設定の「データ管理」から、Library全体をJSONファイルにバックアップ・復元できます。"]];
-    const ee=[["Create a project","Use + → + Project at the top right to create a new project."],["Tap to open","Tap ✎ on a project to open its input page, or tap 📁 on a folder to open the folder."],["Press and hold to organize","Press and hold a project or folder to reorder it, move it to a folder, or move it to Trash."],["Organize with folders","Create folders from the + button and organize projects inside them."],["Edit a project","Use ⚙️ on a project to change its name, pages, dates, and stages."],["Library settings","Open App Settings with ⚙️ at the top right of Library. You can set new-project defaults, the theme color, data management, and more."],["New Project Defaults","Set the initial page range and stages for newly created projects. You can change them per project after creation."],["Theme Color","Change the accent color used for completed cells, selected states, and other highlights."],["Trash","Deleted projects and folders move to Trash and can be restored when needed."],["Backup","Use Data Management in Settings to back up or restore the entire Library as a JSON file."]];
+    const ja=[["プロジェクトを作る","右上の「＋」→「＋ プロジェクト」から新しいプロジェクトを作成します。"],["タップして開く","✎プロジェクトをタップすると入力ページへ、📁フォルダをタップするとフォルダが開きます。"],["≡で整理","プロジェクトやフォルダの≡をドラッグすると、上下に自由に並び替えできます。プロジェクトはフォルダへ重ねて移動することもできます。"],["フォルダで整理","「＋」からフォルダを作成できます。プロジェクトをフォルダにまとめて整理できます。"],["プロジェクトを編集","プロジェクトの⚙️から、プロジェクト名・ページ・日付・工程を変更できます。"],["Library設定","Library右上の⚙️からアプリ設定を開けます。新規プロジェクトの初期値やテーマカラー、データ管理などを設定できます。"],["新規プロジェクトのデフォルト","新しく作るプロジェクトの制作ページと工程の初期値を設定できます。作成後はプロジェクトごとに変更できます。"],["テーマカラー","完了セルや選択状態などに使うアクセントカラーを変更できます。"],["ゴミ箱","削除したプロジェクトやフォルダはゴミ箱へ移動します。必要なら復元できます。"],["バックアップ","設定の「データ管理」から、Library全体をJSONファイルにバックアップ・復元できます。"]];
+    const ee=[["Create a project","Use + → + Project at the top right to create a new project."],["Tap to open","Tap ✎ on a project to open its input page, or tap 📁 on a folder to open the folder."],["Reorder with ≡","Drag ≡ on a project or folder to reorder items freely. You can also drag a project onto a folder to move it there."],["Organize with folders","Create folders from the + button and organize projects inside them."],["Edit a project","Use ⚙️ on a project to change its name, pages, dates, and stages."],["Library settings","Open App Settings with ⚙️ at the top right of Library. You can set new-project defaults, the theme color, data management, and more."],["New Project Defaults","Set the initial page range and stages for newly created projects. You can change them per project after creation."],["Theme Color","Change the accent color used for completed cells, selected states, and other highlights."],["Trash","Deleted projects and folders move to Trash and can be restored when needed."],["Backup","Use Data Management in Settings to back up or restore the entire Library as a JSON file."]];
     items?.forEach((it,i)=>{const a=(en?ee:ja)[i];if(!a)return;it.querySelector(".help-item-title").textContent=a[0];it.querySelector(".help-item-text").textContent=a[1]});
     document.querySelectorAll(".theme-color-option").forEach(btn=>{const label=en?btn.dataset.en:btn.dataset.ja;btn.setAttribute("aria-label",label);btn.title=label;btn.querySelector(".theme-option-label").textContent=label});
   }

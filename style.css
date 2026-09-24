@@ -1304,3 +1304,8 @@ input{border-color:var(--border);border-radius:12px}
 .project-drag-handle.project-icon-button{width:34px;height:34px;min-height:34px;padding:7px;display:grid;place-items:center;border:0;background:transparent;color:var(--muted);border-radius:9px;touch-action:none;cursor:grab}
 .project-drag-handle.project-icon-button .icon-line{width:19px;height:19px}
 .project-drag-handle.project-icon-button:active{cursor:grabbing;background:var(--soft);color:var(--text)}
+
+/* Library reorder v10: same ≡ handle for projects/folders; vertical drag ghost */
+.folder-drag-handle.project-icon-button{width:34px;height:34px;min-height:34px;padding:7px;display:grid;place-items:center;border:0;background:transparent;color:var(--muted);border-radius:9px;touch-action:none;cursor:grab;flex:none}
+.folder-drag-handle.project-icon-button .icon-line{width:19px;height:19px}
+.folder-drag-handle.project-icon-button:active{cursor:grabbing;background:var(--soft);color:var(--text)}
