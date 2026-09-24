@@ -1280,14 +1280,15 @@ input{border-color:var(--border);border-radius:12px}
 .page-step-value{width:100%!important;height:48px!important;box-sizing:border-box;text-align:center!important;border:0!important;border-bottom:1px solid var(--border)!important;border-radius:0!important;background:transparent!important;padding:0!important;font-size:24px!important;font-weight:700!important;color:var(--text)!important;-moz-appearance:textfield}
 .page-step-value::-webkit-inner-spin-button,.page-step-value::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .stage-editor-list{gap:0;margin-top:6px;border-top:1px solid var(--border)}
-.stage-editor-row{display:grid;grid-template-columns:minmax(0,1fr) 40px;gap:4px;align-items:center;min-height:48px;border-bottom:1px solid var(--border);position:relative}
-.stage-editor-row input{min-width:0;height:46px;border:0!important;border-radius:0!important;background:transparent!important;padding:0 8px!important;font:inherit;font-weight:600;box-sizing:border-box;outline:none}
-.stage-editor-row input[readonly]{cursor:pointer}
-.stage-editor-row.editing input{padding-right:42px!important}
-.stage-drag-handle{grid-column:2;width:40px;height:40px;border:0;background:transparent;color:var(--muted);font-size:22px;line-height:1;touch-action:none;cursor:grab}
+.stage-editor-row{display:grid;grid-template-columns:40px minmax(0,1fr) 40px 40px;gap:2px;align-items:center;min-height:48px;border-bottom:1px solid var(--border);position:relative}
+.stage-editor-row input{min-width:0;height:46px;border:0!important;border-radius:0!important;background:transparent!important;padding:0 4px!important;font:inherit;font-weight:600;box-sizing:border-box;outline:none}
+.stage-editor-row input[readonly]{cursor:default}
+.stage-edit-button,.stage-delete-button,.stage-drag-handle{width:40px;height:40px;border:0;background:transparent;color:var(--muted);line-height:1}
+.stage-edit-button{font-size:19px}
+.stage-delete-button{font-size:17px;filter:grayscale(1);opacity:.72}
+.stage-drag-handle{font-size:22px;touch-action:none;cursor:grab}
 .stage-drag-handle:active{cursor:grabbing}
 .stage-editor-row.dragging{opacity:.62;background:#fff;z-index:2}
-.stage-delete-button{display:none;position:absolute;right:44px;top:5px;width:36px;height:36px;border:0;background:transparent;color:#a44;font-size:20px}
-.stage-editor-row.editing .stage-delete-button{display:block}
+.stage-editor-row.editing input{border-bottom:1px solid var(--text)!important}
 .stage-add-button{height:44px;margin-top:8px;border:0;background:transparent;text-align:left;padding:0 8px;border-radius:8px;color:var(--text);font-weight:700}
 .stage-add-button:active{background:rgba(0,0,0,.045)}

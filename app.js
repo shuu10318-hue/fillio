@@ -89,27 +89,54 @@ function setupPageStepper(inputId){
 }
 function makeStageRow(name,i,arr,render,meta){
  const row=document.createElement("div"); row.className="stage-editor-row"; row.dataset.stageIndex=String(i);
- row.innerHTML=`<input type="text" maxlength="12" value="${escapeStageHtml(name)}" aria-label="工程名" readonly><button type="button" class="stage-delete-button" title="削除" aria-label="削除">×</button><button type="button" class="stage-drag-handle" title="並べ替え" aria-label="並べ替え">≡</button>`;
- const input=row.querySelector("input"),del=row.querySelector(".stage-delete-button"),handle=row.querySelector(".stage-drag-handle");
- input.addEventListener("click",()=>{input.readOnly=false;row.classList.add("editing");input.focus();input.select()});
- input.addEventListener("input",()=>arr[i]=input.value);
- input.addEventListener("blur",()=>setTimeout(()=>{input.readOnly=true;row.classList.remove("editing")},120));
- del.addEventListener("pointerdown",e=>e.preventDefault());
- del.addEventListener("click",()=>{if(arr.length<=1){alert(languageSettings?.language==="en"?"At least one stage is required.":"工程は1つ以上必要です。");return}arr.splice(i,1);if(meta)meta.splice(i,1);render()});
- let from=i,last=i;
- handle.addEventListener("pointerdown",e=>{e.preventDefault();from=i;last=i;row.classList.add("dragging");handle.setPointerCapture?.(e.pointerId)});
+ row.innerHTML=`<button type="button" class="stage-edit-button" title="名前を変更" aria-label="名前を変更">✎</button><input type="text" maxlength="12" value="${escapeStageHtml(name)}" aria-label="工程名" readonly><button type="button" class="stage-delete-button" title="工程を削除" aria-label="工程を削除"><span aria-hidden="true">🗑</span></button><button type="button" class="stage-drag-handle" title="並べ替え" aria-label="並べ替え">≡</button>`;
+ const input=row.querySelector("input"),edit=row.querySelector(".stage-edit-button"),del=row.querySelector(".stage-delete-button"),handle=row.querySelector(".stage-drag-handle");
+ edit.addEventListener("click",()=>{input.readOnly=false;row.classList.add("editing");input.focus();input.select()});
+ input.addEventListener("input",()=>arr[Number(row.dataset.stageIndex)]=input.value);
+ input.addEventListener("blur",()=>{input.readOnly=true;row.classList.remove("editing")});
+ del.addEventListener("click",()=>{
+   const idx=Number(row.dataset.stageIndex);
+   if(arr.length<=1){alert(languageSettings?.language==="en"?"At least one stage is required.":"工程は1つ以上必要です。");return}
+   const label=arr[idx]||"";
+   const ok=confirm(languageSettings?.language==="en"?`Delete stage “${label}”?`:`工程「${label}」を削除しますか？`);
+   if(!ok)return;
+   arr.splice(idx,1);if(meta)meta.splice(idx,1);render();
+ });
+ let dragging=false,last=i,pointerId=null;
+ const finishDrag=()=>{
+   if(!dragging)return;
+   dragging=false;row.classList.remove("dragging");
+   try{if(pointerId!==null&&handle.hasPointerCapture?.(pointerId))handle.releasePointerCapture(pointerId)}catch{}
+   pointerId=null;render();
+ };
+ handle.addEventListener("pointerdown",e=>{
+   if(e.pointerType==="mouse"&&e.button!==0)return;
+   e.preventDefault(); dragging=true; last=Number(row.dataset.stageIndex); pointerId=e.pointerId;
+   row.classList.add("dragging"); handle.setPointerCapture?.(e.pointerId);
+ });
  handle.addEventListener("pointermove",e=>{
-   if(!row.classList.contains("dragging"))return;
-   const target=document.elementFromPoint(e.clientX,e.clientY)?.closest?.(".stage-editor-row");
-   if(!target||target.parentElement!==row.parentElement)return;
-   const to=Number(target.dataset.stageIndex); if(!Number.isInteger(to)||to===last)return;
+   if(!dragging)return;
+   e.preventDefault();
+   const siblings=[...row.parentElement.querySelectorAll(":scope > .stage-editor-row")];
+   let to=last;
+   for(let idx=0;idx<siblings.length;idx++){
+     const el=siblings[idx]; if(el===row)continue;
+     const r=el.getBoundingClientRect();
+     if(e.clientY<r.top+r.height/2){to=idx-(idx>last?1:0);break}
+     to=idx;
+   }
+   to=Math.max(0,Math.min(arr.length-1,to));
+   if(to===last)return;
    const [item]=arr.splice(last,1);arr.splice(to,0,item);
    if(meta){const [m]=meta.splice(last,1);meta.splice(to,0,m)}
-   if(to>last)target.after(row);else target.before(row);
+   const rows=[...row.parentElement.querySelectorAll(":scope > .stage-editor-row")].filter(el=>el!==row);
+   if(to>=rows.length)row.parentElement.appendChild(row);else row.parentElement.insertBefore(row,rows[to]);
    [...row.parentElement.children].forEach((el,idx)=>el.dataset.stageIndex=String(idx));
    last=to;
  });
- const end=()=>{row.classList.remove("dragging");render()};handle.addEventListener("pointerup",end);handle.addEventListener("pointercancel",end);
+ handle.addEventListener("pointerup",finishDrag);
+ handle.addEventListener("pointercancel",finishDrag);
+ handle.addEventListener("lostpointercapture",finishDrag);
  return row;
 }
 let defaultStageDraft=[];
