@@ -955,9 +955,11 @@ input{border-color:var(--border);border-radius:12px}
 .folder-add{display:inline-flex;align-items:center;gap:7px}
 .folder-add .icon-line{width:17px;height:17px}
 .home-head-actions .language-button,.home-head-actions #appSettingsButton{font-size:0;display:inline-flex;align-items:center;justify-content:center}
-.drag-trash-zone{position:fixed;left:50%;bottom:18px;transform:translate(-50%,18px);width:min(360px,calc(100% - 28px));height:64px;border:1.5px dashed #888;border-radius:16px;background:rgba(255,255,255,.96);display:flex;align-items:center;justify-content:center;gap:9px;font-size:13px;font-weight:800;color:#555;z-index:3000;opacity:0;pointer-events:none;transition:opacity .12s ease,transform .12s ease,background .12s ease}
+.drag-trash-zone{position:fixed;left:50%;bottom:18px;transform:translate(-50%,18px);width:min(360px,calc(100% - 28px));height:64px;border:1.5px dashed #888;border-radius:16px;background:rgba(255,255,255,.96);display:flex;align-items:center;justify-content:center;gap:9px;font-size:13px;font-weight:800;color:#555;z-index:3000;opacity:0;pointer-events:none;transition:opacity .12s ease,transform .12s ease,background .12s ease,border-color .12s ease,color .12s ease,box-shadow .12s ease}
 .drag-trash-zone.show{opacity:1;transform:translate(-50%,0)}
-.drag-trash-zone.over{background:#f0f0f0;border-style:solid;color:#111}
+.drag-trash-zone.over{background:color-mix(in srgb,var(--accent) 10%,#fff);border-style:solid;border-color:var(--accent);color:var(--accent);transform:translate(-50%,-3px) scale(1.025);box-shadow:0 8px 24px color-mix(in srgb,var(--accent) 18%,transparent)}
+.drag-trash-zone .icon-line{transition:transform .12s ease,color .12s ease}
+.drag-trash-zone.over .icon-line{transform:scale(1.18)}
 .drag-trash-zone .icon-line{width:22px;height:22px}
 .trash-open-button{height:38px;padding:0 11px;border:1px solid var(--border);border-radius:9px;display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:12px}
 .trash-open-button .icon-line{width:17px;height:17px}
@@ -1328,3 +1330,12 @@ input{border-color:var(--border);border-radius:12px}
 /* Stable drag target: keep Trash visible for the full Library pointer-drag lifecycle. */
 body.library-drag-active #dragTrashZone{opacity:1!important;visibility:visible!important;transform:translate(-50%,0) scale(1)!important}
 body.library-drag-active #dragTrashZone.over{transform:translate(-50%,0) scale(1.045)!important}
+/* v16: clear visual feedback when a dragged Library item is over Trash */
+.drag-trash-zone.over{
+  transform:translate(-50%,-3px) scale(1.055)!important;
+  background:color-mix(in srgb,var(--accent) 10%,#fff)!important;
+  border:2px solid var(--accent)!important;
+  color:var(--accent)!important;
+  box-shadow:0 8px 24px color-mix(in srgb,var(--accent) 18%,transparent)!important;
+}
+.drag-trash-zone.over .icon-line{transform:scale(1.18)!important}
