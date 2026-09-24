@@ -251,15 +251,11 @@ body.project-reorder-mode .project-item::before{content:none!important}
 .stage-add-button{width:100%;height:40px;margin-top:8px}
 .stage-add-button:disabled{opacity:.4}
 .stage-editor-note{font-size:10px;color:var(--muted);margin-top:6px;line-height:1.5}
-.table-head,.page-row{grid-template-columns:42px repeat(var(--stage-count,5),minmax(0,1fr))!important}
 
 /* ---- extracted block ---- */
 
 /* 工程数に合わせて、見出しと実際のマスを同じ列数で描画 */
 #tableHead,
-#pages .page-row{
-  grid-template-columns:25px repeat(var(--stage-count,5),minmax(0,1fr))!important;
-}
 
 /* ---- extracted block ---- */
 
@@ -702,52 +698,9 @@ input{border-color:var(--border);border-radius:12px}
 }
 
 
-/* --- Stage table axis behavior ---
-   Horizontal: page numbers stay fixed; stage headers move with cells.
-   Vertical: stage header row stays fixed; page numbers move with their rows. */
+/* --- Stage production grid: shared dimensions and cell geometry --- */
 :root{--progress-cell-size:clamp(48px,11vw,58px);--progress-page-col:28px;--progress-grid-gap:3px}
 .prototype-input-card{min-width:0;overflow:visible}
-#tableHead{
-  position:sticky;
-  top:0;
-  z-index:20;
-  display:grid;
-  grid-template-columns:var(--progress-page-col) minmax(0,1fr)!important;
-  gap:var(--progress-grid-gap)!important;
-  width:100%;
-  margin-bottom:5px;
-  background:var(--card);
-}
-.table-head-corner{
-  width:var(--progress-page-col);
-  min-width:var(--progress-page-col);
-  background:var(--card);
-  z-index:2;
-}
-.stage-head-viewport{overflow:hidden;min-width:0}
-.stage-head-track{
-  display:flex;
-  gap:var(--progress-grid-gap);
-  width:max-content;
-  will-change:transform;
-}
-#tableHead .head{
-  flex:0 0 var(--progress-cell-size);
-  width:var(--progress-cell-size);
-  min-width:var(--progress-cell-size);
-}
-.stage-table-scroll{
-  display:block;
-  width:100%;
-  max-width:100%;
-  min-width:0;
-  overflow-x:auto;
-  overflow-y:visible;
-  -webkit-overflow-scrolling:touch;
-  overscroll-behavior-x:contain;
-  touch-action:pan-x pan-y;
-  padding-bottom:4px;
-}
 #pages .page-row{
   width:max-content;
   min-width:max-content;
@@ -760,87 +713,8 @@ input{border-color:var(--border);border-radius:12px}
   min-width:var(--progress-cell-size);
   min-height:var(--progress-cell-size);
 }
-/* 横方向だけ追従する列。top は指定しない。 */
-#pages .page-number{
-  position:sticky;
-  left:0;
-  z-index:5;
-  width:var(--progress-page-col);
-  min-width:var(--progress-page-col);
-  align-self:stretch;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:var(--card);
-}
-@media(max-width:360px){:root{--progress-cell-size:48px;--progress-page-col:26px;--progress-grid-gap:2px}}
-
-/* --- robust vertical follow for stage header --- */
-.table-head-anchor{position:relative;height:auto;margin-bottom:5px}
-#tableHead{position:relative!important;top:auto!important;margin-bottom:0!important}
-#tableHead.stage-head-fixed{position:fixed!important;z-index:100;top:0!important;margin:0!important;background:var(--card);box-sizing:border-box}
-.table-head-anchor.stage-head-fixed-active{height:var(--stage-head-height,24px)}
-
-/* Long-press source marker stays inside the cell so row 1 is never visually clipped. */
 #pages .progress-cell.paint-source{outline:none!important;box-shadow:inset 0 0 0 2px #777}
-
-/* Stage header horizontal sync must be immediate: never animate/interpolate it. */
-.stage-head-track{
-  transition:none!important;
-  animation:none!important;
-  scroll-behavior:auto!important;
-  will-change:auto!important;
-}
-
-/* --- Native horizontal header movement: no JS scrollLeft sync --- */
-#tableHead{
-  display:grid!important;
-  width:max-content!important;
-  min-width:max-content!important;
-  grid-template-columns:var(--progress-page-col) repeat(var(--stage-count,5),var(--progress-cell-size))!important;
-  gap:var(--progress-grid-gap)!important;
-}
-#tableHead .head{
-  width:var(--progress-cell-size)!important;
-  min-width:var(--progress-cell-size)!important;
-}
-#tableHead .table-head-corner{
-  position:sticky;
-  left:0;
-  z-index:6;
-}
-.stage-head-viewport,.stage-head-track{display:contents!important;transform:none!important}
-
-/* Native two-axis table behavior: keep the header in the same horizontal scroller. */
-.stage-table-scroll{overflow-x:auto!important;overflow-y:clip!important;}
-.table-head-anchor{position:sticky!important;top:0!important;z-index:100!important;height:auto!important;margin-bottom:5px!important;background:var(--card)!important;}
-.table-head-anchor.stage-head-fixed-active{height:auto!important;}
-#tableHead,#tableHead.stage-head-fixed{position:relative!important;top:auto!important;left:auto!important;margin:0!important;width:max-content!important;min-width:max-content!important;transform:none!important;}
-
-
-/* --- 2026-09-23: native horizontal + vertical-only header follow --- */
-.stage-table-scroll{
-  position:relative!important;
-  overflow-x:auto!important;
-  overflow-y:auto!important;
-}
-.table-head-anchor{
-  position:relative!important;
-  top:auto!important;
-  z-index:100!important;
-  margin-bottom:5px!important;
-  background:var(--card)!important;
-  will-change:transform;
-}
-#tableHead,#tableHead.stage-head-fixed{
-  position:relative!important;
-  top:auto!important;
-  left:auto!important;
-  transform:none!important;
-}
-/* Vertical movement is applied only to the anchor. Horizontal movement stays native. */
-.table-head-anchor.is-vertically-following{z-index:120!important;}
-
+@media(max-width:360px){:root{--progress-cell-size:48px;--progress-page-col:26px;--progress-grid-gap:2px}}
 
 /* --- Excel-style native two-axis production grid (2026-09-23 rebuild) ---
    The grid itself owns both scroll axes, so sticky top/left are browser-native.

@@ -1878,22 +1878,17 @@ document.addEventListener("touchend",()=>{
      projectStore.folders[fid].trashedAt=Date.now();
      projectStore.rootOrder=(projectStore.rootOrder||[]).filter(k=>k!=="f:"+fid);
      persistProjectStore();
-     removedByTrash=true;
    }else if(trashOver&&pid&&projectStore.projects?.[pid]){
      const p=projectStore.projects[pid];p.trashedAt=Date.now();p.folderId=null;
      projectStore.rootOrder=(projectStore.rootOrder||[]).filter(k=>k!=="p:"+pid);
      projectStore.projectOrder=(projectStore.projectOrder||[]).filter(id=>id!==pid);
      persistProjectStore();
-     removedByTrash=true;
    }else if(dropFolderId&&pid&&projectStore.projects?.[pid]){
      projectStore.projects[pid].folderId=dropFolderId;
      projectStore.rootOrder=(projectStore.rootOrder||[]).filter(k=>k!=="p:"+pid);
      persistProjectStore();
    }else saveCurrentOrder();
    drag.classList.remove("library-stage-dragging");
-   // The data is already in Trash. Remove the dragged Library node before
-   // the deferred render so its temporary reordered position cannot linger.
-   if(removedByTrash&&drag.isConnected)drag.remove();
    clearTargets();
    document.getElementById("dragTrashZone")?.classList.remove("show","over");
    document.body.classList.remove("library-drag-active");
