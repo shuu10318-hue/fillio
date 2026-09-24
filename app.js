@@ -1464,7 +1464,7 @@ function renderFoldersAndFilter(){
  }
  [...list.querySelectorAll(".project-item[data-project-id]")].forEach(el=>{
    const p=projectStore.projects[el.dataset.projectId];
-   el.style.display=((p?.folderId||null)===currentFolderId)?"":"none";
+   el.style.display=(!p?.trashedAt&&(p?.folderId||null)===currentFolderId)?"":"none";
  });
  if(currentFolderId){
    // フォルダ内の各作品に「フォルダから戻す」を表示
@@ -1505,7 +1505,7 @@ function renderFoldersAndFilter(){
    });
    const rank=new Map(projectStore.rootOrder.map((k,i)=>[k,i]));
    const mixed=[...list.querySelectorAll(".folder-item[data-folder-id],.project-item[data-project-id]")]
-     .filter(el=>el.classList.contains("folder-item")||!projectStore.projects[el.dataset.projectId]?.folderId);
+     .filter(el=>el.classList.contains("folder-item")||(!projectStore.projects[el.dataset.projectId]?.trashedAt&&!projectStore.projects[el.dataset.projectId]?.folderId));
    mixed.sort((a,b)=>(rank.get(a.dataset.orderKey)??999999)-(rank.get(b.dataset.orderKey)??999999));
    mixed.forEach(el=>list.append(el));
  }
