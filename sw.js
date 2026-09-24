@@ -1,4 +1,4 @@
-const CACHE_NAME = "fillio-shell-20260924-7";
+const CACHE_NAME = "fillio-shell-20260924-10";
 const APP_SHELL = [
   "./",
   "./index.html",
