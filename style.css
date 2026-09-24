@@ -1324,3 +1324,7 @@ input{border-color:var(--border);border-radius:12px}
 #projectHome .library-stage-dragging{opacity:.68;background:var(--surface,#fff);position:relative;z-index:4;transform:none!important}
 #projectHome .library-stage-dragging .project-drag-handle,
 #projectHome .library-stage-dragging .folder-drag-handle{cursor:grabbing}
+
+/* Stable drag target: keep Trash visible for the full Library pointer-drag lifecycle. */
+body.library-drag-active #dragTrashZone{opacity:1!important;visibility:visible!important;transform:translate(-50%,0) scale(1)!important}
+body.library-drag-active #dragTrashZone.over{transform:translate(-50%,0) scale(1.045)!important}

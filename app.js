@@ -8,7 +8,12 @@ function setupPageStepper(inputId){
    let timer=null,repeat=null,started=0;
    const stop=()=>{clearTimeout(timer);clearInterval(repeat);timer=repeat=null};
    btn.addEventListener("pointerdown",e=>{
-     e.preventDefault(); const d=Number(btn.dataset.step)||0; set(Number(input.value)+d); started=Date.now();
+     e.preventDefault();
+     // A stepper action must never summon/retain the numeric keyboard.
+     // Blur the page input (or any other focused field) before changing the value.
+     if(document.activeElement instanceof HTMLElement)document.activeElement.blur();
+     input.blur();
+     const d=Number(btn.dataset.step)||0; set(Number(input.value)+d); started=Date.now();
      timer=setTimeout(()=>{repeat=setInterval(()=>{const held=Date.now()-started;const jump=held>2200?5:1;set(Number(input.value)+d*jump)},heldInterval())},420);
      function heldInterval(){return 75}
      btn.setPointerCapture?.(e.pointerId);
@@ -1885,6 +1890,7 @@ document.addEventListener("touchend",()=>{
    drag.classList.remove("library-stage-dragging");
    clearTargets();
    document.getElementById("dragTrashZone")?.classList.remove("show","over");
+   document.body.classList.remove("library-drag-active");
    cleanup(); drag=null;pointerId=null;dropFolderId=null;trashOver=false;window.__libraryStageDragging=false;
    window.__suppressMixedClickUntil=Date.now()+250;
    setTimeout(renderFoldersAndFilter,0);
@@ -1914,6 +1920,7 @@ document.addEventListener("touchend",()=>{
    e.preventDefault();e.stopPropagation();
    drag=item;pointerId=e.pointerId;startIndex=activeItems().indexOf(item);dropFolderId=null;trashOver=false;
    window.__libraryStageDragging=true;
+   document.body.classList.add("library-drag-active");
    drag.classList.add("library-stage-dragging");
    document.getElementById("dragTrashZone")?.classList.add("show");
    window.addEventListener("pointermove",onMove,{passive:false});
