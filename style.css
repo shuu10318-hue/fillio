@@ -520,7 +520,7 @@ input{border-color:var(--border);border-radius:12px}
 #editorApp #projectBreadcrumb .crumb-current{color:#34373b!important}
 .memo-list-button,.settings-button,.language-button,.project-add-button,.folder-add,
 .backup-button,.nav-button,.page-button{
-  border-color:var(--border)!important;border-radius:12px!important;
+  border-color:var(--border);border-radius:12px;
   box-shadow:0 2px 8px rgba(32,40,50,.025);
 }
 
