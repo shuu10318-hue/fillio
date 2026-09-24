@@ -1339,3 +1339,15 @@ body.library-drag-active #dragTrashZone.over{transform:translate(-50%,0) scale(1
   box-shadow:0 8px 24px color-mix(in srgb,var(--accent) 18%,transparent)!important;
 }
 .drag-trash-zone.over .icon-line{transform:scale(1.18)!important}
+
+
+/* v17: unambiguous Trash hover/drop feedback. ID selector intentionally wins older rules. */
+#dragTrashZone.over{
+  background:var(--accent)!important;
+  border:2px solid var(--accent)!important;
+  color:#fff!important;
+  transform:translate(-50%,0) scale(1.06)!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.20)!important;
+}
+#dragTrashZone.over .icon-line{transform:scale(1.22)!important;color:#fff!important;}
+#dragTrashZone.over #dragTrashLabel{color:#fff!important;}
