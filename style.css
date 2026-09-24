@@ -1011,7 +1011,7 @@ body.library-drag-active .drag-trash-zone.over{
 
 
 /* Folder project action: curved return arrow below edit */
-.project-item-actions{display:flex;flex-direction:column;align-items:center;gap:7px}
+.project-item-actions{display:flex;flex-direction:column;align-items:center;gap:7px;padding-top:0}
 .folder-eject.project-icon-button{width:32px;height:32px;padding:6px;display:grid;place-items:center;border:0;background:transparent;color:var(--muted);border-radius:9px}
 .folder-eject.project-icon-button .icon-line{width:18px;height:18px}
 .folder-eject.project-icon-button:hover{background:var(--soft);color:var(--text)}
@@ -1020,7 +1020,7 @@ body.library-drag-active .drag-trash-zone.over{
 .project-open-title{display:flex;align-items:center;gap:7px;width:100%;min-width:0;padding:0;border:0;background:transparent;color:var(--text);text-align:left;cursor:pointer}
 .project-open-title .icon-line{width:17px;height:17px;flex:0 0 17px;color:var(--muted)}
 .project-open-title .project-item-title{min-width:0;display:block}
-.project-edit-button.project-icon-button{width:34px;height:34px;min-height:34px;padding:7px;display:grid;place-items:center;border:0;background:transparent;color:var(--muted);border-radius:9px}
+.project-edit-button.project-icon-button{width:34px;height:34px;min-height:34px;padding:7px;display:grid;place-items:center;border:0;background:transparent;color:var(--muted);border-radius:9px;margin-top:0}
 .project-edit-button.project-icon-button .icon-line{width:19px;height:19px}
 .project-edit-button.project-icon-button:hover{background:var(--soft);color:var(--text)}
 
@@ -1043,8 +1043,6 @@ body.library-drag-active .drag-trash-zone.over{
 
 /* ===== Library stage-detail polish 2026-09-23 ===== */
 .project-open-title{min-height:34px}
-.project-item-actions{padding-top:0!important}
-.project-edit-button.project-icon-button{margin-top:0!important}
 .project-stage-track.dual{position:relative;overflow:hidden}
 .project-stage-track.dual>i{position:absolute;left:0;top:0;height:100%;border-radius:inherit}
 .project-stage-track.dual>.started{background:color-mix(in srgb,var(--accent) 34%,#dfe2e5)}

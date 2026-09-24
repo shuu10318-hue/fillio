@@ -1,11 +1,11 @@
-const CACHE_NAME = "fillio-v26";
+const CACHE_NAME = "fillio-v27";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./style.css?v=26",
-  "./app-core.js?v=26",
-  "./app-data.js?v=26",
-  "./app.js?v=26",
+  "./style.css?v=27",
+  "./app-core.js?v=27",
+  "./app-data.js?v=27",
+  "./app.js?v=27",
   "./fillio-logo.svg",
   "./fillio-mark.svg",
   "./manifest.webmanifest",
