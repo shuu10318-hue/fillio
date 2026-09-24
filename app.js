@@ -95,7 +95,7 @@ function makeStageRow(name,i,arr,render,meta){
  row.innerHTML=`<button type="button" class="stage-edit-button" title="名前を変更" aria-label="名前を変更">${pencil}</button><input type="text" maxlength="12" value="${escapeStageHtml(name)}" aria-label="工程名" readonly enterkeyhint="done"><button type="button" class="stage-delete-button" title="工程を削除" aria-label="工程を削除">${trash}</button><button type="button" class="stage-drag-handle" title="並べ替え" aria-label="並べ替え">${grip}</button>`;
  const input=row.querySelector("input"),edit=row.querySelector(".stage-edit-button"),del=row.querySelector(".stage-delete-button"),handle=row.querySelector(".stage-drag-handle");
  edit.addEventListener("click",()=>{
-   input.readOnly=false;row.classList.add("editing");input.focus({preventScroll:true});
+   input.readOnly=false;row.classList.add("editing");input.focus();
    // Keep the existing name unselected; editing starts from the end.
    const n=input.value.length;try{input.setSelectionRange(n,n)}catch{}
  });
