@@ -2301,9 +2301,12 @@ function applyCurrentLanguageNow(){
     translateExactText(document);
     translateUiPatterns(document);
   }else{
+    // The current view was already re-rendered above. Rendering it a second
+    // time here races with renderFoldersAndFilter()'s frame guard: in a
+    // folder view renderProjectList() rebuilt every card, then the guarded
+    // filter skipped, making the UI temporarily look like Library root until
+    // reload. Only restore fixed Japanese labels here.
     restoreKnownJapaneseUi();
-    // render() is the Japanese source of truth for all dynamic labels.
-    rerenderCurrentViewForLanguage();
   }
   if(currentProjectId && projectStore.projects[currentProjectId])updateSummary();
 }
