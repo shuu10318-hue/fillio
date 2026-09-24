@@ -89,11 +89,20 @@ function setupPageStepper(inputId){
 }
 function makeStageRow(name,i,arr,render,meta){
  const row=document.createElement("div"); row.className="stage-editor-row"; row.dataset.stageIndex=String(i);
- row.innerHTML=`<button type="button" class="stage-edit-button" title="名前を変更" aria-label="名前を変更">✎</button><input type="text" maxlength="12" value="${escapeStageHtml(name)}" aria-label="工程名" readonly><button type="button" class="stage-delete-button" title="工程を削除" aria-label="工程を削除"><span aria-hidden="true">🗑</span></button><button type="button" class="stage-drag-handle" title="並べ替え" aria-label="並べ替え">≡</button>`;
+ const pencil='<svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
+ const trash='<svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg>';
+ const grip='<svg class="icon-line stage-grip-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14M5 12h14M5 16h14"/></svg>';
+ row.innerHTML=`<button type="button" class="stage-edit-button" title="名前を変更" aria-label="名前を変更">${pencil}</button><input type="text" maxlength="12" value="${escapeStageHtml(name)}" aria-label="工程名" readonly enterkeyhint="done"><button type="button" class="stage-delete-button" title="工程を削除" aria-label="工程を削除">${trash}</button><button type="button" class="stage-drag-handle" title="並べ替え" aria-label="並べ替え">${grip}</button>`;
  const input=row.querySelector("input"),edit=row.querySelector(".stage-edit-button"),del=row.querySelector(".stage-delete-button"),handle=row.querySelector(".stage-drag-handle");
- edit.addEventListener("click",()=>{input.readOnly=false;row.classList.add("editing");input.focus();input.select()});
+ edit.addEventListener("click",()=>{
+   input.readOnly=false;row.classList.add("editing");input.focus({preventScroll:true});
+   // Keep the existing name unselected; editing starts from the end.
+   const n=input.value.length;try{input.setSelectionRange(n,n)}catch{}
+ });
  input.addEventListener("input",()=>arr[Number(row.dataset.stageIndex)]=input.value);
+ const endEdit=()=>{input.readOnly=true;row.classList.remove("editing");input.blur()};
  input.addEventListener("blur",()=>{input.readOnly=true;row.classList.remove("editing")});
+ input.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();endEdit()}});
  del.addEventListener("click",()=>{
    const idx=Number(row.dataset.stageIndex);
    if(arr.length<=1){alert(languageSettings?.language==="en"?"At least one stage is required.":"工程は1つ以上必要です。");return}
@@ -102,41 +111,39 @@ function makeStageRow(name,i,arr,render,meta){
    if(!ok)return;
    arr.splice(idx,1);if(meta)meta.splice(idx,1);render();
  });
- let dragging=false,last=i,pointerId=null;
+
+ // Reordering is DOM-only while the finger is down. The data array is changed
+ // once on release. This avoids index drift when crossing several rows.
+ let dragging=false,pointerId=null,startIndex=i;
+ const moveRowAtPointer=y=>{
+   const list=row.parentElement;if(!list)return;
+   const others=[...list.querySelectorAll(":scope > .stage-editor-row")].filter(el=>el!==row);
+   let before=null;
+   for(const el of others){const r=el.getBoundingClientRect();if(y<r.top+r.height/2){before=el;break}}
+   if(before)list.insertBefore(row,before);else list.appendChild(row);
+ };
  const finishDrag=()=>{
    if(!dragging)return;
    dragging=false;row.classList.remove("dragging");
+   const list=row.parentElement;
+   const finalIndex=list?[...list.querySelectorAll(":scope > .stage-editor-row")].indexOf(row):startIndex;
    try{if(pointerId!==null&&handle.hasPointerCapture?.(pointerId))handle.releasePointerCapture(pointerId)}catch{}
-   pointerId=null;render();
+   pointerId=null;
+   if(finalIndex>=0&&finalIndex!==startIndex){
+     const [item]=arr.splice(startIndex,1);arr.splice(finalIndex,0,item);
+     if(meta){const [m]=meta.splice(startIndex,1);meta.splice(finalIndex,0,m)}
+   }
+   render();
  };
  handle.addEventListener("pointerdown",e=>{
    if(e.pointerType==="mouse"&&e.button!==0)return;
-   e.preventDefault(); dragging=true; last=Number(row.dataset.stageIndex); pointerId=e.pointerId;
-   row.classList.add("dragging"); handle.setPointerCapture?.(e.pointerId);
+   e.preventDefault();dragging=true;pointerId=e.pointerId;startIndex=Number(row.dataset.stageIndex);
+   row.classList.add("dragging");handle.setPointerCapture?.(e.pointerId);
  });
- handle.addEventListener("pointermove",e=>{
-   if(!dragging)return;
-   e.preventDefault();
-   const siblings=[...row.parentElement.querySelectorAll(":scope > .stage-editor-row")];
-   let to=last;
-   for(let idx=0;idx<siblings.length;idx++){
-     const el=siblings[idx]; if(el===row)continue;
-     const r=el.getBoundingClientRect();
-     if(e.clientY<r.top+r.height/2){to=idx-(idx>last?1:0);break}
-     to=idx;
-   }
-   to=Math.max(0,Math.min(arr.length-1,to));
-   if(to===last)return;
-   const [item]=arr.splice(last,1);arr.splice(to,0,item);
-   if(meta){const [m]=meta.splice(last,1);meta.splice(to,0,m)}
-   const rows=[...row.parentElement.querySelectorAll(":scope > .stage-editor-row")].filter(el=>el!==row);
-   if(to>=rows.length)row.parentElement.appendChild(row);else row.parentElement.insertBefore(row,rows[to]);
-   [...row.parentElement.children].forEach((el,idx)=>el.dataset.stageIndex=String(idx));
-   last=to;
- });
+ handle.addEventListener("pointermove",e=>{if(!dragging||e.pointerId!==pointerId)return;e.preventDefault();moveRowAtPointer(e.clientY)});
  handle.addEventListener("pointerup",finishDrag);
  handle.addEventListener("pointercancel",finishDrag);
- handle.addEventListener("lostpointercapture",finishDrag);
+ handle.addEventListener("lostpointercapture",()=>{if(dragging)finishDrag()});
  return row;
 }
 let defaultStageDraft=[];

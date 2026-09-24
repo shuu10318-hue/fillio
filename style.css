@@ -1292,3 +1292,10 @@ input{border-color:var(--border);border-radius:12px}
 .stage-editor-row.editing input{border-bottom:1px solid var(--text)!important}
 .stage-add-button{height:44px;margin-top:8px;border:0;background:transparent;text-align:left;padding:0 8px;border-radius:8px;color:var(--text);font-weight:700}
 .stage-add-button:active{background:rgba(0,0,0,.045)}
+
+/* Stage editor v3: unified line icons and stable multi-row reorder */
+.stage-edit-button,.stage-delete-button,.stage-drag-handle{display:grid;place-items:center;padding:0;filter:none!important;opacity:1!important}
+.stage-edit-button .icon-line,.stage-delete-button .icon-line,.stage-drag-handle .icon-line{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.stage-drag-handle .stage-grip-icon{width:23px;height:23px}
+.stage-editor-row.dragging{opacity:.68;background:var(--surface,#fff);z-index:4}
+.stage-editor-row.dragging .stage-drag-handle{cursor:grabbing}
