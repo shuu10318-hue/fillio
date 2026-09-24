@@ -1509,9 +1509,18 @@ document.getElementById("saveEditProject").addEventListener("click",()=>{
   p.startPage=newStart; p.totalPages=newTotal;
   p.creationStartDate=document.getElementById("editProjectCreationStartDate").value||"";
   p.deadline=document.getElementById("editProjectDeadline").value||"";
+  // Keep the Library context that was active when this settings sheet was opened.
+  // renderProjectList() rebuilds every project card, so the folder filter must be
+  // reapplied explicitly after saving; otherwise a folder view temporarily looks
+  // like the Library root.
+  const returnFolderId=currentFolderId;
   persistProjectStore();
   closeProjectEdit();
   renderProjectList();
+  currentFolderId=(returnFolderId&&projectStore.folders?.[returnFolderId])?returnFolderId:null;
+  renderFoldersAndFilter();
+  saveViewState(currentFolderId?"folder":"root");
+  syncFillioHistory("replace");
 });
 
 
