@@ -1,4 +1,4 @@
-/* fillio v42 - Library drag/drop and reorder module
+/* fillio v43 - Library drag/drop and reorder module
    Active Pointer Events implementation only. Obsolete Touch-event implementations removed after v38 audit. */
 
 // Library reorder v11 — same pointer model as Stage editor.
@@ -19,16 +19,14 @@
    const zone=document.getElementById("dragTrashZone");
    if(!zone)return false;
    zone.classList.add("show");
-   // Keep hit testing independent from the zone's own show/over transform.
-   // The visual element moves and scales, but the drop target stays fixed.
-   // v42: keep the destructive drop target compact and close to the top edge.
-   // This leaves a separate band below it for upward auto-scroll while reordering.
+   // v43: the destructive hit target matches the visible 250 x 50px trash box.
+   // Auto-scroll still uses its own wider edge band, so reorder scrolling stays easy.
    const width=Math.min(250,Math.max(0,window.innerWidth-72));
    const left=(window.innerWidth-width)/2;
    const right=left+width;
-   const top=0;
-   const bottom=62;
-   const over=x>=left-8&&x<=right+8&&y>=top&&y<=bottom;
+   const top=12;
+   const bottom=top+50;
+   const over=x>=left&&x<=right&&y>=top&&y<=bottom;
    zone.classList.toggle("over",over);
    return over;
  };
