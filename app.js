@@ -202,7 +202,6 @@ function makeBackup(){
     rootOrder:Array.isArray(projectStore.rootOrder)?projectStore.rootOrder:[]
   };
 }
-function safeFileName(name){return (name||"漫画制作進捗").replace(/[\/:*?"<>|]/g,"_").trim()||"漫画制作進捗"}
 function showBackupStatus(message){
   const box=document.getElementById("backupStatus");box.style.display="block";box.innerHTML=message;
 }
