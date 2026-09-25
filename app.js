@@ -25,8 +25,7 @@ function setupPageStepper(inputId){
 loadAppSettings();
 applyThemeColor();
 
-// Critical editor DOM references must be explicit.
-// Relying on legacy window.<id> named properties can fail intermittently on PWA reloads.
+// Explicit editor DOM references; do not rely on legacy window.<id> globals.
 const pages=document.getElementById("pages");
 const range=document.getElementById("range");
 const navPage=document.getElementById("navPage");
@@ -740,23 +739,27 @@ if(folderList)folderObserver.observe(folderList,{childList:true});
 ensureFolders();
 applyLanguage();
 
-// 全イベント・フォルダ機能の初期化が終わってから、前回の表示位置を1回だけ復元する。
-setTimeout(()=>{
+// Restore the saved view only after the complete app shell has loaded.
+// This keeps project restoration out of the startup race between split scripts,
+// language refreshes and the browser/PWA's first paint.
+let initialViewRestored=false;
+function restoreInitialView(){
+  if(initialViewRestored)return;
+  initialViewRestored=true;
   const last=loadViewState();
 
   if(last?.view==="project" && last.projectId && projectStore.projects[last.projectId]){
     openProject(last.projectId,"replace");
     return;
   }
-
   if(last?.view==="folder" && last.folderId && projectStore.folders?.[last.folderId]){
     showFolderView(last.folderId,"replace");
     return;
   }
-
   showProjectHome("replace");
-  renderFoldersAndFilter();
-},0);
+}
+if(document.readyState==="complete")restoreInitialView();
+else window.addEventListener("load",restoreInitialView,{once:true});
 
 /* ---- extracted script block ---- */
 
