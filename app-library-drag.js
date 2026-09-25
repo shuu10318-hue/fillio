@@ -1,4 +1,4 @@
-/* fillio v41 - Library drag/drop and reorder module
+/* fillio v42 - Library drag/drop and reorder module
    Active Pointer Events implementation only. Obsolete Touch-event implementations removed after v38 audit. */
 
 // Library reorder v11 — same pointer model as Stage editor.
@@ -6,6 +6,7 @@
 (function initLibraryStageStyleReorder(){
  const list=document.getElementById("projectList"); if(!list)return;
  let drag=null,pointerId=null,startIndex=-1,dropFolderId=null,trashOver=false;
+ let autoScrollFrame=0,lastPointerX=0,lastPointerY=0;
  const directVisibleItems=()=>[...list.children].filter(el=>
    (el.classList?.contains("folder-item")||el.classList?.contains("project-item")) &&
    getComputedStyle(el).display!=="none"
@@ -20,12 +21,14 @@
    zone.classList.add("show");
    // Keep hit testing independent from the zone's own show/over transform.
    // The visual element moves and scales, but the drop target stays fixed.
-   const width=Math.min(360,Math.max(0,window.innerWidth-28));
+   // v42: keep the destructive drop target compact and close to the top edge.
+   // This leaves a separate band below it for upward auto-scroll while reordering.
+   const width=Math.min(250,Math.max(0,window.innerWidth-72));
    const left=(window.innerWidth-width)/2;
    const right=left+width;
    const top=0;
-   const bottom=94;
-   const over=x>=left-10&&x<=right+10&&y>=top&&y<=bottom;
+   const bottom=62;
+   const over=x>=left-8&&x<=right+8&&y>=top&&y<=bottom;
    zone.classList.toggle("over",over);
    return over;
  };
@@ -45,6 +48,37 @@
      if(last.nextElementSibling!==drag)list.insertBefore(drag,last.nextSibling);
    }
  };
+ const stopAutoScroll=()=>{
+   if(autoScrollFrame){cancelAnimationFrame(autoScrollFrame);autoScrollFrame=0}
+ };
+ const autoScrollStep=()=>{
+   autoScrollFrame=0;
+   if(!drag)return;
+   const edge=112;
+   let delta=0;
+   if(!trashOver&&lastPointerY<edge){
+     const strength=Math.max(0,Math.min(1,(edge-lastPointerY)/edge));
+     delta=-(3+11*strength);
+   }else if(lastPointerY>window.innerHeight-edge){
+     const strength=Math.max(0,Math.min(1,(lastPointerY-(window.innerHeight-edge))/edge));
+     delta=3+11*strength;
+   }
+   if(delta){
+     const before=window.scrollY;
+     window.scrollBy(0,delta);
+     if(window.scrollY!==before){
+       clearTargets();dropFolderId=null;
+       moveAt(lastPointerY);
+     }
+     autoScrollFrame=requestAnimationFrame(autoScrollStep);
+   }
+ };
+ const updateAutoScroll=()=>{
+   const edge=112;
+   const shouldScroll=!trashOver&&(lastPointerY<edge||lastPointerY>window.innerHeight-edge);
+   if(shouldScroll){if(!autoScrollFrame)autoScrollFrame=requestAnimationFrame(autoScrollStep)}
+   else stopAutoScroll();
+ };
  const saveCurrentOrder=()=>{
    if(currentFolderId){
      // Keep global projectOrder compatible while applying the visible folder order.
@@ -60,6 +94,7 @@
    persistProjectStore();
  };
  const cleanup=()=>{
+   stopAutoScroll();
    window.removeEventListener("pointermove",onMove);
    window.removeEventListener("pointerup",finish);
    window.removeEventListener("pointercancel",finish);
@@ -92,7 +127,9 @@
  function onMove(e){
    if(!drag||e.pointerId!==pointerId)return;
    e.preventDefault();
-   trashOver=setTrash(e.clientX,e.clientY);
+   lastPointerX=e.clientX;lastPointerY=e.clientY;
+   trashOver=setTrash(lastPointerX,lastPointerY);
+   updateAutoScroll();
    clearTargets();dropFolderId=null;
    if(trashOver)return;
    // Root only: dropping a project into the center of a folder keeps folder move support.
@@ -113,6 +150,7 @@
    if(currentFolderId&&item.classList.contains("folder-item"))return;
    e.preventDefault();e.stopPropagation();
    drag=item;pointerId=e.pointerId;startIndex=activeItems().indexOf(item);dropFolderId=null;trashOver=false;
+   lastPointerX=e.clientX;lastPointerY=e.clientY;
    window.__libraryStageDragging=true;
    document.body.classList.add("library-drag-active");
    drag.classList.add("library-stage-dragging");

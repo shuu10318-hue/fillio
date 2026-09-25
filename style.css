@@ -731,8 +731,8 @@ input{border-color:var(--border);border-radius:12px}
 .drag-trash-zone{
   position:fixed;left:50%;top:12px;bottom:auto;
   transform:translate(-50%,-18px) scale(1);
-  width:min(360px,calc(100% - 28px));height:64px;
-  border:1.5px dashed #888;border-radius:16px;
+  width:min(250px,calc(100% - 72px));height:50px;
+  border:1.5px dashed #888;border-radius:14px;
   background:rgba(255,255,255,.96);color:#555;
   display:flex;align-items:center;justify-content:center;gap:9px;
   font-size:13px;font-weight:800;z-index:3000;
@@ -746,7 +746,7 @@ body.library-drag-active .drag-trash-zone{
 .drag-trash-zone.over,
 body.library-drag-active .drag-trash-zone.over{
   opacity:1;visibility:visible;
-  transform:translate(-50%,2px) scale(1.08);
+  transform:translate(-50%,2px) scale(1.06);
   background:var(--accent);border:2px solid var(--accent);color:#fff;
   box-shadow:0 10px 28px color-mix(in srgb,var(--accent) 35%,transparent);
 }
