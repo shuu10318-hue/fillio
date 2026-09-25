@@ -22,6 +22,10 @@ document.getElementById("stageAddButton")?.addEventListener("click",()=>{
   renderStageEditor();
 });
 
+document.getElementById("clearEditProjectDeadline")?.addEventListener("click",()=>{
+  document.getElementById("editProjectDeadline").value="";
+});
+
 let editingProjectId=null;
 function updateEditProjectTotal(){}
 function openProjectEdit(id){
@@ -64,7 +68,7 @@ document.getElementById("saveEditProject").addEventListener("click",()=>{
   });
   p.title=document.getElementById("editProjectTitle").value.trim();
   p.startPage=newStart; p.totalPages=newTotal;
-  p.creationStartDate=document.getElementById("editProjectCreationStartDate").value||"";
+  p.creationStartDate=document.getElementById("editProjectCreationStartDate").value||p.creationStartDate||localDate();
   p.deadline=document.getElementById("editProjectDeadline").value||"";
   // Keep the Library context that was active when this settings sheet was opened.
   // renderProjectList() rebuilds every project card, so the folder filter must be

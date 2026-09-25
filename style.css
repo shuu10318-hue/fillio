@@ -1107,3 +1107,8 @@ body.library-drag-active .drag-trash-zone.over{
 /* v45: vertically align memo-list TODO labels with their checkboxes */
 .memo-todo-item{align-items:center!important;}
 .memo-todo-item input{display:block;align-self:center;}
+
+/* Optional deadline input */
+.date-clear-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+.date-clear-row input{min-width:0}
+.date-clear-button{height:44px;min-width:58px;padding:0 12px;border:1px solid var(--border);border-radius:9px;background:#fff;color:var(--muted);font-weight:700}

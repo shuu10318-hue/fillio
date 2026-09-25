@@ -768,7 +768,7 @@ const FULL_I18N={
  en:{
  "作品一覧":"Projects","プロジェクト":"Projects","＋ プロジェクト":"+ Project","＋ 新しいプロジェクト":"+ New Project","＋ フォルダ":"+ Folder","← 戻る":"← Back","名前変更":"Rename","削除":"Delete",
  "漫画制作進捗":"Manga Production Tracker","メモ一覧":"Notes","作品名":"Project title","制作ページ数":"Pages","制作ページ":"Pages",
- "創作開始日":"Start date","締切予定日":"Deadline","総合進捗":"Overall Progress","制作進捗":"Overall Progress","工程別進捗":"Progress by Stage","工程表":"Production Table",
+ "作業開始日":"Start Date","締切予定日":"Deadline","総合進捗":"Overall Progress","制作進捗":"Overall Progress","工程別進捗":"Progress by Stage","工程表":"Production Table",
  "作業履歴":"Work History","今日":"Today","直近7日":"Last 7 days","1日平均":"Daily average","完成予想":"Estimated Completion",
  "← 前":"← Prev","次 →":"Next →","未着手":"Not started","着手中":"In progress","完成済み":"Completed","着手":"Started","完成":"Completed",
  "新しいプロジェクト":"New Project","作品編集":"Edit Project","工程設定":"Stage Settings","工程をカスタマイズ":"Customize Stages",
@@ -779,7 +779,7 @@ const FULL_I18N={
  "ページ番号をタップ":"Tap a page number","マーカー":"Legend",
  "💾 バックアップ":"💾 Backup","📂 復元":"📂 Restore","工程":"Stages","工程名":"Stage name","上へ":"Up","下へ":"Down",
  "言語":"Language","アプリ設定":"App Settings","新規プロジェクトのデフォルト":"New Project Defaults","設定":"Settings","Libraryの使い方":"Library Help","作品を作る":"Create a project","フォルダで整理":"Organize with folders","作品を編集":"Edit a project","ゴミ箱":"Trash","バックアップ":"Backup","テーマカラー":"Theme Color","完了セルや選択状態などのアクセントカラーに使われます。":"Used for completed cells and selected states.",
- "全工程":"All stages","締切":"Deadline","ページ":"Pages","未設定":"Not set","完了":"Done","完成工程":"completed stages",
+ "全工程":"All stages","締切":"Deadline","なし":"None","ページ":"Pages","未設定":"Not set","完了":"Done","完成工程":"completed stages",
  "データ収集中":"Collecting data","完成！":"Complete!","変更は自動保存されます":"Changes are saved automatically",
  "保存しました ✓":"Saved ✓","該当するメモはありません。":"No matching notes.","（メモ本文なし）":"(No note text)",
  "修正点・忘れたくないことなど":"Corrections, reminders, etc.",
@@ -853,7 +853,7 @@ languageObserver.observe(document.body,{subtree:true,childList:true,characterDat
 /* ---- i18n completion patch ---- */
 const I18N_MORE_EN={
  "作品編集":"Edit Project","作品名":"Project title","制作ページ":"Pages","制作ページ数":"Pages",
- "創作開始日":"Start date","締切予定日":"Deadline","工程設定":"Stage Settings",
+ "作業開始日":"Start Date","締切予定日":"Deadline","工程設定":"Stage Settings",
  "工程をカスタマイズ":"Customize Stages","工程名":"Stage name",
  "変更しなければ「ネーム・ペン・背景・トーン・写植」で作成されます":"If unchanged, the default stages will be used.",
  "工程名の変更・並び替え・追加・削除":"Rename, reorder, add or delete stages.",

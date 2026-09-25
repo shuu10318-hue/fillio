@@ -11,6 +11,10 @@ function renderNewProjectStageEditor(){
   document.getElementById("newStageAddButton").disabled=false;
 }
 
+document.getElementById("clearNewProjectDeadline")?.addEventListener("click",()=>{
+  document.getElementById("newProjectDeadline").value="";
+});
+
 document.getElementById("newStageAddButton").addEventListener("click",()=>{
   if(newProjectStageDraft.length>=MAX_STAGES){
     alert(languageSettings?.language==="en"?`Up to ${MAX_STAGES} stages.`:`工程は最大${MAX_STAGES}個までです。`);
@@ -23,7 +27,6 @@ document.getElementById("newStageAddButton").addEventListener("click",()=>{
 document.getElementById("newProjectButton").onclick=()=>{
   document.getElementById("newProjectTitle").value="";
   document.getElementById("newProjectPages").value=clampPageCount(projectDefaults.endPage-projectDefaults.startPage+1);
-  document.getElementById("newProjectCreationStartDate").value="";
   document.getElementById("newProjectDeadline").value="";
   newProjectStageDraft=[...projectDefaults.stages];
   renderNewProjectStageEditor();
@@ -51,7 +54,6 @@ document.getElementById("createNewProject").onclick=()=>{
   const newStages=newProjectStageDraft.map(x=>String(x??"").trim());
   projectStore.projects[id].stages=newStages;
   projectStore.projects[id].progress=Array.from({length:b-a+1},()=>Array(newStages.length).fill(0));
-  projectStore.projects[id].creationStartDate=document.getElementById("newProjectCreationStartDate").value||"";
   projectStore.projects[id].deadline=document.getElementById("newProjectDeadline").value||"";
   projectStore.projectOrder=[id,...(Array.isArray(projectStore.projectOrder)?projectStore.projectOrder:[]).filter(x=>x!==id)];
   if(!Array.isArray(projectStore.rootOrder))projectStore.rootOrder=[];

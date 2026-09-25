@@ -73,7 +73,7 @@
 
   // Native date pickers are already a commit-style control; after a date is chosen,
   // release focus so the picker/focus state does not linger.
-  ["newProjectCreationStartDate","newProjectDeadline","editProjectCreationStartDate","editProjectDeadline"].forEach(id=>{
+  ["newProjectDeadline","editProjectCreationStartDate","editProjectDeadline"].forEach(id=>{
     const el=document.getElementById(id); if(!el)return;
     el.addEventListener("change",()=>el.blur());
   });

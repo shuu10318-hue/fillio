@@ -14,7 +14,7 @@
 <title>fillio</title>
 
 
-<link rel="stylesheet" href="style.css?v=47">
+<link rel="stylesheet" href="style.css?v=49">
 </head>
 <body>
 
@@ -97,7 +97,7 @@
 <b>〜</b>
 <div><input id="endPageInput" type="number" min="1" max="999" value="48"><span>P</span></div>
 </div>
-<div class="label" style="margin-top:15px">創作開始日</div>
+<div class="label" style="margin-top:15px">作業開始日</div>
 <input id="creationStartDateInput" type="date">
 <div class="label" style="margin-top:15px">締切予定日</div>
 <input id="deadlineInput" type="date">
@@ -170,10 +170,10 @@
       <input id="editProjectPages" class="page-step-value" type="number" min="1" max="300" inputmode="numeric" aria-label="制作ページ数">
       <button type="button" class="page-step-button" data-step="1" aria-label="ページ数を増やす">＋</button>
     </div>
-    <div class="label" style="margin-top:14px">創作開始日</div>
+    <div class="label" style="margin-top:14px">作業開始日</div>
     <input id="editProjectCreationStartDate" type="date">
     <div class="label" style="margin-top:14px">締切予定日</div>
-    <input id="editProjectDeadline" type="date">
+    <div class="date-clear-row"><input id="editProjectDeadline" type="date"><button id="clearEditProjectDeadline" class="date-clear-button" type="button">なし</button></div>
     <div class="label" style="margin-top:14px">工程設定</div>
     <div id="stageEditorList" class="stage-editor-list"></div>
     <button id="stageAddButton" class="stage-add-button" type="button">＋ 工程を追加</button>
@@ -240,10 +240,8 @@
       <input id="newProjectPages" class="page-step-value" type="number" min="1" max="300" inputmode="numeric" aria-label="制作ページ数">
       <button type="button" class="page-step-button" data-step="1" aria-label="ページ数を増やす">＋</button>
     </div>
-    <div class="label" style="margin-top:14px">創作開始日</div>
-    <input id="newProjectCreationStartDate" type="date">
     <div class="label" style="margin-top:14px">締切予定日</div>
-    <input id="newProjectDeadline" type="date">
+    <div class="date-clear-row"><input id="newProjectDeadline" type="date"><button id="clearNewProjectDeadline" class="date-clear-button" type="button">なし</button></div>
     <div class="label" style="margin-top:14px">工程</div>
     <div id="newStageEditorList" class="stage-editor-list"></div>
     <button id="newStageAddButton" class="stage-add-button" type="button">＋ 工程を追加</button>
@@ -284,19 +282,19 @@
 </div>
 
 
-<script src="app-core.js?v=47"></script>
-<script src="app-data.js?v=47"></script>
-<script src="app-stage.js?v=47"></script>
-<script src="app.js?v=47"></script>
-<script src="app-cells.js?v=47"></script>
-<script src="app-library.js?v=47"></script>
-<script src="app-folder.js?v=47"></script>
-<script src="app-library-drag.js?v=47"></script>
-<script src="app-trash.js?v=47"></script>
-<script src="app-project-settings.js?v=47"></script>
-<script src="app-settings.js?v=47"></script>
-<script src="app-ui.js?v=47"></script>
-<script src="app-project-modal.js?v=47"></script>
+<script src="app-core.js?v=49"></script>
+<script src="app-data.js?v=49"></script>
+<script src="app-stage.js?v=49"></script>
+<script src="app.js?v=49"></script>
+<script src="app-cells.js?v=49"></script>
+<script src="app-library.js?v=49"></script>
+<script src="app-folder.js?v=49"></script>
+<script src="app-library-drag.js?v=49"></script>
+<script src="app-trash.js?v=49"></script>
+<script src="app-project-settings.js?v=49"></script>
+<script src="app-settings.js?v=49"></script>
+<script src="app-ui.js?v=49"></script>
+<script src="app-project-modal.js?v=49"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

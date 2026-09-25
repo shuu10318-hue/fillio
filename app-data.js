@@ -54,7 +54,7 @@ function freshProjectData(title="新しいプロジェクト",sp=1,ep=1){
   const n=Math.max(1,Math.min(500,ep-sp+1));
   const p=createProgress(n);
   return {
-    title,creationStartDate:"",deadline:"",totalPages:n,startPage:sp,progress:p,stages:[...DEFAULT_STAGES],folderId:null,
+    title,creationStartDate:localDate(),deadline:"",totalPages:n,startPage:sp,progress:p,stages:[...DEFAULT_STAGES],folderId:null,
     history:{day:localDate(),baselineDone:0,baselineWeighted:0,weightedDays:{},days:{}},
     pageNotes:{}
   };
@@ -89,7 +89,7 @@ const projectStages=Array.isArray(s?.stages)&&s.stages.length
   return {
     title:typeof s?.title==="string"?s.title:"",
     stages:projectStages,
-    creationStartDate:typeof s?.creationStartDate==="string"?s.creationStartDate:"",
+    creationStartDate:typeof s?.creationStartDate==="string"&&s.creationStartDate?s.creationStartDate:localDate(),
     deadline:typeof s?.deadline==="string"?s.deadline:"",
     totalPages:n,startPage:sp,progress:pg,
     folderId:typeof s?.folderId==="string"&&s.folderId?s.folderId:null,
@@ -125,10 +125,15 @@ function loadProjectStore(){
         folders:(raw.folders&&typeof raw.folders==="object")?raw.folders:{},
         rootOrder:Array.isArray(raw.rootOrder)?raw.rootOrder:[]
       };
+      let migratedStartDate=false;
       Object.entries(raw.projects).forEach(([id,p])=>{
-        if(p&&Array.isArray(p.progress))projectStore.projects[id]=normalizeProjectData(p);
+        if(p&&Array.isArray(p.progress)){
+          if(!(typeof p.creationStartDate==="string"&&p.creationStartDate))migratedStartDate=true;
+          projectStore.projects[id]=normalizeProjectData(p);
+        }
       });
       if(!projectStore.projects[projectStore.activeProjectId])projectStore.activeProjectId=null;
+      if(migratedStartDate)persistProjectStore();
       return;
     }
   }catch(e){}
