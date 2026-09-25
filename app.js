@@ -1042,19 +1042,6 @@ document.querySelectorAll(".memo-filter").forEach(btn=>btn.onclick=()=>{
 });
 
 
-let newProjectStageDraft=[...DEFAULT_STAGES];
-function renderNewProjectStageEditor(){
- const box=document.getElementById("newStageEditorList"); if(!box)return; box.innerHTML="";
- newProjectStageDraft.forEach((name,i)=>box.appendChild(makeStageRow(name,i,newProjectStageDraft,renderNewProjectStageEditor)));
- document.getElementById("newStageAddButton").disabled=false;
-}
-document.getElementById("newStageAddButton").addEventListener("click",()=>{
-  if(newProjectStageDraft.length>=MAX_STAGES){alert(languageSettings?.language==="en"?`Up to ${MAX_STAGES} stages.`:`工程は最大${MAX_STAGES}個までです。`);return}
-  newProjectStageDraft.push("");
-  renderNewProjectStageEditor();
-});
-
-
 ["defaultPages","newProjectPages","editProjectPages"].forEach(setupPageStepper);
 
 function closeAppSettings(){
@@ -1084,49 +1071,7 @@ document.getElementById("settingsSave").onclick=()=>{
 
 document.querySelectorAll(".theme-color-option").forEach(btn=>btn.addEventListener("click",()=>applyThemeColor(btn.dataset.themeColor)));
 
-document.getElementById("newProjectButton").onclick=()=>{
-  document.getElementById("newProjectTitle").value="";
-  document.getElementById("newProjectPages").value=clampPageCount(projectDefaults.endPage-projectDefaults.startPage+1);
-  document.getElementById("newProjectCreationStartDate").value="";
-  document.getElementById("newProjectDeadline").value="";
-  newProjectStageDraft=[...projectDefaults.stages];
-  renderNewProjectStageEditor();
-  lockPageScroll();
-  document.getElementById("projectModal").classList.add("open");
-  // Do not auto-focus: opening the create sheet should not summon the mobile keyboard.
-};
-function closeNewProjectModal(){
-  document.getElementById("projectModal").classList.remove("open");
-  unlockPageScroll();
-}
-document.getElementById("cancelNewProject").onclick=closeNewProjectModal;
-document.getElementById("projectModal").onclick=e=>{if(e.target.id==="projectModal")closeNewProjectModal()};
-document.getElementById("createNewProject").onclick=()=>{
-  const title=document.getElementById("newProjectTitle").value.trim();
-  let a=1;
-  let b=clampPageCount(document.getElementById("newProjectPages").value);
-  const id=newProjectId();
-  projectStore.projects[id]=freshProjectData(title,a,b);
-  // フォルダ内から作成した場合は、そのフォルダに所属させる
-  projectStore.projects[id].folderId=currentFolderId||null;
-  const newStages=newProjectStageDraft.map(x=>String(x??"").trim());
-  projectStore.projects[id].stages=newStages;
-  projectStore.projects[id].progress=Array.from({length:b-a+1},()=>Array(newStages.length).fill(0));
-  projectStore.projects[id].creationStartDate=document.getElementById("newProjectCreationStartDate").value||"";
-  projectStore.projects[id].deadline=document.getElementById("newProjectDeadline").value||"";
-  projectStore.projectOrder=[id,...(Array.isArray(projectStore.projectOrder)?projectStore.projectOrder:[]).filter(x=>x!==id)];
-  if(!Array.isArray(projectStore.rootOrder))projectStore.rootOrder=[];
-  // ルートで作成した作品だけ rootOrder に追加する
-  if(!currentFolderId){
-    projectStore.rootOrder=["p:"+id,...projectStore.rootOrder.filter(k=>k!=="p:"+id)];
-  }else{
-    projectStore.rootOrder=projectStore.rootOrder.filter(k=>k!=="p:"+id);
-  }
-  projectStore.activeProjectId=id;
-  persistProjectStore();
-  closeNewProjectModal();
-  openProject(id);
-};
+
 
 load();
 
