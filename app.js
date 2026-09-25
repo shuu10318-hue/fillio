@@ -686,15 +686,20 @@ helpModal.addEventListener("click",e=>{if(e.target===helpModal)closeHelp()});
 let currentFolderId=null;
 function ensureFolders(){
  if(!projectStore.folders||typeof projectStore.folders!=="object")projectStore.folders={};
- Object.values(projectStore.projects||{}).forEach(p=>{if(!("folderId" in p))p.folderId=null});
+ Object.values(projectStore.projects||{}).forEach(p=>{
+   if(!("folderId" in p))p.folderId=null;
+   // A stale/malformed backup may reference a folder that no longer exists.
+   // Recover only that orphaned project to Library root; valid trashed folders stay intact.
+   if(p.folderId&&!projectStore.folders[p.folderId])p.folderId=null;
+ });
  if(!Array.isArray(projectStore.rootOrder))projectStore.rootOrder=[];
  const keys=[];
  Object.keys(projectStore.folders).forEach(id=>{if(!projectStore.folders[id]?.trashedAt)keys.push("f:"+id)});
  (projectStore.projectOrder||[]).forEach(id=>{
-   if(projectStore.projects[id]&&!projectStore.projects[id].folderId)keys.push("p:"+id);
+   if(projectStore.projects[id]&&!projectStore.projects[id].trashedAt&&!projectStore.projects[id].folderId)keys.push("p:"+id);
  });
  Object.keys(projectStore.projects||{}).forEach(id=>{
-   if(!projectStore.projects[id].folderId)keys.push("p:"+id);
+   if(!projectStore.projects[id].trashedAt&&!projectStore.projects[id].folderId)keys.push("p:"+id);
  });
  const valid=[...new Set(keys)];
  projectStore.rootOrder=projectStore.rootOrder.filter(k=>valid.includes(k));
