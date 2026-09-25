@@ -432,7 +432,9 @@ document.getElementById("stickyDelete").onclick=()=>{
   renderPages();
 };
 document.getElementById("stickySave").onclick=()=>{
-  const text=document.getElementById("stickyText").value.trim();
+  const stickyText=document.getElementById("stickyText");
+  const text=stickyText.value.trim();
+  stickyText.blur();
   if(!stickyColor)stickyColor="#f4dc8a";
   pageNotes[String(stickyPage)]={text,color:stickyColor,todos:stickyTodos.map(t=>({id:t.id,text:t.text,done:!!t.done}))};
   save();

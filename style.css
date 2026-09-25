@@ -1092,3 +1092,18 @@ body.library-drag-active .drag-trash-zone.over{
 #projectHome .library-stage-dragging .folder-drag-handle{cursor:grabbing}
 
 /* Library trash drag states are defined once in the unified trash block above. */
+
+/* v45: keep the sticky page-number column fully opaque while scrolling */
+#pages .page-number{
+  align-self:stretch!important;
+  min-height:var(--progress-cell-size)!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  box-sizing:border-box!important;
+  box-shadow:0 5px 0 var(--card);
+}
+
+/* v45: vertically align memo-list TODO labels with their checkboxes */
+.memo-todo-item{align-items:center!important;}
+.memo-todo-item input{display:block;align-self:center;}
