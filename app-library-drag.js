@@ -1,4 +1,4 @@
-/* fillio v39 - Library drag/drop and reorder module
+/* fillio v41 - Library drag/drop and reorder module
    Active Pointer Events implementation only. Obsolete Touch-event implementations removed after v38 audit. */
 
 // Library reorder v11 — same pointer model as Stage editor.
@@ -18,9 +18,16 @@
    const zone=document.getElementById("dragTrashZone");
    if(!zone)return false;
    zone.classList.add("show");
-   const r=zone.getBoundingClientRect();
-   const over=x>=r.left-10&&x<=r.right+10&&y>=r.top-28&&y<=r.bottom+18;
-   zone.classList.toggle("over",over); return over;
+   // Keep hit testing independent from the zone's own show/over transform.
+   // The visual element moves and scales, but the drop target stays fixed.
+   const width=Math.min(360,Math.max(0,window.innerWidth-28));
+   const left=(window.innerWidth-width)/2;
+   const right=left+width;
+   const top=0;
+   const bottom=94;
+   const over=x>=left-10&&x<=right+10&&y>=top&&y<=bottom;
+   zone.classList.toggle("over",over);
+   return over;
  };
  // Same crossing rule as the Stage editor: use the current midpoint of every
  // other visible row and move only when the pointer crosses that midpoint.
