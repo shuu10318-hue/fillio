@@ -68,6 +68,10 @@ function renderProjectList(){
     const item=document.createElement("div");
     item.className="project-item";
     item.dataset.projectId=id; item.dataset.orderKey="p:"+id;
+    // Keep Library/folder visibility correct from the moment the card enters the DOM.
+    // Startup language rendering can run before renderFoldersAndFilter's frame guard clears;
+    // never expose the unfiltered all-project list during that gap.
+    item.style.display=((p.folderId||null)===currentFolderId)?"":"none";
     const donePages=(p.progress||[]).filter(r=>Array.isArray(r)&&r.every(v=>v===2)).length;
     const dash=projectDashboardStats(p);
     const isEn=languageSettings?.language==="en";
