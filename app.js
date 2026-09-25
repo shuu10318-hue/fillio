@@ -24,6 +24,18 @@ function setupPageStepper(inputId){
 }
 loadAppSettings();
 applyThemeColor();
+
+// Critical editor DOM references must be explicit.
+// Relying on legacy window.<id> named properties can fail intermittently on PWA reloads.
+const pages=document.getElementById("pages");
+const range=document.getElementById("range");
+const navPage=document.getElementById("navPage");
+const prev=document.getElementById("prev");
+const next=document.getElementById("next");
+const startPageInput=document.getElementById("startPageInput");
+const endPageInput=document.getElementById("endPageInput");
+const totalPageLabel=document.getElementById("totalPageLabel");
+
 let stages=[...DEFAULT_STAGES];
 let totalPages=48,startPage=1,currentView=0,progress=createProgress(48);
 let history={day:"",baselineDone:0,days:{}};
