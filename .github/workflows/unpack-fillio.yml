@@ -1,0 +1,76 @@
+name: Unpack fillio ZIP
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'fillio-v*.zip'
+
+permissions:
+  contents: write
+
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Find uploaded ZIP
+        id: zip
+        shell: bash
+        run: |
+          ZIP=$(find . -maxdepth 1 -type f -name 'fillio-v*.zip' | sort -V | tail -n 1)
+
+          if [ -z "$ZIP" ]; then
+            echo "No fillio ZIP found."
+            exit 1
+          fi
+
+          echo "file=$ZIP" >> "$GITHUB_OUTPUT"
+          echo "Using $ZIP"
+
+      - name: Unpack fillio
+        shell: bash
+        run: |
+          ZIP="${{ steps.zip.outputs.file }}"
+
+          rm -rf _fillio_unpack
+          mkdir _fillio_unpack
+          unzip -q "$ZIP" -d _fillio_unpack
+
+          # ZIP must contain fillio's index.html.
+          ROOT=$(find _fillio_unpack -type f -name index.html -printf '%h\n' | head -n 1)
+
+          if [ -z "$ROOT" ]; then
+            echo "index.html was not found. Aborting."
+            exit 1
+          fi
+
+          # Keep GitHub configuration and Git metadata intact.
+          rsync -a --delete \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='fillio-v*.zip' \
+            "$ROOT/" ./
+
+          rm -rf _fillio_unpack
+          rm -f fillio-v*.zip
+
+      - name: Commit updated fillio
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git commit -m "Deploy fillio from uploaded ZIP"
+          git push
