@@ -393,6 +393,7 @@ function openSticky(page){
   stickyColor=n.color||"";
   stickyTodos=Array.isArray(n.todos)?n.todos.map((t,i)=>({id:t.id||(`${Date.now()}-${i}`),text:String(t.text||""),done:!!t.done})):[];
   document.getElementById("stickyTitle").textContent=uiLang()==="en"?`Page ${page} note`:`${page}P 付箋`;
+  document.getElementById("stickyLabel").value=String(n.label||"").slice(0,6);
   document.getElementById("stickyText").value=n.text||"";
   document.getElementById("stickyTodoInput").value="";
   renderStickyTodos();
@@ -438,6 +439,7 @@ document.getElementById("stickyDelete").onclick=()=>{
   if(!confirm(deleteMessage))return;
   delete pageNotes[String(stickyPage)];
   stickyColor="";stickyTodos=[];
+  document.getElementById("stickyLabel").value="";
   document.getElementById("stickyText").value="";
   renderStickyTodos();
   save();
@@ -447,8 +449,11 @@ document.getElementById("stickyDelete").onclick=()=>{
 document.getElementById("stickySave").onclick=()=>{
   const stickyText=document.getElementById("stickyText");
   const text=stickyText.value.trim();
+  const stickyLabel=document.getElementById("stickyLabel");
+  const label=(stickyLabel?.value||"").trim().slice(0,6);
   stickyText.blur();
-  pageNotes[String(stickyPage)]={text,color:stickyColor,todos:stickyTodos.map(t=>({id:t.id,text:t.text,done:!!t.done}))};
+  stickyLabel?.blur();
+  pageNotes[String(stickyPage)]={text,color:stickyColor,label,todos:stickyTodos.map(t=>({id:t.id,text:t.text,done:!!t.done}))};
   save();
   document.getElementById("stickyModal").classList.remove("open");
   renderPages();
@@ -461,7 +466,11 @@ function renderPages(){
     const row=document.createElement("div");row.className="page-row";
     const num=document.createElement("div");num.className="page-number";
     const actualPage=startPage+p, note=pageNotes[String(actualPage)]||{text:"",color:""};
-    num.textContent=actualPage;
+    const pageLabel=String(note.label||"").trim();
+    num.textContent=pageLabel||actualPage;
+    num.classList.toggle("has-page-label",!!pageLabel);
+    if(pageLabel.length>=6)num.classList.add("page-label-long");
+    else if(pageLabel.length>=4)num.classList.add("page-label-medium");
     if(note.color)num.style.setProperty("background",note.color,"important");
     num.onclick=()=>openSticky(actualPage);
     row.appendChild(num);
@@ -560,7 +569,9 @@ function renderMemoList(){
     const pg=document.createElement("div");
     pg.className="memo-page";
     if(note.color)pg.style.background=note.color;else pg.classList.add("no-color");
-    pg.textContent=page+"P";
+    const pageLabel=String(note.label||"").trim();
+    pg.textContent=pageLabel||(page+"P");
+    pg.classList.toggle("has-page-label",!!pageLabel);
     const content=document.createElement("div");
     content.className="memo-content";
     const tx=document.createElement("div");
@@ -598,7 +609,24 @@ function renderMemoList(){
       const targetRow=pages?.children?.[index];
       if(targetRow)targetRow.scrollIntoView({behavior:"smooth",block:"center"});
     };
-    row.append(pg,content,jump);
+    const actions=document.createElement("div");
+    actions.className="memo-actions";
+    const del=document.createElement("button");
+    del.className="memo-delete";
+    del.type="button";
+    del.textContent="🗑";
+    del.setAttribute("aria-label",uiLang()==="en"?"Delete note":"付箋を削除");
+    del.title=uiLang()==="en"?"Delete note":"付箋を削除";
+    del.onclick=()=>{
+      const deleteMessage=uiLang()==="en"?"Delete this note?":"この付箋を削除しますか？";
+      if(!confirm(deleteMessage))return;
+      delete pageNotes[String(page)];
+      save();
+      renderPages();
+      renderMemoList();
+    };
+    actions.append(jump,del);
+    row.append(pg,content,actions);
     body.appendChild(row);
   });
 }
@@ -1345,6 +1373,8 @@ function localizeOpenUi(){
  {const el=document.querySelector("#closeMemoList");if(el){el.textContent="×";el.setAttribute("aria-label",en?"Close":"閉じる");}}
  const filters=[["all","すべて","All"],["none","無色","No color"],["#f4a6a6","赤","Red"],["#f4dc8a","黄","Yellow"],["#9ec8f4","青","Blue"],["#a9ddb0","緑","Green"]];
  filters.forEach(([key,ja,enText])=>{const el=document.querySelector(`.memo-filter[data-filter="${key}"]`);if(el)el.textContent=en?enText:ja});
+ set("#stickyLabelCaption","ラベル","Label");
+ ph("#stickyLabel","表紙・扉・あとがき など","Cover, Title, After, etc.");
  ph("#stickyText","修正点・忘れたくないことなど","Corrections, reminders, etc.");
  ph("#stickyTodoInput","チェック項目を追加","Add checklist item");
  set("#stickyDelete","付箋を削除","Delete Note");

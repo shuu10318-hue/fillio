@@ -14,7 +14,7 @@
 <title>fillio</title>
 
 
-<link rel="stylesheet" href="style.css?v=53">
+<link rel="stylesheet" href="style.css?v=55">
 </head>
 <body>
 
@@ -252,6 +252,7 @@
 <div id="stickyModal" class="sticky-modal">
  <div class="sticky-sheet">
   <div class="modal-action-head sticky-head"><button id="stickyClose" class="modal-text-action modal-cancel-action" type="button">キャンセル</button><h2 id="stickyTitle">付箋</h2><button type="button" id="stickySave" class="modal-text-action modal-confirm-action">保存</button></div>
+  <div class="sticky-label-field"><div id="stickyLabelCaption" class="label">ラベル</div><input id="stickyLabel" type="text" maxlength="6" placeholder="表紙・扉・あとがき など"></div>
   <textarea id="stickyText" placeholder="修正点・忘れたくないことなど"></textarea>
   <div class="sticky-todo-head"><div class="label">TODO</div><span id="stickyTodoCount">0/0</span></div>
   <div id="stickyTodoList" class="sticky-todo-list"></div>
@@ -284,19 +285,19 @@
 </div>
 
 
-<script src="app-core.js?v=53"></script>
-<script src="app-data.js?v=53"></script>
-<script src="app-stage.js?v=53"></script>
-<script src="app.js?v=53"></script>
-<script src="app-cells.js?v=53"></script>
-<script src="app-library.js?v=53"></script>
-<script src="app-folder.js?v=53"></script>
-<script src="app-library-drag.js?v=53"></script>
-<script src="app-trash.js?v=53"></script>
-<script src="app-project-settings.js?v=53"></script>
-<script src="app-settings.js?v=53"></script>
-<script src="app-ui.js?v=53"></script>
-<script src="app-project-modal.js?v=53"></script>
+<script src="app-core.js?v=55"></script>
+<script src="app-data.js?v=55"></script>
+<script src="app-stage.js?v=55"></script>
+<script src="app.js?v=55"></script>
+<script src="app-cells.js?v=55"></script>
+<script src="app-library.js?v=55"></script>
+<script src="app-folder.js?v=55"></script>
+<script src="app-library-drag.js?v=55"></script>
+<script src="app-trash.js?v=55"></script>
+<script src="app-project-settings.js?v=55"></script>
+<script src="app-settings.js?v=55"></script>
+<script src="app-ui.js?v=55"></script>
+<script src="app-project-modal.js?v=55"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
