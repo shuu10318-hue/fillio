@@ -18,7 +18,7 @@ button{font:inherit;color:inherit}
 
 .table-head,.page-row{display:grid;grid-template-columns:25px repeat(5,minmax(0,1fr));gap:3px;align-items:center}
 .table-head{margin-bottom:5px}.head{color:var(--muted);font-size:9px;line-height:1.15;text-align:center}
-.page-number{text-align:center;color:var(--muted);font-size:11px}.page-row{margin-bottom:4px}
+.page-number{text-align:center;color:var(--muted);font-size:var(--type-caption-size);font-variant-numeric:tabular-nums}.page-row{margin-bottom:4px}
 .progress-cell{height:39px;padding:0;border:1px solid var(--border);border-radius:6px;background:white;font-size:15px;font-weight:700}
 .progress-cell.paint-source{outline:2px solid #777;outline-offset:1px}
 
@@ -73,7 +73,7 @@ button{font:inherit;color:inherit}
 
 .project-item{background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px}
 .project-item-main{display:flex;justify-content:space-between;gap:12px;align-items:center}
-.project-item-title{font-weight:800;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.project-item-title{font-weight:var(--type-title-weight);font-size:var(--type-title-size);line-height:var(--type-title-line);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 
 .project-edit-button{min-height:42px;padding:0 12px;border:1px solid var(--border);border-radius:9px;background:#fff;font-weight:700;flex:none}
@@ -287,7 +287,7 @@ button{font:inherit;color:inherit}
 
 .home-head-actions{display:flex;gap:8px;align-items:center}
 .settings-sheet{max-height:88dvh;overflow-y:auto;box-sizing:border-box}
-.settings-section-title{font-size:14px;font-weight:800;margin:20px 0 12px;padding-top:14px;border-top:1px solid var(--border)}
+.settings-section-title{font-size:var(--type-heading-size);font-weight:var(--type-heading-weight);line-height:var(--type-heading-line);margin:20px 0 12px;padding-top:14px;border-top:1px solid var(--border)}
 #appLanguage{width:100%;height:44px;border:1px solid var(--border);border-radius:9px;background:#fff;padding:0 10px;font-size:14px}
 
 
@@ -469,6 +469,14 @@ body{overflow-y:auto;-webkit-overflow-scrolling:touch}
   --accent-text:#fff;
   --progress-track:#eceeef;--progress-started:#aeb2b7;--progress-done:var(--accent);
   --cell-empty:transparent;--cell-mid:#aaa;--cell-done:var(--accent);--cell-border:#cfd2d6;--cell-done-text:#fff;
+
+  /* Typography recipe: shared semantic roles; layout-specific exceptions stay local. */
+  --type-title-size:16px;--type-title-weight:800;--type-title-line:1.2;
+  --type-heading-size:14px;--type-heading-weight:800;--type-heading-line:1.35;
+  --type-body-size:13px;--type-body-weight:400;--type-body-line:1.5;
+  --type-label-size:12px;--type-label-weight:700;--type-label-line:1.35;
+  --type-caption-size:11px;--type-caption-weight:400;--type-caption-line:1.5;
+  --type-metric-size:18px;--type-metric-weight:800;--type-metric-line:1.2;
 }
 body{background:var(--bg);letter-spacing:.005em}
 .app{max-width:520px;padding:16px 13px 42px}
@@ -918,11 +926,15 @@ body.library-drag-active .drag-trash-zone.over{
 .fillio-logo{filter:none!important}
 
 
+
+/* Stable-width numerals for progress, step and page metrics. */
+.project-summary-main>b,.project-summary-main>strong,.project-stage-value,.page-number,.project-meta-row b{font-variant-numeric:tabular-nums}
+
 /* Library card redesign: progress-first hierarchy */
 .project-summary{margin-top:10px}
 .project-summary-main{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
 .project-summary-main>b{font-size:19px;line-height:1.2;color:var(--text);font-weight:800;letter-spacing:-.02em}
-.project-summary-main>strong{font-size:18px;line-height:1.2;color:var(--accent);font-weight:800}
+.project-summary-main>strong{font-size:var(--type-metric-size);line-height:var(--type-metric-line);color:var(--accent);font-weight:var(--type-metric-weight);font-variant-numeric:tabular-nums}
 .project-progress-track{height:7px;margin-top:9px;border-radius:999px;background:var(--progress-track);overflow:hidden}
 .project-progress-track>i{display:block;height:100%;min-width:0;border-radius:inherit;background:var(--progress-done);transition:width .2s ease}
 .project-plan-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:11px}
@@ -961,9 +973,9 @@ body.library-drag-active .drag-trash-zone.over{
 .project-stage-details{display:none;padding:10px 2px 2px}
 .project-stage-details.open{display:block}
 .project-stage-row{display:grid;grid-template-columns:minmax(70px,1fr) minmax(90px,1.5fr) 52px;gap:9px;align-items:center;min-height:28px}
-.project-stage-name{font-size:11px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.project-stage-name{font-size:var(--type-caption-size);line-height:var(--type-caption-line);color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .project-stage-row>b{font-size:11px;text-align:right;color:var(--text)}
-.project-stage-value{width:52px;padding:4px 0;border:0;background:transparent;color:var(--text);font:inherit;font-size:11px;font-weight:700;text-align:right;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.project-stage-value{width:52px;padding:4px 0;border:0;background:transparent;color:var(--text);font:inherit;font-size:var(--type-caption-size);font-weight:var(--type-label-weight);line-height:var(--type-label-line);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .project-stage-track{height:5px;border-radius:999px;background:var(--progress-track);overflow:hidden}
 .project-stage-track>i{display:block;height:100%;border-radius:inherit;background:var(--progress-done)}
 
