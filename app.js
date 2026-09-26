@@ -598,139 +598,7 @@ else window.addEventListener("load",restoreInitialView,{once:true});
 
 
 
-/* Full-app UI language layer. User-entered titles, folder names, notes and custom stage names are never translated. */
-const FULL_I18N={
- en:{
- "作品一覧":"Projects","プロジェクト":"Projects","＋ プロジェクト":"+ Project","＋ 新しいプロジェクト":"+ New Project","＋ フォルダ":"+ Folder","名前変更":"Rename","削除":"Delete",
- "メモ一覧":"Notes","作品名":"Project title","制作ページ数":"Pages","制作ページ":"Pages",
- "作業開始日":"Start Date","締切予定日":"Deadline","工程表":"Production Table",
-"未着手":"Not started","着手中":"In progress","完成済み":"Completed","着手":"Started","完成":"Completed",
- "新しいプロジェクト":"New Project","作品編集":"Edit Project","工程設定":"Stage Settings","工程をカスタマイズ":"Customize Stages",
- "＋ 工程を追加":"+ Add Stage","キャンセル":"Cancel","保存":"Save","作成":"Create","編集":"Edit","この作品を削除":"Delete Project",
- "新しいフォルダ":"New Folder","フォルダ名":"Folder name","フォルダ名を変更":"Rename Folder","フォルダから戻す":"Move out of folder",
- "付箋":"Page Note","付箋を削除":"Delete Note","閉じる":"Close","すべて":"All","赤":"Red","黄":"Yellow","青":"Blue","緑":"Green","移動":"Go",
- "使い方":"Help","工程マスをタップ":"Tap a stage cell","長押し＋スライド":"Long press + slide",
- "ページ番号をタップ":"Tap a page number","マーカー":"Legend",
- "💾 バックアップ":"💾 Backup","📂 復元":"📂 Restore","工程":"Stages","工程名":"Stage name",
- "言語":"Language","アプリ設定":"App Settings","新規プロジェクトのデフォルト":"New Project Defaults","設定":"Settings","Libraryの使い方":"Library Help","フォルダで整理":"Organize with folders","ゴミ箱":"Trash","バックアップ":"Backup","テーマカラー":"Theme Color","完了セルや選択状態などのアクセントカラーに使われます。":"Used for completed cells and selected states.",
- "全工程":"All stages","締切":"Deadline","なし":"None","ページ":"Pages","未設定":"Not set","完了":"Done",
- "データ収集中":"Collecting data","完成！":"Complete!","変更は自動保存されます":"Changes are saved automatically",
- "保存しました ✓":"Saved ✓","該当するメモはありません。":"No matching notes.","（メモ本文なし）":"(No note text)",
- "修正点・忘れたくないことなど":"Corrections, reminders, etc.",
- "工程名の変更・並び替え・追加・削除":"Rename, reorder, add or delete stages.",
- "新しいプロジェクトを作るときの初期値です。プロジェクトごとに変更できます。":"Initial values for new projects. You can change them for each project.",
- "作品ごとの進捗・付箋・作業履歴は端末内に自動保存されます。":"Project progress, notes and work history are saved automatically on this device.",
- "まだ作品がありません。":"No projects yet.","「＋ 新しいプロジェクト」から作成できます。":"Create one with “+ New Project”.",
- 
- 
- "Chromeのダウンロード一覧または端末の「Downloads」を確認してください。":"Check Chrome downloads or the device Downloads folder.",
- "タップするたびに「未着手 → 着手 → 完了 → 未着手」と切り替わります。":"Each tap cycles: Not started → In progress → Complete → Not started.",
- "工程マスを約0.5秒長押しし、上下または左右になぞると範囲をプレビューできます。指を離すと確定します。振動したら開始です。":"Long-press a stage cell for about 0.5 seconds, then slide vertically or horizontally to preview the range. Release to apply it. It starts when the device vibrates.",
- "そのページに付箋メモを付けられます。赤・黄・青・緑で分類でき、「メモ一覧」から絞り込みやページ移動もできます。":"Add a note to a page and classify it by red, yellow, blue or green. Filter notes and jump to pages from Notes.",
- }};
-function translateExactText(root=document){
- if(uiLang()!=="en")return;
- const map=FULL_I18N.en;
- const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
- const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
- nodes.forEach(n=>{
-   if(n.parentElement?.closest("input,textarea,option"))return;
-   const raw=n.nodeValue,trim=raw.trim();
-   if(map[trim])n.nodeValue=raw.replace(trim,map[trim]);
- });
- document.querySelectorAll('input[placeholder]').forEach(el=>{
-   const p=el.getAttribute("placeholder");if(map[p])el.setAttribute("placeholder",map[p]);
- });
-}
-/* ---- i18n helpers ---- */
-const I18N_MORE_EN={
- "作品編集":"Edit Project","作品名":"Project title","制作ページ":"Pages","制作ページ数":"Pages",
- "作業開始日":"Start Date","締切予定日":"Deadline","工程設定":"Stage Settings",
- "工程をカスタマイズ":"Customize Stages","工程名":"Stage name",
- "変更しなければ「ネーム・ペン・背景・トーン・写植」で作成されます":"If unchanged, the default stages will be used.",
- "工程名の変更・並び替え・追加・削除":"Rename, reorder, add or delete stages.",
- "変更は自動保存されます":"Changes are saved automatically",
- "完成":"Completed","着手":"Started","全工程":"All stages","締切":"Deadline",
- "ページ":"Pages","未設定":"Not set","無題":"Untitled",
- "この工程":"This stage","全工程完了":"All stages complete",
- "完成予想との差分は、作業履歴がたまると表示":"The forecast comparison appears after enough work history is collected.",
- "新しい工程":"New Stage"
-};
-Object.assign(FULL_I18N.en,I18N_MORE_EN);
-
-Object.assign(FULL_I18N.en,{
- "制作進捗":"Overall Progress",
- "制作中":"In progress",
- "完成率":"Completion",
- "直近7日間":"Last 7 days",
- "完成予想":"Estimated Completion",
- "締切まで":"Until deadline",
- "必要ペース":"Required pace"
-});
-
-
-function translateUiPatterns(root=document){
- if(uiLang()!=="en")return;
- const els=(root===document?[...document.querySelectorAll("*")]:
-   [root,...(root.querySelectorAll?[...root.querySelectorAll("*")]:[])]);
- for(const el of els){
-   if(!el || el.children.length || el.matches?.("script,style,input,textarea,option"))continue;
-   const raw=el.textContent, s=raw.trim();
-   if(!s)continue;
-   let x=s;
-   if(FULL_I18N.en[x]) x=FULL_I18N.en[x];
-   else{
-     x=x.replace(/^全(\d+)P$/,"$1 pages")
-      .replace(/^(\d+)P\s*\/\s*(\d+)P$/,"$1 / $2 pages")
-      .replace(/^(\d+)作品$/,"$1 projects")
-       .replace(/^(\d+)–(\d+) \/ 全(\d+)P$/,"$1–$2 / $3 pages")
-       .replace(/^完成\s*(\d+)\s*\/\s*(\d+)P$/,"Completed $1 / $2 pages")
-       .replace(/^着手\s*(\d+)%\s*・\s*完成\s*(\d+)%$/,"Started $1% · Completed $2%")
-       .replace(/^着手\s*(\d+)%$/,"Started $1%")
-       .replace(/^完成\s*(\d+)%$/,"Completed $1%")
-       .replace(/^全(\d+)工程$/,"$1 stages")
-       .replace(/^あと約(\d+)日$/,"About $1 days")
-       .replace(/^締切まで\s*あと(\d+)日$/,"$1 days until deadline")
-       .replace(/^締切を\s*(\d+)日超過$/,"$1 days past deadline")
-       .replace(/^完成予想は締切より\s*(\d+)日早いペース$/,"Forecast: $1 days before deadline")
-       .replace(/^完成予想は締切より\s*(\d+)日超過するペース$/,"Forecast: $1 days after deadline")
-       .replace(/^完成予想は締切予定日と同日$/,"Forecast matches the deadline")
-       .replace(/^必要ペース\s*1日([\d.]+)工程$/,"Required pace: $1 stages/day")
-       .replace(/^締切まで\s*あと(\d+)日\s*・\s*完成予想は締切より\s*(\d+)日超過するペース\s*・\s*必要ペース\s*1日([\d.]+)工程$/,"$1 days until deadline · Forecast is $2 days after deadline · Required pace: $3 stages/day")
-       .replace(/^締切まで\s*あと(\d+)日\s*・\s*完成予想は締切より\s*(\d+)日早いペース\s*・\s*必要ペース\s*1日([\d.]+)工程$/,"$1 days until deadline · Forecast is $2 days before deadline · Required pace: $3 stages/day")
-       .replace(/^(\d+)作品$/,"$1 projects")
-       .replace(/^(\d+)P 付箋$/,"Page $1 note");
-   }
-   if(x!==s)el.textContent=raw.replace(s,x);
- }
- // title/placeholderなど
- document.title="fillio";
- document.querySelectorAll("[placeholder]").forEach(el=>{
-   const p=el.getAttribute("placeholder");
-   if(p==="作品名")el.setAttribute("placeholder","Project title");
-   if(p==="フォルダ名")el.setAttribute("placeholder","Folder name");
-   if(p==="修正点・忘れたくないことなど")el.setAttribute("placeholder","Corrections, reminders, etc.");
- });
-}
-
-/* ---- Deterministic runtime language switch ----
-   Keep user-authored project/folder/stage/note text untouched.
-   Re-render first, then localize fixed/dynamic UI in one direction. */
-const JA_STATIC_BY_ID={
-  memoListButton:"メモ一覧",
-  settingsTitle:"アプリ設定",
-  settingsDefaultsTitle:"新規プロジェクトのデフォルト",
-  settingsPagesLabel:"制作ページ",
-  settingsStagesLabel:"工程",
-  defaultStageAdd:"＋ 工程を追加",
-  settingsNote:"新しいプロジェクトを作るときの初期値です。プロジェクトごとに変更できます。",
-  settingsCancel:"キャンセル",settingsSave:"保存"
-};
-function restoreKnownJapaneseUi(){
-  Object.entries(JA_STATIC_BY_ID).forEach(([id,txt])=>{const el=document.getElementById(id);if(el)el.textContent=txt});
-  document.title="fillio";
-  document.documentElement.lang="ja";
-}
+/* Language refresh: render the current view, then apply the canonical i18n dictionary. */
 function rerenderCurrentViewForLanguage(){
   try{
     if(currentProjectId && projectStore.projects[currentProjectId]){
@@ -745,19 +613,10 @@ function rerenderCurrentViewForLanguage(){
 function applyCurrentLanguageNow(){
   syncSplitSettings();
   rerenderCurrentViewForLanguage();
-  if(languageSettings.language==="en"){
-    applyLanguage();
-    translateExactText(document);
-    translateUiPatterns(document);
-  }else{
-    // The current view was already re-rendered above. Rendering it a second
-    // time here races with renderFoldersAndFilter()'s frame guard: in a
-    // folder view renderProjectList() rebuilt every card, then the guarded
-    // filter skipped, making the UI temporarily look like Library root until
-    // reload. Only restore fixed Japanese labels here.
-    restoreKnownJapaneseUi();
-  }
+  applyLanguage();
+  localizeOpenUi?.();
 }
+
 /* ---- Separate Language UI and Project Defaults UI ---- */
 function updateLanguageButtons(){
  document.querySelectorAll(".language-option").forEach(b=>b.classList.toggle("active",b.dataset.lang===languageSettings.language));
@@ -801,15 +660,10 @@ updateLanguageButtons();
    Existing projects and their progress are never touched. */
 const defaultStageReset=document.getElementById("defaultStageReset");
 if(defaultStageReset){
- const updateDefaultStageResetLabel=()=>{
-   defaultStageReset.textContent=languageSettings.language==="en"?"Reset Stages":"工程を初期設定に戻す";
- };
+ const updateDefaultStageResetLabel=()=>{ defaultStageReset.textContent=t("settings.resetStages"); };
  updateDefaultStageResetLabel();
  defaultStageReset.onclick=()=>{
-   const en=languageSettings.language==="en";
-   const ok=confirm(en
-     ?"Reset the default stages for new projects?\nExisting projects will not be affected."
-     :"新規プロジェクト用の工程を初期設定に戻しますか？\n既存の作品には影響しません。");
+   const ok=confirm(t("settings.resetStagesConfirm"));
    if(!ok)return;
    defaultStageDraft=cloneStages(DEFAULT_STAGES);
    renderDefaultStageEditor();
@@ -819,29 +673,15 @@ if(defaultStageReset){
 
 
 
-/* ---- Persistence + default-settings language ---- */
-function localizeDefaultsSettingsUi(){
- const en=languageSettings.language==="en";
- const set=(id,ja,enText)=>{const el=document.getElementById(id);if(el)el.textContent=en?enText:ja};
- set("settingsTitle","アプリ設定","Default Settings");
- set("settingsDefaultsTitle","新規プロジェクトのデフォルト","New Project Defaults");
- set("settingsPagesLabel","制作ページ","Pages");
- set("settingsStagesLabel","工程","Stages");
- set("defaultStageAdd","＋ 工程を追加","+ Add Stage");
- set("defaultStageReset","工程を初期設定に戻す","Reset Stages");
- set("settingsNote","新しいプロジェクトを作るときの初期値です。プロジェクトごとに変更できます。","These initial values are used when creating a new project. You can change them per project.");
- set("settingsCancel","キャンセル","Cancel");
- set("settingsSave","保存","Save");
-}
+/* Settings language is handled by app-i18n.js. */
+function localizeDefaultsSettingsUi(){ applyLanguage(); }
 function refreshSettingsLanguage(){
- localizeDefaultsSettingsUi();
- if(document.getElementById("appSettingsModal").classList.contains("open")){
-   defaultStageDraft=cloneStages(projectDefaults.stages);
-   renderDefaultStageEditor();
- }
+  applyLanguage();
+  if(document.getElementById("appSettingsModal").classList.contains("open")){
+    defaultStageDraft=cloneStages(projectDefaults.stages);
+    renderDefaultStageEditor();
+  }
 }
-setTimeout(()=>localizeDefaultsSettingsUi(),0);
-
 
 /* ---- Folder rendering + localized default stage names ---- */
 /* After startup/reload, force one final folder-aware render after all language
@@ -879,115 +719,10 @@ setTimeout(refreshCurrentProjectTitle,0);
    if(e.target.closest(".folder-item,.project-item"))e.preventDefault();
  });
 })();
-/* Data management labels. */
-(function(){
-  function localizeDataManagement(){
-    const lang=(typeof languageSettings!=="undefined" && languageSettings?.language==="en")?"en":"ja";
-    const set=(id,ja,en)=>{const el=document.getElementById(id);if(el)el.textContent=lang==="en"?en:ja};
-    set("dataManagementTitle","データ管理","Data Management");
-    set("dataManagementNote",
-      "全作品・フォルダ・進捗・付箋・作業履歴を1つのJSONに保存します。",
-      "Save all projects, folders, progress, notes and work history in one JSON file.");
-  }
-  localizeDataManagement();
-  document.querySelectorAll(".language-option").forEach(btn=>{
-    btn.addEventListener("click",()=>setTimeout(localizeDataManagement,0));
-  });
-  document.getElementById("appSettingsButton")?.addEventListener("click",localizeDataManagement);
-})();
 
 
-/* ===== I18N CLEAN AUTHORITY =====
-   One runtime authority. Japanese HTML/render output is the source of truth.
-   English is applied as a presentation layer. User-authored project/folder/stage/note
-   text is excluded. Language changes persist once, then reload once. */
-const CLEAN_EN_EXACT = {
- "全体":"OVERALL",
- "作品一覧":"Projects","プロジェクト":"Projects","メモ一覧":"Notes","総合進捗":"Overall Progress","制作進捗":"Overall Progress",
- "制作中":"In progress","完成率":"Completion","工程表":"Production Table",
- "変更は自動保存されます":"Changes are saved automatically",
- "着手中":"In progress","完成済み":"Completed","着手":"Started","完成":"Completed",
-"閉じる":"Close","言語":"Language","アプリ設定":"App Settings",
- "新規プロジェクトのデフォルト":"New Project Defaults","制作ページ":"Pages","工程":"Stages",
- "＋ 工程を追加":"+ Add Stage","キャンセル":"Cancel","保存":"Save","データ管理":"Data Management","ページ":"Pages","全工程":"All stages","締切":"Deadline","未設定":"Not set","編集":"Edit","この作品を削除":"Delete this project","作品":"projects",
-};
-const CLEAN_USER_TEXT_SELECTOR = [
- ".project-title",".project-name",".folder-name",
-"#pages .stage-name",".memo-text",".memo-list",
- "input[type=text]","textarea","[data-user-text]"
-].join(",");
 
-function cleanEnglishPass(root=document){
- if(languageSettings?.language!=="en")return;
- document.documentElement.lang="en";
- document.title="fillio";
- const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
- const nodes=[]; while(walker.nextNode())nodes.push(walker.currentNode);
- for(const n of nodes){
-   const el=n.parentElement;
-   if(!el || el.closest("script,style,option") || el.closest(CLEAN_USER_TEXT_SELECTOR))continue;
-   const raw=n.nodeValue||"", s=raw.trim(); if(!s)continue;
-   let x=CLEAN_EN_EXACT[s]||FULL_I18N?.en?.[s]||s;
-   x=x.replace(/^締切まで\s*あと(\d+)日\s*・\s*完成予想は締切より\s*(\d+)日超過するペース\s*・\s*必要ペース\s*1日([\d.]+)工程$/,"$1 days until deadline · Forecast is $2 days after deadline · Required pace: $3 stages/day")
-      .replace(/^締切まで\s*あと(\d+)日\s*・\s*完成予想は締切より\s*(\d+)日早いペース\s*・\s*必要ペース\s*1日([\d.]+)工程$/,"$1 days until deadline · Forecast is $2 days before deadline · Required pace: $3 stages/day")
-      .replace(/^締切まで\s*あと(\d+)日\s*・\s*完成予想は締切予定日と同日\s*・\s*必要ペース\s*1日([\d.]+)工程$/,"$1 days until deadline · Forecast matches the deadline · Required pace: $2 stages/day")
-      .replace(/^全(\d+)P$/,"$1 pages")
-      .replace(/^(\d+)–(\d+)\s*\/\s*全(\d+)P$/,"$1–$2 / $3 pages")
-      .replace(/^完成\s*(\d+)\s*\/\s*(\d+)P$/,"Completed $1 / $2 pages")
-      .replace(/^着手\s*(\d+)%\s*・\s*完成\s*(\d+)%$/,"Started $1% · Completed $2%")
-      .replace(/^あと約(\d+)日$/,"About $1 days")
-      .replace(/^締切まで\s*あと(\d+)日$/,"$1 days until deadline")
-      .replace(/^締切を\s*(\d+)日超過$/,"$1 days past deadline")
-      .replace(/^完成予想は締切より\s*(\d+)日超過するペース$/,"Forecast is $1 days after deadline")
-      .replace(/^完成予想は締切より\s*(\d+)日早いペース$/,"Forecast is $1 days before deadline")
-      .replace(/^必要ペース\s*1日([\d.]+)工程$/,"Required pace: $1 stages/day");
-   if(x!==s)n.nodeValue=raw.replace(s,x);
- }
-}
-
-let cleanI18nTimer=0;
-const cleanI18nObserver=new MutationObserver((mutations)=>{
- if(languageSettings?.language!=="en")return;
- const roots=new Set();
- for(const m of mutations){
-   const el=m.target?.nodeType===Node.TEXT_NODE ? m.target.parentElement : m.target;
-   if(el && el.nodeType===Node.ELEMENT_NODE) roots.add(el);
- }
- clearTimeout(cleanI18nTimer);
- cleanI18nTimer=setTimeout(()=>{
-   for(const el of roots){
-     if(el.isConnected)cleanEnglishPass(el);
-   }
- },0);
-});
-if(languageSettings?.language==="en"){
- cleanI18nObserver.observe(document.body,{subtree:true,childList:true,characterData:true});
- setTimeout(()=>cleanEnglishPass(document),80);
-}else{
- document.documentElement.lang="ja";
- document.title="fillio";
-}
-
-document.querySelectorAll(".language-option").forEach(btn=>{
- btn.onclick=()=>{
-   const selected=btn.dataset.lang==="en"?"en":"ja";
-   if(selected===languageSettings.language){
-     document.getElementById("languageModal")?.classList.remove("open");
-     return;
-   }
-   appSettings=normalizeAppSettings({
-     language:selected,
-     defaultPages:projectDefaults.pages,
-     defaultStages:cloneStages(projectDefaults.stages)
-   });
-   persistAppSettings();
-   location.reload();
- };
-});
-/* ===== /I18N CLEAN AUTHORITY ===== */
-
-
-/* ---- Modal/list i18n consistency ---- */
+/* Open modal/list labels use the canonical dictionary directly. */
 function localizeNoColorSwatch(){
  const el=document.querySelector(".color-pick-none");
  if(!el)return;
@@ -996,84 +731,12 @@ function localizeNoColorSwatch(){
  el.setAttribute("title",label);
 }
 function localizeOpenUi(){
+ applyLanguage();
  localizeNoColorSwatch();
- const en=uiLang()==="en";
- const set=(sel,ja,enText)=>{const el=document.querySelector(sel);if(el)el.textContent=en?enText:ja};
- const ph=(sel,ja,enText)=>{const el=document.querySelector(sel);if(el)el.placeholder=en?enText:ja};
- set("#memoListModal .memo-head h2",t("notes.title"),t("notes.title"));
- {const el=document.querySelector("#closeMemoList");if(el){el.textContent="×";el.setAttribute("aria-label",t("common.close"));}}
- const filters=[["all","すべて","All"],["none","無色","No color"],["#f4a6a6","赤","Red"],["#f4dc8a","黄","Yellow"],["#9ec8f4","青","Blue"],["#a9ddb0","緑","Green"]];
- filters.forEach(([key,ja,enText])=>{const el=document.querySelector(`.memo-filter[data-filter="${key}"]`);if(el)el.textContent=en?enText:ja});
- set("#stickyLabelCaption",t("memo.label"),t("memo.label"));
- ph("#stickyLabel",t("memo.labelPlaceholder"),t("memo.labelPlaceholder"));
- ph("#stickyText",t("memo.textPlaceholder"),t("memo.textPlaceholder"));
- ph("#stickyTodoInput",t("memo.todoPlaceholder"),t("memo.todoPlaceholder"));
- set("#stickyDelete",t("memo.delete"),t("memo.delete"));
- set("#stickySave",t("common.save"),t("common.save"));
- // fixed UI in any currently open JS modal is normalized on every call.
- document.querySelectorAll('.project-modal.open,.folder-modal.open,.memo-modal.open,.sticky-modal.open').forEach(root=>{
-   if(en){translateExactText(root);translateUiPatterns(root)}
- });
 }
-const _openStickyI18n=openSticky;
-openSticky=function(page){_openStickyI18n(page);localizeOpenUi();};
-const _renderMemoListI18n=renderMemoList;
-renderMemoList=function(){_renderMemoListI18n();localizeOpenUi();};
-const _applyCurrentLanguageNowI18n=applyCurrentLanguageNow;
-applyCurrentLanguageNow=function(){_applyCurrentLanguageNowI18n();localizeOpenUi();};
 setTimeout(localizeOpenUi,0);
 
 
-/* ===== Dynamic UI i18n =====
-   Covers UI created/re-rendered by JavaScript. User-authored text is never translated. */
-const DYNAMIC_UI_EN={
-  "ページ":"Pages","完成":"Completed","全工程":"All stages","編集":"Edit","この作品を削除":"Delete this project",
-  "フォルダから戻す":"Move out of folder","移動":"Go","付箋を削除":"Delete Note","保存":"Save","閉じる":"Close",
-  "すべて":"All","赤":"Red","黄":"Yellow","青":"Blue","緑":"Green","今日":"Today",
-  "全工程完了":"All stages complete","データ収集中":"Collecting data","完成！":"Complete!"
-};
-function auditDynamicUiLanguage(root=document){
-  if(uiLang()!=="en")return;
-  const scope=root?.querySelectorAll?root:document;
-  const all=(root===document?[...document.querySelectorAll("*")]:[root,...root.querySelectorAll("*")]);
-  for(const el of all){
-    if(!el || el.matches?.("script,style,input,textarea,option") || el.closest?.("[data-user-text],.memo-text,.sticky-todo-item span,.memo-todo-item span"))continue;
-    if(el.children.length===0){
-      const raw=el.textContent||"", t=raw.trim();
-      let x=DYNAMIC_UI_EN[t]||FULL_I18N?.en?.[t]||t;
-      x=x.replace(/^まだ作品がありません。$/,"No projects yet.")
-         .replace(/^「＋ 新しいプロジェクト」から作成できます。$/,"Create one with “+ New Project”.")
-         .replace(/^全(\d+)P$/,"$1 pages")
-         .replace(/^(\d+)P\s*\/\s*(\d+)P$/,"$1 / $2 pages")
-         .replace(/^(\d+)作品$/,"$1 projects")
-         .replace(/^あと約(\d+)日$/,"About $1 days")
-         .replace(/^完成予想は締切より\s*(\d+)日早いペース$/,"Forecast is $1 days before deadline")
-         .replace(/^完成予想は締切より\s*(\d+)日超過するペース$/,"Forecast is $1 days after deadline")
-         .replace(/^完成予想は締切予定日と同日$/,"Forecast matches the deadline")
-         .replace(/^必要ペース\s*1日([\d.]+)工程$/,"Required pace: $1 stages/day");
-      if(x!==t)el.textContent=raw.replace(t,x);
-    }
-  }
-  // Dynamic controls inside memo list are intentionally outside the generic text pass
-  // because memo bodies are user-authored.
-  document.querySelectorAll('#memoList .memo-jump,[data-action="memo-jump"]').forEach(el=>{el.textContent="Go"});
-  // Project cards are frequently rebuilt wholesale.
-  document.querySelectorAll('.project-item').forEach(card=>{
-    const rows=card.querySelectorAll('.project-meta-row span');
-    rows.forEach(el=>{const t=el.textContent.trim(); if(DYNAMIC_UI_EN[t])el.textContent=DYNAMIC_UI_EN[t]});
-    const del=card.querySelector('.project-delete-button');if(del)del.textContent="Delete this project";
-  });
-  localizeOpenUi?.();
-}
-let dynamicAuditTimer=0;
-const dynamicAuditObserver=new MutationObserver(muts=>{
-  if(uiLang()!=="en")return;
-  clearTimeout(dynamicAuditTimer);
-  dynamicAuditTimer=setTimeout(()=>auditDynamicUiLanguage(document),0);
-});
-if(uiLang()==="en")dynamicAuditObserver.observe(document.body,{subtree:true,childList:true,characterData:true});
-setTimeout(()=>auditDynamicUiLanguage(document),0);
-/* ===== /Dynamic UI i18n ===== */
 
 
 /* Library trash-drop behavior lives in app-library-drag.js. */

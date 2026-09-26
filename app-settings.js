@@ -4,23 +4,6 @@
   const $=id=>document.getElementById(id);
   function isEn(){return languageSettings?.language==="en"}
 
-  function syncExtraLanguage(){
-    const set=(id,key)=>{const el=$(id);if(el)el.textContent=t(key)};
-    set("displayModeTitle","settings.displayMode");set("displayModeNote","settings.displayModeNote");
-    set("themeColorTitle","settings.themeColor");set("themeColorNote","settings.themeColorNote");
-    set("cellShapeTitle","settings.cellShape");set("cellShapeNote","settings.cellShapeNote");
-    set("dataManagementTitle","settings.dataManagement");set("dataManagementNote","settings.dataManagementNote");
-    set("exportBackup","settings.backup");set("importBackup","settings.restore");set("libraryHelpTitle","help.libraryTitle");
-    const hb=$("libraryHelpButton");if(hb)hb.setAttribute("aria-label",t("help.libraryTitle"));
-    const hc=$("libraryHelpClose");if(hc)hc.setAttribute("aria-label",t("common.close"));
-    const helpKeys=["create","open","reorder","folder","edit","settings","defaults","theme","trash","backup"];
-    $("libraryHelpModal")?.querySelectorAll(".help-item").forEach((it,i)=>{const key=helpKeys[i];if(!key)return;it.querySelector(".help-item-title").textContent=t(`help.${key}.title`);it.querySelector(".help-item-text").textContent=t(`help.${key}.text`)});
-    const en=uiLang()==="en";
-    document.querySelectorAll(".display-mode-option").forEach(btn=>{const label=en?btn.dataset.en:btn.dataset.ja;btn.textContent=label;btn.setAttribute("aria-label",label)});
-    document.querySelectorAll(".theme-color-option").forEach(btn=>{const label=en?btn.dataset.en:btn.dataset.ja;btn.setAttribute("aria-label",label);btn.title=label;btn.querySelector(".theme-option-label").textContent=label});
-    document.querySelectorAll(".cell-shape-option").forEach(btn=>{const label=en?btn.dataset.en:btn.dataset.ja;btn.setAttribute("aria-label",label);btn.title=label;btn.querySelector(".cell-shape-label").textContent=label});
-  }
-
   const helpBtn=$("libraryHelpButton"), helpModal=$("libraryHelpModal"), helpClose=$("libraryHelpClose");
   const openHelp=()=>{if(!helpModal)return;lockPageScroll();helpModal.classList.add("open");helpModal.setAttribute("aria-hidden","false")};
   const closeHelp=()=>{if(!helpModal)return;helpModal.classList.remove("open");helpModal.setAttribute("aria-hidden","true");unlockPageScroll()};
@@ -50,7 +33,6 @@
     persistAppSettings();
   },{capture:true}));
 
-  syncExtraLanguage();
 })();
 
 /* Finish form editing consistently on mobile */
