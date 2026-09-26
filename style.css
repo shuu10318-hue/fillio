@@ -1278,3 +1278,22 @@ body.library-drag-active .drag-trash-zone.over{
 :root[data-display-mode="dark"] .fillio-logo{filter:invert(1)!important}
 :root[data-display-mode="dark"] .sticky-save,
 :root[data-display-mode="dark"] .project-create-button{background:#ececed!important;color:#151515!important;border-color:#ececed!important}
+
+
+/* ===== v64: keep progress-state colors consistent across appearance modes ===== */
+:root[data-display-mode="dark"] #pages .progress-cell,
+:root[data-display-mode="dark"] .progress-cell{background:#fff!important;border-color:#cfd2d6!important;color:var(--text)!important}
+:root[data-display-mode="dark"] #pages .progress-cell.state1,
+:root[data-display-mode="dark"] .progress-cell.state1{background:var(--started)!important;border-color:#cfd2d6!important;color:#222!important}
+:root[data-display-mode="dark"][data-theme="color"] #pages .progress-cell.state1,
+:root[data-display-mode="dark"][data-theme="color"] .progress-cell.state1{background:color-mix(in srgb,var(--accent) 38%,#d7d7d7)!important}
+:root[data-display-mode="dark"] #pages .progress-cell.state2,
+:root[data-display-mode="dark"] .progress-cell.state2{background:var(--accent)!important;border-color:var(--accent)!important;color:#fff!important}
+:root[data-display-mode="dark"] .state-swatch,
+:root[data-display-mode="dark"] .help-swatch{background:#fff!important;border-color:#cfd2d6!important}
+:root[data-display-mode="dark"] .state-swatch.started,
+:root[data-display-mode="dark"] .help-swatch.started{background:var(--started)!important;border-color:#cfd2d6!important}
+:root[data-display-mode="dark"][data-theme="color"] .state-swatch.started,
+:root[data-display-mode="dark"][data-theme="color"] .help-swatch.started{background:color-mix(in srgb,var(--accent) 38%,#d7d7d7)!important}
+:root[data-display-mode="dark"] .state-swatch.done,
+:root[data-display-mode="dark"] .help-swatch.done{background:var(--accent)!important;border-color:var(--accent)!important}

@@ -33,7 +33,8 @@ function normalizeAppSettings(raw){
  const rawTheme=raw?.themeColor ?? appSettings?.themeColor;
  const requested=legacyThemeMap[rawTheme]||rawTheme;
  const themeColor=allowedColors.includes(requested)?requested:"#222222";
- const displayMode=["light","dark","auto"].includes(raw?.displayMode)?raw.displayMode:"light";
+ const rawDisplayMode=raw?.displayMode ?? appSettings?.displayMode;
+ const displayMode=["light","dark","auto"].includes(rawDisplayMode)?rawDisplayMode:"light";
  return {language:lang,defaultStartPage:a,defaultEndPage:b,defaultStages:ss,themeColor,displayMode};
 }
 function syncSplitSettings(){
