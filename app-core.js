@@ -18,9 +18,9 @@ function projectStageValueMode(id){return stageValueModes[id]==="steps"?"steps":
 function saveProjectStageValueModes(){return safeStorageSet(STAGE_VALUE_MODE_KEY,JSON.stringify(stageValueModes))}
 let appSettings=null;
 let languageSettings={language:"ja"};
-let projectDefaults={startPage:1,endPage:48,stages:[]};
-const DATA_VERSION=1;
-const BACKUP_VERSION=1;
+let projectDefaults={pages:48,stages:[]};
+const DATA_VERSION=2;
+const BACKUP_VERSION=2;
 const PROJECT_PAGE_MAX=500;
 let projectStore={version:DATA_VERSION,activeProjectId:null,projects:{}};
 let currentProjectId=null;
@@ -33,9 +33,7 @@ const UI_TEXT={
 };
 function normalizeAppSettings(raw){
  const lang=raw?.language==="en"?"en":"ja";
- let a=Math.max(1,Math.min(PROJECT_PAGE_MAX,Number(raw?.defaultStartPage)||1));
- let b=Math.max(a,Math.min(PROJECT_PAGE_MAX,Number(raw?.defaultEndPage)||48));
- if(b-a+1>PROJECT_PAGE_MAX)b=a+PROJECT_PAGE_MAX-1;
+ const pages=Math.max(1,Math.min(PROJECT_PAGE_MAX,Number(raw?.defaultPages)||48));
  let ss=Array.isArray(raw?.defaultStages)?raw.defaultStages.map(x=>String(x||"").trim()).filter(Boolean).slice(0,MAX_STAGES):[];
  if(!ss.length)ss=[...DEFAULT_STAGES];
  const allowedColors=["#222222","#d9788d","#6e9fd0","#70ad98","#9a83c6","#dc9878","#d6b94c","#d86f67","#7656a8"];
@@ -45,13 +43,12 @@ function normalizeAppSettings(raw){
  const displayMode=["light","dark","auto"].includes(rawDisplayMode)?rawDisplayMode:"light";
  const rawCellShape=raw?.cellShape ?? appSettings?.cellShape;
  const cellShape=["rounded","circle","star"].includes(rawCellShape)?rawCellShape:"rounded";
- return {language:lang,defaultStartPage:a,defaultEndPage:b,defaultStages:ss,themeColor,displayMode,cellShape};
+ return {language:lang,defaultPages:pages,defaultStages:ss,themeColor,displayMode,cellShape};
 }
 function syncSplitSettings(){
  languageSettings={language:appSettings?.language==="en"?"en":"ja"};
  projectDefaults={
-   startPage:appSettings?.defaultStartPage||1,
-   endPage:appSettings?.defaultEndPage||48,
+   pages:appSettings?.defaultPages||48,
    stages:[...(appSettings?.defaultStages||DEFAULT_STAGES)]
  };
 }

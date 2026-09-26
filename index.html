@@ -14,7 +14,7 @@
 <title>fillio</title>
 
 
-<link rel="stylesheet" href="style.css?v=81">
+<link rel="stylesheet" href="style.css?v=82">
 </head>
 <body>
 
@@ -87,21 +87,6 @@
 <div class="app" id="editorApp" style="display:none">
 <div class="top-title"><div class="editor-brand"><button type="button" class="fillio-home-link" aria-label="Libraryへ戻る"><img src="fillio-logo.svg" class="fillio-logo" alt="fillio"></button></div><div class="top-actions"><button id="memoListButton" class="memo-list-button" type="button"><svg class="memo-list-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.75h14a1.25 1.25 0 0 1 1.25 1.25v10.5L15.5 20.25H5A1.25 1.25 0 0 1 3.75 19V5A1.25 1.25 0 0 1 5 3.75Z"/><path d="M15.5 20.25V16.5a1 1 0 0 1 1-1h3.75"/></svg><span class="memo-list-label">メモ一覧</span></button></div></div>
 <div class="current-project-title-wrap"><div class="current-project-title-label" id="currentProjectTitleLabel">作品</div><div id="currentProjectTitle" class="current-project-title"></div></div><div id="projectBreadcrumb" class="project-breadcrumb"></div>
-<div class="card" style="display:none">
-<div class="label">作品名</div><input id="title" value="ばちぼこゾンビランド" placeholder="作品名">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-top:15px;margin-bottom:7px">
-<div class="label" style="margin:0">制作ページ数</div><div id="totalPageLabel" style="font-size:11px;color:var(--muted)">全48P</div>
-</div>
-<div class="page-range">
-<div><input id="startPageInput" type="number" min="1" max="999" value="1"><span>P</span></div>
-<b>〜</b>
-<div><input id="endPageInput" type="number" min="1" max="999" value="48"><span>P</span></div>
-</div>
-<div class="label" style="margin-top:15px">作業開始日</div>
-<input id="creationStartDateInput" type="date">
-<div class="label" style="margin-top:15px">締切予定日</div>
-<input id="deadlineInput" type="date">
-</div>
 <div class="card stage-grid-card">
 <div class="table-toolbar"><div style="display:flex;align-items:center"><div class="section-title" style="margin:0">工程表</div><button id="helpButton" class="help-fab" type="button" aria-label="使い方">?</button></div><div id="range" class="range"></div></div>
 <div class="stage-table-scroll" id="stageTableScroll">
@@ -275,19 +260,19 @@
 </div>
 
 
-<script src="app-core.js?v=81"></script>
-<script src="app-data.js?v=81"></script>
-<script src="app-stage.js?v=81"></script>
-<script src="app.js?v=81"></script>
-<script src="app-cells.js?v=81"></script>
-<script src="app-library.js?v=81"></script>
-<script src="app-folder.js?v=81"></script>
-<script src="app-library-drag.js?v=81"></script>
-<script src="app-trash.js?v=81"></script>
-<script src="app-project-settings.js?v=81"></script>
-<script src="app-settings.js?v=81"></script>
-<script src="app-ui.js?v=81"></script>
-<script src="app-project-modal.js?v=81"></script>
+<script src="app-core.js?v=82"></script>
+<script src="app-data.js?v=82"></script>
+<script src="app-stage.js?v=82"></script>
+<script src="app.js?v=82"></script>
+<script src="app-cells.js?v=82"></script>
+<script src="app-library.js?v=82"></script>
+<script src="app-folder.js?v=82"></script>
+<script src="app-library-drag.js?v=82"></script>
+<script src="app-trash.js?v=82"></script>
+<script src="app-project-settings.js?v=82"></script>
+<script src="app-settings.js?v=82"></script>
+<script src="app-ui.js?v=82"></script>
+<script src="app-project-modal.js?v=82"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

@@ -29,12 +29,9 @@ applyDisplayMode();
 // Explicit editor DOM references; do not rely on implicit window.<id> globals.
 const pages=document.getElementById("pages");
 const range=document.getElementById("range");
-const startPageInput=document.getElementById("startPageInput");
-const endPageInput=document.getElementById("endPageInput");
-const totalPageLabel=document.getElementById("totalPageLabel");
 
 let stages=[...DEFAULT_STAGES];
-let totalPages=48,startPage=1,progress=createProgress(48);
+let totalPages=48,progress=createProgress(48);
 let history={day:"",baselineDone:0,days:{}};
 let pageNotes={};
 
@@ -322,7 +319,7 @@ function renderPages(){
   for(let p=start;p<end;p++){
     const row=document.createElement("div");row.className="page-row";
     const num=document.createElement("div");num.className="page-number";
-    const actualPage=startPage+p, note=pageNotes[String(actualPage)]||{text:"",color:""};
+    const actualPage=p+1, note=pageNotes[String(actualPage)]||{text:"",color:""};
     const pageLabel=String(note.label||"").trim();
     num.textContent=pageLabel||actualPage;
     num.classList.toggle("has-page-label",!!pageLabel);
@@ -352,29 +349,6 @@ function renderPages(){
 }
 
 function render(){renderDynamicTableHead();renderPages()}
-function syncRangeUI(){
-  startPageInput.value=startPage;
-  endPageInput.value=startPage+totalPages-1;
-  totalPageLabel.textContent=`全${totalPages}P`;
-}
-function applyPageRange(){
-  const oldStart=startPage;
-  let a=Math.max(1,Math.min(999,Number(startPageInput.value)||oldStart));
-  let b=Math.max(a,Math.min(999,Number(endPageInput.value)||a));
-  const old=progress, oldEnd=oldStart+totalPages-1;
-  const newProgress=[];
-  for(let page=a;page<=b;page++){
-    if(page>=oldStart&&page<=oldEnd) newProgress.push([...old[page-oldStart]]);
-    else newProgress.push(Array(stages.length).fill(0));
-  }
-  startPage=a; totalPages=b-a+1; progress=newProgress;
-  syncRangeUI(); save(); render();
-}
-startPageInput.addEventListener("change",applyPageRange);
-endPageInput.addEventListener("change",applyPageRange);
-document.getElementById("creationStartDateInput").addEventListener("change",save);
-document.getElementById("deadlineInput").addEventListener("change",()=>{save();});
-document.getElementById("title").addEventListener("input",save);
 document.getElementById("exportBackup").addEventListener("click",exportBackup);
 document.getElementById("importBackup").addEventListener("click",()=>document.getElementById("backupFile").click());
 document.getElementById("backupFile").addEventListener("change",async e=>{
@@ -401,7 +375,7 @@ function renderMemoList(){
   const entries=Object.entries(pageNotes||{})
     .map(([key,note])=>{
       const page=Number(key);
-      const index=page-startPage;
+      const index=page-1;
       return {index,page,note};
     })
     .filter(x=>Number.isInteger(x.page)&&x.index>=0&&x.index<totalPages&&x.note&&typeof x.note==="object")
@@ -509,27 +483,9 @@ function closeAppSettings(){
   unlockPageScroll();
 }
 
-document.getElementById("appSettingsButton").onclick=()=>{
- document.getElementById("defaultPages").value=clampPageCount(projectDefaults.endPage-projectDefaults.startPage+1);
- defaultStageDraft=[...projectDefaults.stages];renderDefaultStageEditor();
- applyThemeColor(appSettings.themeColor);
- applyCellShape(appSettings.cellShape);
- applyDisplayMode(appSettings.displayMode);
- lockPageScroll();
- document.getElementById("appSettingsModal").classList.add("open");
-};
 document.getElementById("settingsCancel").onclick=closeAppSettings;
 document.getElementById("appSettingsModal").onclick=e=>{if(e.target.id==="appSettingsModal")closeAppSettings()};
 document.getElementById("defaultStageAdd").onclick=()=>{if(defaultStageDraft.length>=MAX_STAGES){alert(languageSettings?.language==="en"?`Up to ${MAX_STAGES} stages.`:`工程は最大${MAX_STAGES}個までです。`);return}defaultStageDraft.push(languageSettings.language==="en"?"New Stage":"新しい工程");renderDefaultStageEditor()};
-document.getElementById("settingsSave").onclick=()=>{
- let a=1;
- let b=clampPageCount(document.getElementById("defaultPages").value);
- const ss=defaultStageDraft.map(x=>String(x||"").trim()).filter(Boolean);
- if(!ss.length)return;
- appSettings=normalizeAppSettings({language:document.getElementById("appLanguage").value,defaultStartPage:a,defaultEndPage:b,defaultStages:ss,themeColor:document.querySelector(".theme-color-option.selected")?.dataset.themeColor||appSettings.themeColor,displayMode:document.querySelector(".display-mode-option.selected")?.dataset.displayMode||appSettings.displayMode});
- persistAppSettings();applyLanguage();applyThemeColor();applyCellShape();applyDisplayMode();
- closeAppSettings();
-};
 
 
 
@@ -639,7 +595,7 @@ function restoreInitialView(){
 if(document.readyState==="complete")restoreInitialView();
 else window.addEventListener("load",restoreInitialView,{once:true});
 
-/* ---- extracted script block ---- */
+
 
 /* Full-app UI language layer. User-entered titles, folder names, notes and custom stage names are never translated. */
 const FULL_I18N={
@@ -723,9 +679,9 @@ const languageObserver=new MutationObserver(muts=>{
 });
 languageObserver.observe(document.body,{subtree:true,childList:true,characterData:true});
 
-/* Legacy settings-save i18n wrapper removed; final settings handler is authoritative. */
 
-/* ---- extracted script block ---- */
+
+
 
 /* ---- i18n helpers ---- */
 const I18N_MORE_EN={
@@ -806,7 +762,7 @@ function refreshWholeLanguage(){
  }
 }
 
-// Legacy settings-save language wrapper removed; final settings handler is authoritative.
+
 
 // 動的再描画後の翻訳漏れも拾う
 const fullLanguageObserver=new MutationObserver(()=>{
@@ -819,7 +775,7 @@ fullLanguageObserver.observe(document.body,{childList:true,subtree:true,characte
 
 setTimeout(refreshWholeLanguage,0);
 
-/* ---- extracted script block ---- */
+
 
 /* ---- Deterministic runtime language switch ----
    Keep user-authored project/folder/stage/note text untouched.
@@ -890,16 +846,13 @@ function handleLanguageOptionClick(btn){
  if(selected==="ja"&&enDefault)ss=[...JA_STAGE_DEFAULTS];
  appSettings=normalizeAppSettings({
    language:selected,
-   defaultStartPage:projectDefaults.startPage,
-   defaultEndPage:projectDefaults.endPage,
+   defaultPages:projectDefaults.pages,
    defaultStages:ss
  });
  persistAppSettings();
  document.getElementById("appLanguage").value=selected;
  updateLanguageButtons();
 
- // Preserve the original order: request the clean reload first, then queue the
- // same maintenance callbacks that the former wrappers queued afterwards.
  location.reload();
  setTimeout(refreshSettingsLanguage,0);
  setTimeout(()=>{
@@ -921,10 +874,9 @@ document.querySelectorAll(".language-option").forEach(btn=>{
  btn.onclick=()=>handleLanguageOptionClick(btn);
 });
 
-/* Settings gear now saves ONLY new-project defaults. Language is untouched. */
 document.getElementById("appSettingsButton").onclick=()=>{
  refreshSettingsLanguage();
- document.getElementById("defaultPages").value=clampPageCount(projectDefaults.endPage-projectDefaults.startPage+1);
+ document.getElementById("defaultPages").value=clampPageCount(projectDefaults.pages);
  defaultStageDraft=[...projectDefaults.stages];
  renderDefaultStageEditor();
  localizeDefaultsSettingsUi();
@@ -932,15 +884,12 @@ document.getElementById("appSettingsButton").onclick=()=>{
  document.getElementById("appSettingsModal").classList.add("open");
 };
 document.getElementById("settingsSave").onclick=()=>{
- let a=1;
- let b=clampPageCount(document.getElementById("defaultPages").value);
- if(b-a+1>PROJECT_PAGE_MAX){alert(uiLang()==="en"?`Up to ${PROJECT_PAGE_MAX} pages per project.`:`1作品${PROJECT_PAGE_MAX}ページまでです。`);return}
+ const b=clampPageCount(document.getElementById("defaultPages").value);
  const ss=defaultStageDraft.map(x=>String(x||"").trim()).filter(Boolean);
  if(!ss.length)return;
  appSettings=normalizeAppSettings({
    language:languageSettings.language,
-   defaultStartPage:a,
-   defaultEndPage:b,
+   defaultPages:b,
    defaultStages:ss
  });
  persistAppSettings();
@@ -971,7 +920,7 @@ if(defaultStageReset){
 }
 
 
-/* ---- extracted script block ---- */
+
 
 /* ---- Persistence + default-settings language ---- */
 function localizeDefaultsSettingsUi(){
@@ -995,8 +944,7 @@ function syncStockDefaultsToLanguage(){
  if(!stockStageSet(ss,projectDefaults.stages)){
    appSettings=normalizeAppSettings({
      language:languageSettings.language,
-     defaultStartPage:projectDefaults.startPage,
-     defaultEndPage:projectDefaults.endPage,
+     defaultPages:projectDefaults.pages,
      defaultStages:ss
    });
    persistAppSettings();
@@ -1012,7 +960,7 @@ function refreshSettingsLanguage(){
 }
 setTimeout(()=>{syncStockDefaultsToLanguage();localizeDefaultsSettingsUi()},0);
 
-/* ---- extracted script block ---- */
+
 
 /* ---- Folder rendering + localized default stage names ---- */
 const DEFAULT_STAGE_NAME_MAP={
@@ -1044,8 +992,7 @@ function translateDefaultStageNames(targetLang){
  if(translated.some((x,i)=>x!==projectDefaults.stages[i])){
    appSettings=normalizeAppSettings({
      language:targetLang,
-     defaultStartPage:projectDefaults.startPage,
-     defaultEndPage:projectDefaults.endPage,
+     defaultPages:projectDefaults.pages,
      defaultStages:translated
    });
    persistAppSettings();
@@ -1063,7 +1010,7 @@ setTimeout(()=>{
  }
 },40);
 
-/* ---- extracted script block ---- */
+
 
 /* Visible project title */
 function refreshCurrentProjectTitle(){
@@ -1077,7 +1024,7 @@ function refreshCurrentProjectTitle(){
 document.addEventListener("click",()=>setTimeout(refreshCurrentProjectTitle,0),true);
 setTimeout(refreshCurrentProjectTitle,0);
 
-/* ---- extracted script block ---- */
+
 
 (function(){
  const list=document.getElementById("projectList");if(!list)return;
@@ -1190,8 +1137,7 @@ document.querySelectorAll(".language-option").forEach(btn=>{
    }
    appSettings=normalizeAppSettings({
      language:selected,
-     defaultStartPage:projectDefaults.startPage,
-     defaultEndPage:projectDefaults.endPage,
+     defaultPages:projectDefaults.pages,
      defaultStages:[...projectDefaults.stages]
    });
    persistAppSettings();

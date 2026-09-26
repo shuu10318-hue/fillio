@@ -36,22 +36,22 @@ function rollHistory(){
 }
 function makeProjectData(){
   rollHistory();
+  const current=projectStore.projects[currentProjectId]||{};
   return {
-    title:document.getElementById("title").value,
-    creationStartDate:document.getElementById("creationStartDateInput").value||"",
-    deadline:document.getElementById("deadlineInput").value||"",
-    totalPages,startPage,
+    title:typeof current.title==="string"?current.title:"",
+    creationStartDate:current.creationStartDate||localDate(),
+    deadline:current.deadline||"",
+    totalPages,
     progress:progress.map(r=>[...r]),
     stages:[...stages],
     history:JSON.parse(JSON.stringify(history)),
     pageNotes:JSON.parse(JSON.stringify(pageNotes))
   };
 }
-function freshProjectData(title="新しいプロジェクト",sp=1,ep=1){
-  const n=Math.max(1,Math.min(PROJECT_PAGE_MAX,ep-sp+1));
-  const p=createProgress(n);
+function freshProjectData(title="新しいプロジェクト",pages=1){
+  const n=Math.max(1,Math.min(PROJECT_PAGE_MAX,pages));
   return {
-    title,creationStartDate:localDate(),deadline:"",totalPages:n,startPage:sp,progress:p,stages:[...DEFAULT_STAGES],folderId:null,
+    title,creationStartDate:localDate(),deadline:"",totalPages:n,progress:createProgress(n),stages:[...DEFAULT_STAGES],folderId:null,
     history:{day:localDate(),baselineDone:0,baselineWeighted:0,weightedDays:{},days:{}},
     pageNotes:{}
   };
@@ -78,7 +78,6 @@ function save(){
 }
 function normalizeProjectData(s){
   let n=Number.isInteger(s?.totalPages)&&s.totalPages>0?Math.min(PROJECT_PAGE_MAX,s.totalPages):48;
-  let sp=Number.isInteger(s?.startPage)&&s.startPage>0?s.startPage:1;
 const projectStages=Array.isArray(s?.stages)&&s.stages.length
     ? s.stages.map(x=>String(x??"").trim()).slice(0,MAX_STAGES)
     : [...DEFAULT_STAGES];
@@ -88,7 +87,7 @@ const projectStages=Array.isArray(s?.stages)&&s.stages.length
     stages:projectStages,
     creationStartDate:typeof s?.creationStartDate==="string"&&s.creationStartDate?s.creationStartDate:localDate(),
     deadline:typeof s?.deadline==="string"?s.deadline:"",
-    totalPages:n,startPage:sp,progress:pg,
+    totalPages:n,progress:pg,
     folderId:typeof s?.folderId==="string"&&s.folderId?s.folderId:null,
     trashedAt:Number.isFinite(Number(s?.trashedAt))&&Number(s.trashedAt)>0?Number(s.trashedAt):null,
     history:s?.history&&typeof s.history==="object"?s.history:null,
@@ -122,18 +121,13 @@ function loadProjectStore(){
 function applyProjectData(s){
   const p=normalizeProjectData(s);
   totalPages=p.totalPages;
-  startPage=p.startPage;
   progress=p.progress;
   stages=[...(p.stages||DEFAULT_STAGES)];
   pageNotes=p.pageNotes;
-  document.getElementById("title").value=p.title;
   const currentTitleEl=document.getElementById("currentProjectTitle");
   if(currentTitleEl)currentTitleEl.textContent=p.title;
-  document.getElementById("creationStartDateInput").value=p.creationStartDate||"";
-  document.getElementById("deadlineInput").value=p.deadline||"";
   history=p.history?normalizeHistory(p.history):{day:localDate(),baselineDone:doneCount(),baselineWeighted:weightedCount(),weightedDays:{},days:{}};
   rollHistory();
-  syncRangeUI();
 }
 
 function saveViewState(view){

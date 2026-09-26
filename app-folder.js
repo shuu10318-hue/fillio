@@ -56,9 +56,6 @@ document.getElementById("folderDelete")?.addEventListener("click",()=>{
  if(Array.isArray(projectStore.rootOrder))projectStore.rootOrder=projectStore.rootOrder.filter(k=>k!=="f:"+deletedFolderId);
  currentFolderId=null;
  persistProjectStore();
- // 削除後は既存のルート一覧遷移を通す。
- // 旧コードの renderProjectHome() は存在しない関数名で、ここで例外になり
- // DOMだけ削除前のフォルダ画面に残っていた。
  showProjectHome();
 });
 

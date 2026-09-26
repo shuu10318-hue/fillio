@@ -27,7 +27,6 @@ document.getElementById("clearEditProjectDeadline")?.addEventListener("click",()
 });
 
 let editingProjectId=null;
-function updateEditProjectTotal(){}
 function openProjectEdit(id){
   const p=projectStore.projects[id]; if(!p)return;
   editingProjectId=id;
@@ -37,7 +36,6 @@ function openProjectEdit(id){
   document.getElementById("editProjectPages").value=Math.min(PROJECT_PAGE_MAX,p.totalPages||1);
   document.getElementById("editProjectCreationStartDate").value=p.creationStartDate||"";
   document.getElementById("editProjectDeadline").value=p.deadline||"";
-  updateEditProjectTotal();
   document.getElementById("editProjectModal").classList.add("open");
   document.body.style.overflow="hidden";
 }
@@ -52,22 +50,20 @@ document.getElementById("editProjectModal").addEventListener("click",e=>{if(e.ta
 document.getElementById("saveEditProject").addEventListener("click",()=>{
   if(!editingProjectId)return;
   const p=projectStore.projects[editingProjectId];
-  const newStart=p.startPage||1;
   const newTotal=clampPageCount(document.getElementById("editProjectPages").value);
-  const oldStart=p.startPage||1, oldProgress=Array.isArray(p.progress)?p.progress:[];
+  const oldProgress=Array.isArray(p.progress)?p.progress:[];
   const oldStages=Array.isArray(p.stages)&&p.stages.length?[...p.stages]:[...DEFAULT_STAGES];
   const cleanedStages=stageDraft.map(x=>String(x??"").trim());
   // Each draft item carries its original column index, so rename/reorder preserves the exact progress column.
   const mapping=stageDraftMeta.map(x=>x.originalIndex);
   p.stages=cleanedStages;
   p.progress=Array.from({length:newTotal},(_,i)=>{
-    const oldIndex=(newStart+i)-oldStart;
-    if(oldIndex<0||oldIndex>=oldProgress.length)return Array(p.stages.length).fill(0);
-    const oldRow=oldProgress[oldIndex]||[];
+    if(i>=oldProgress.length)return Array(p.stages.length).fill(0);
+    const oldRow=oldProgress[i]||[];
     return mapping.map(oi=>oi===null?0:(oldRow[oi]??0));
   });
   p.title=document.getElementById("editProjectTitle").value.trim();
-  p.startPage=newStart; p.totalPages=newTotal;
+  p.totalPages=newTotal;
   p.creationStartDate=document.getElementById("editProjectCreationStartDate").value||p.creationStartDate||localDate();
   p.deadline=document.getElementById("editProjectDeadline").value||"";
   // Keep the Library context that was active when this settings sheet was opened.

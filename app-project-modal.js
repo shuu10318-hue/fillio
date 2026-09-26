@@ -26,7 +26,7 @@ document.getElementById("newStageAddButton").addEventListener("click",()=>{
 
 document.getElementById("newProjectButton").onclick=()=>{
   document.getElementById("newProjectTitle").value="";
-  document.getElementById("newProjectPages").value=clampPageCount(projectDefaults.endPage-projectDefaults.startPage+1);
+  document.getElementById("newProjectPages").value=clampPageCount(projectDefaults.pages);
   document.getElementById("newProjectDeadline").value="";
   newProjectStageDraft=[...projectDefaults.stages];
   renderNewProjectStageEditor();
@@ -45,15 +45,14 @@ document.getElementById("projectModal").onclick=e=>{if(e.target.id==="projectMod
 
 document.getElementById("createNewProject").onclick=()=>{
   const title=document.getElementById("newProjectTitle").value.trim();
-  let a=1;
-  let b=clampPageCount(document.getElementById("newProjectPages").value);
+  const pages=clampPageCount(document.getElementById("newProjectPages").value);
   const id=newProjectId();
-  projectStore.projects[id]=freshProjectData(title,a,b);
+  projectStore.projects[id]=freshProjectData(title,pages);
   // フォルダ内から作成した場合は、そのフォルダに所属させる
   projectStore.projects[id].folderId=currentFolderId||null;
   const newStages=newProjectStageDraft.map(x=>String(x??"").trim());
   projectStore.projects[id].stages=newStages;
-  projectStore.projects[id].progress=Array.from({length:b-a+1},()=>Array(newStages.length).fill(0));
+  projectStore.projects[id].progress=Array.from({length:pages},()=>Array(newStages.length).fill(0));
   projectStore.projects[id].deadline=document.getElementById("newProjectDeadline").value||"";
   projectStore.projectOrder=[id,...(Array.isArray(projectStore.projectOrder)?projectStore.projectOrder:[]).filter(x=>x!==id)];
   if(!Array.isArray(projectStore.rootOrder))projectStore.rootOrder=[];
