@@ -969,6 +969,8 @@ body.library-drag-active .drag-trash-zone.over{
 :root[data-cell-shape="star"] .progress-cell::before{content:"";position:absolute;inset:5px;pointer-events:none;box-sizing:border-box;background:var(--cell-empty);border:1px solid var(--cell-border)}
 :root[data-cell-shape="circle"] .progress-cell::before{border-radius:50%}
 :root[data-cell-shape="star"] .progress-cell::before{inset:4px;border:0;background:var(--cell-border);clip-path:polygon(50% 2%,61% 35%,96% 35%,68% 56%,79% 90%,50% 70%,21% 90%,32% 56%,4% 35%,39% 35%)}
+/* Empty star is outline-only. The full square button remains the touch target. */
+:root[data-cell-shape="star"] .progress-cell:not(.state1):not(.state2)::after{content:"";position:absolute;inset:7px;pointer-events:none;background:var(--card);clip-path:polygon(50% 2%,61% 35%,96% 35%,68% 56%,79% 90%,50% 70%,21% 90%,32% 56%,4% 35%,39% 35%)}
 :root[data-cell-shape="circle"] .progress-cell.state1::before{background:var(--cell-mid);border-color:var(--cell-mid)}
 :root[data-cell-shape="circle"] .progress-cell.state2::before{background:var(--cell-done);border-color:var(--cell-done)}
 :root[data-cell-shape="star"] .progress-cell.state1::before{background:var(--cell-mid)}
