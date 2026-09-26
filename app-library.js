@@ -92,7 +92,7 @@ function renderProjectList(){
   <div class="project-summary-main"><b>${donePages} / ${p.totalPages}P</b><strong>${donePct}%</strong></div>
   <div class="project-progress-track dual"><i class="started" style="width:${dash.startedPct}%"></i><i class="done" style="width:${donePct}%"></i></div>
   <div class="project-plan-row">
-    <div><span>${t("library.deadline")}</span><b>${p.deadline?p.deadline.replaceAll("-","/"):(isEn?"None":"未設定")}</b></div>
+    <div><span>${t("library.deadline")}</span><b>${p.deadline?p.deadline.replaceAll("-","/"):t("library.none")}</b></div>
     <div><span>${t("library.forecast")}</span><b>${dash.forecast}</b></div>
   </div>
   <div class="project-dashboard-strip project-dashboard-compact">
