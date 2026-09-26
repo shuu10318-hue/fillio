@@ -434,6 +434,8 @@ document.getElementById("stickyClose").onclick=()=>document.getElementById("stic
 document.getElementById("stickyModal").onclick=e=>{if(e.target.id==="stickyModal")e.currentTarget.classList.remove("open")};
 document.getElementById("stickyDelete").onclick=()=>{
   if(stickyPage===null)return;
+  const deleteMessage=uiLang()==="en"?"Delete this note?":"この付箋を削除しますか？";
+  if(!confirm(deleteMessage))return;
   delete pageNotes[String(stickyPage)];
   stickyColor="";stickyTodos=[];
   document.getElementById("stickyText").value="";
@@ -446,7 +448,6 @@ document.getElementById("stickySave").onclick=()=>{
   const stickyText=document.getElementById("stickyText");
   const text=stickyText.value.trim();
   stickyText.blur();
-  if(!stickyColor)stickyColor="#f4dc8a";
   pageNotes[String(stickyPage)]={text,color:stickyColor,todos:stickyTodos.map(t=>({id:t.id,text:t.text,done:!!t.done}))};
   save();
   document.getElementById("stickyModal").classList.remove("open");
@@ -1328,7 +1329,15 @@ document.querySelectorAll(".language-option").forEach(btn=>{
 
 
 /* ---- Modal/list i18n consistency patch ---- */
+function localizeNoColorSwatch(){
+ const el=document.querySelector(".color-pick-none");
+ if(!el)return;
+ const label=uiLang()==="en"?"No color":"色なし";
+ el.setAttribute("aria-label",label);
+ el.setAttribute("title",label);
+}
 function localizeOpenUi(){
+ localizeNoColorSwatch();
  const en=uiLang()==="en";
  const set=(sel,ja,enText)=>{const el=document.querySelector(sel);if(el)el.textContent=en?enText:ja};
  const ph=(sel,ja,enText)=>{const el=document.querySelector(sel);if(el)el.placeholder=en?enText:ja};

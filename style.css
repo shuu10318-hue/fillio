@@ -43,7 +43,7 @@ button{font:inherit;color:inherit}
 .forecast-date{text-align:right;font-size:17px;font-weight:800}
 .page-range{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}.page-range>div{display:grid;grid-template-columns:1fr auto;gap:5px;align-items:center}.page-range input,.page-range select{width:100%;box-sizing:border-box}.page-range b{font-size:14px;color:var(--muted)}@media(max-width:360px){.app{padding-left:9px;padding-right:9px}.table-head,.page-row{grid-template-columns:22px repeat(5,minmax(0,1fr));gap:2px}.progress-cell{height:36px}.head{font-size:8px}}
 
-.page-number{cursor:pointer;position:relative;-webkit-user-select:none;user-select:none}
+.page-number{cursor:pointer;position:relative;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 .page-number.note-marked{font-weight:800}
 .note-badge{display:inline-block;width:7px;height:7px;border-radius:50%;margin-left:4px;vertical-align:middle;background:#555}
 .sticky-modal{position:fixed;inset:0;background:rgba(0,0,0,.32);display:none;align-items:flex-end;justify-content:center;z-index:999}
@@ -1112,3 +1112,22 @@ body.library-drag-active .drag-trash-zone.over{
 .date-clear-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
 .date-clear-row input{min-width:0}
 .date-clear-button{height:44px;min-width:58px;padding:0 12px;border:1px solid var(--border);border-radius:9px;background:#fff;color:var(--muted);font-weight:700}
+
+/* v52: explicit no-marker swatch; empty value means no page-number background. */
+.color-pick-none{
+  position:relative;
+  background:#fff!important;
+  border:1px solid #c9cdd3!important;
+  overflow:hidden;
+}
+.color-pick-none::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:140%;
+  height:1.5px;
+  background:#9aa0a6;
+  transform:translate(-50%,-50%) rotate(-45deg);
+  pointer-events:none;
+}
