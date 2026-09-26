@@ -964,7 +964,7 @@ body.library-drag-active .drag-trash-zone.over{
 .project-stage-name{font-size:11px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .project-stage-row>b{font-size:11px;text-align:right;color:var(--text)}
 .project-stage-value{width:52px;padding:4px 0;border:0;background:transparent;color:var(--text);font:inherit;font-size:11px;font-weight:700;text-align:right;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.project-stage-track{height:5px;border-radius:999px;background:color-mix(in srgb,var(--accent) 10%,#eceeef);overflow:hidden}
+.project-stage-track{height:5px;border-radius:999px;background:#eceeef;overflow:hidden}
 .project-stage-track>i{display:block;height:100%;border-radius:inherit;background:var(--accent)}
 
 /* ===== Library stage details ===== */
@@ -1176,13 +1176,13 @@ body.library-drag-active .drag-trash-zone.over{
 :root[data-display-mode="dark"] #cellShapePicker .cell-shape-option{background:#202225;color:var(--text);border-color:var(--border)}
 
 /* Dark Library progress: keep started state neutral so the accent stays distinct. */
-:root[data-display-mode="dark"] .project-progress-track{background:#2b2d30}
-:root[data-display-mode="dark"] .project-progress-track.dual>.started{
+:root[data-display-mode="dark"] .project-progress-track,:root[data-display-mode="dark"] .project-stage-track{background:#2b2d30}
+:root[data-display-mode="dark"] .project-progress-track.dual>.started,:root[data-display-mode="dark"] .project-stage-track.dual>.started{
   background:color-mix(in srgb,var(--accent) 14%,#a9adb2);
 }
 
 /* Dark mode: language choices use the same dark control surface as other pickers. */
-:root[data-display-mode="dark"][data-theme="mono"] .project-progress-track.dual>.started{background:#8b8f94}
+:root[data-display-mode="dark"][data-theme="mono"] .project-progress-track.dual>.started,:root[data-display-mode="dark"][data-theme="mono"] .project-stage-track.dual>.started{background:#8b8f94}
 :root[data-display-mode="dark"] .language-option{
   background:#202225;
   color:var(--text);
