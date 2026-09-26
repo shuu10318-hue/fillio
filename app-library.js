@@ -58,7 +58,6 @@ function renderProjectList(){
   const savedOrder=Array.isArray(projectStore.projectOrder)?projectStore.projectOrder:[];
   const orderedIds=savedOrder.filter(id=>ids.includes(id));
   ids.forEach(id=>{if(!orderedIds.includes(id))orderedIds.push(id)});
-  projectStore.projectOrder=orderedIds;
   const entries=orderedIds.map(id=>[id,projectStore.projects[id]]);
   if(!entries.length){
     list.innerHTML='<div class="project-empty">まだ作品がありません。<br>「＋ 新しいプロジェクト」から作成できます。</div>';
@@ -139,7 +138,6 @@ function renderProjectList(){
 function renderFoldersAndFilter(){
  if(folderRendering)return;
  folderRendering=true;
- ensureFolders();
  const list=document.getElementById("projectList");if(!list)return;
  list.querySelectorAll(".folder-item").forEach(x=>x.remove());
  const head=document.getElementById("folderHead");

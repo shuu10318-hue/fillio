@@ -235,6 +235,7 @@ function restoreBackup(data){
     folders:(data.folders&&typeof data.folders==="object"&&!Array.isArray(data.folders))?data.folders:{},
     rootOrder:Array.isArray(data.rootOrder)?data.rootOrder.filter(x=>typeof x==="string"):[]
   };
+  ensureFolders();
   if(!persistProjectStore())throw new Error("save-failed");
   showProjectHome();
   return "all";
@@ -529,7 +530,7 @@ helpModal.addEventListener("click",e=>{if(e.target===helpModal)closeHelp()});
 
 // Library drag/reorder lives in app-library-drag.js.
 
-// フォルダ・プロトタイプ：1階層のみ
+// フォルダ：1階層のみ
 let currentFolderId=null;
 function ensureFolders(){
  if(!projectStore.folders||typeof projectStore.folders!=="object")projectStore.folders={};
