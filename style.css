@@ -943,9 +943,9 @@ body.library-drag-active .drag-trash-zone.over{
 /* Progress cells: canonical state colors. Empty inherits the current surface. */
 :root{--cell-empty:transparent;--cell-mid:#aaa;--cell-done:#222;--cell-border:#cfd2d6;--cell-done-text:#fff}
 :root[data-theme="color"]{--cell-mid:color-mix(in srgb,var(--accent) 42%,#d7d7d7);--cell-done:var(--accent)}
-:root[data-display-mode="dark"]{--cell-mid:#777b80;--cell-done:#d9dbde;--cell-border:#414348}
+:root[data-display-mode="dark"]{--cell-mid:#969a9f;--cell-done:#d9dbde;--cell-border:#414348}
 :root[data-display-mode="dark"][data-theme="mono"]{--cell-done-text:#151515}
-:root[data-display-mode="dark"][data-theme="color"]{--cell-mid:color-mix(in srgb,var(--accent) 58%,#e2e2e5);--cell-done:var(--accent)}
+:root[data-display-mode="dark"][data-theme="color"]{--cell-mid:color-mix(in srgb,var(--accent) 46%,#ececef);--cell-done:var(--accent)}
 .progress-cell{background:var(--cell-empty);border-color:var(--cell-border);color:var(--text)}
 .progress-cell.state1{background:var(--cell-mid);border-color:var(--cell-mid);color:#222}
 .progress-cell.state2{background:var(--cell-done);border-color:var(--cell-done);color:var(--cell-done-text)}
