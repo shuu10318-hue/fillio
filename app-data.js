@@ -98,22 +98,7 @@ const projectStages=Array.isArray(s?.stages)&&s.stages.length
     pageNotes:s?.pageNotes&&typeof s.pageNotes==="object"?s.pageNotes:{}
   };
 }
-function migrateLegacyIfNeeded(){
-  if(localStorage.getItem(PROJECTS_KEY))return;
-  let legacy=null;
-  try{ legacy=JSON.parse(localStorage.getItem(STORAGE_KEY)); }catch(e){}
-  projectStore={version:2,activeProjectId:null,projects:{}};
-  if(legacy&&Array.isArray(legacy.progress)){
-    const id=newProjectId();
-    const p=normalizeProjectData(legacy);
-    // 履歴は作品を開いた時に現在の進捗に合わせて正規化する
-    projectStore.projects[id]=p;
-    projectStore.activeProjectId=id;
-  }
-  persistProjectStore();
-}
 function loadProjectStore(){
-  migrateLegacyIfNeeded();
   try{
     const raw=JSON.parse(localStorage.getItem(PROJECTS_KEY));
     if(raw&&raw.projects&&typeof raw.projects==="object"){

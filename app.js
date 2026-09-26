@@ -204,7 +204,7 @@ function makeBackup(){
   }
   persistProjectStore();
   return {
-    app:"manga-progress",
+    app:"fillio",
     version:5,
     type:"multi-project",
     exportedAt:new Date().toISOString(),

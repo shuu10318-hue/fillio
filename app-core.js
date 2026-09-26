@@ -1,9 +1,7 @@
 // Fillio core settings and shared application configuration.
-// Refactor phase 1: behavior and storage format intentionally unchanged.
-const STORAGE_KEY="manga-progress-v1"; // 旧版データ。移行元として残す
-const PROJECTS_KEY="manga-progress-projects-v2";
-const VIEW_STATE_KEY="manga-progress-view-state-v1";
-const APP_SETTINGS_KEY="manga-progress-app-settings-v1";
+const PROJECTS_KEY="fillio-projects-v1";
+const VIEW_STATE_KEY="fillio-view-state-v1";
+const APP_SETTINGS_KEY="fillio-settings-v1";
 const STAGE_VALUE_MODE_KEY="fillio-stage-value-mode-v2";
 let stageValueModes={};
 try{stageValueModes=JSON.parse(localStorage.getItem(STAGE_VALUE_MODE_KEY)||"{}")||{}}catch{stageValueModes={}}
