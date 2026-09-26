@@ -732,9 +732,9 @@ input{border-color:var(--border);border-radius:12px}
 /* Library drag trash: single source of truth.
    States: base (hidden) -> .show (visible) -> .over (drop target active). */
 .drag-trash-zone{
-  position:fixed;left:50%;top:12px;bottom:auto;
+  position:fixed;left:50%;top:72px;bottom:auto;
   transform:translate(-50%,-18px) scale(1);
-  width:min(250px,calc(100% - 72px));height:50px;
+  width:min(210px,calc(100% - 112px));height:50px;
   border:1.5px dashed #888;border-radius:14px;
   background:rgba(255,255,255,.96);color:#555;
   display:flex;align-items:center;justify-content:center;gap:9px;

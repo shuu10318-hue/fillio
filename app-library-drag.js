@@ -19,12 +19,12 @@
    const zone=document.getElementById("dragTrashZone");
    if(!zone)return false;
    zone.classList.add("show");
-   // v43: the destructive hit target matches the visible 250 x 50px trash box.
+   // v57: the destructive hit target matches the visible 210 x 50px trash box.
    // Auto-scroll still uses its own wider edge band, so reorder scrolling stays easy.
-   const width=Math.min(250,Math.max(0,window.innerWidth-72));
+   const width=Math.min(210,Math.max(0,window.innerWidth-112));
    const left=(window.innerWidth-width)/2;
    const right=left+width;
-   const top=12;
+   const top=72;
    const bottom=top+50;
    const over=x>=left&&x<=right&&y>=top&&y<=bottom;
    zone.classList.toggle("over",over);
