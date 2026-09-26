@@ -1,4 +1,4 @@
-/* fillio common UI helpers — extracted from app.js in v29. */
+/* fillio common UI helpers */
 
 let modalPageScrollY=0;
 function lockPageScroll(){

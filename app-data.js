@@ -34,8 +34,6 @@ function rollHistory(){
   history.baselineDone=doneCount();
   history.baselineWeighted=weightedCount();
 }
-function todayDelta(){rollHistory();return doneCount()-history.baselineDone}
-function todayWeightedDelta(){rollHistory();return weightedCount()-history.baselineWeighted}
 function makeProjectData(){
   rollHistory();
   return {

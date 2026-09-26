@@ -24,11 +24,6 @@ document.addEventListener("click",e=>{
  }
 });
 document.getElementById("folderNameInput")?.addEventListener("keydown",e=>{if(e.key==="Enter")createFolder()});
-document.getElementById("folderBack")?.addEventListener("click",e=>{
-  e.preventDefault();e.stopPropagation();
-  if(window.history.state?.fillio&&currentFolderId){window.history.back();return}
-  showProjectHome();
-});
 document.getElementById("folderRename")?.addEventListener("click",()=>{
  if(!currentFolderId)return;
  const f=projectStore.folders?.[currentFolderId];if(!f)return;
@@ -70,14 +65,6 @@ document.getElementById("folderDelete")?.addEventListener("click",()=>{
 
 // フォルダ操作は委譲でも受ける。再描画後のボタンでも確実に動作。
 document.addEventListener("click",e=>{
-  const back=e.target.closest?.("#folderBack");
-  if(back){
-    e.preventDefault();e.stopPropagation();
-    currentFolderId=null;
-    renderFoldersAndFilter();
-    saveViewState("root");
-    return;
-  }
   const eject=e.target.closest?.(".folder-eject");
   if(eject){
     e.preventDefault();e.stopPropagation();

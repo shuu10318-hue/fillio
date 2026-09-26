@@ -1,5 +1,5 @@
-/* fillio settings UI helpers — extracted from app.js in v28 */
-/* ===== 2026-09-23 robust help/theme/i18n patch ===== */
+/* fillio settings UI helpers */
+/* ===== Help, theme, and i18n ===== */
 (function fillioUiFixes(){
   const $=id=>document.getElementById(id);
   function isEn(){return languageSettings?.language==="en"}
@@ -64,7 +64,7 @@
   syncExtraLanguage();
 })();
 
-/* v8: finish form editing consistently on mobile */
+/* Finish form editing consistently on mobile */
 (function setupCommitBlurBehavior(){
   // Project titles: keyboard Done/Enter commits the field and dismisses the keyboard.
   ["newProjectTitle","editProjectTitle"].forEach(id=>{

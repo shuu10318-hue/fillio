@@ -26,7 +26,7 @@ applyThemeColor();
 applyCellShape();
 applyDisplayMode();
 
-// Explicit editor DOM references; do not rely on legacy window.<id> globals.
+// Explicit editor DOM references; do not rely on implicit window.<id> globals.
 const pages=document.getElementById("pages");
 const range=document.getElementById("range");
 const startPageInput=document.getElementById("startPageInput");
@@ -116,12 +116,6 @@ function showFolderView(folderId,historyMode="push"){
   renderFoldersAndFilter();
   saveViewState("folder");
   syncFillioHistory(historyMode);
-}
-function backFromProject(){
-  if(window.history.state?.fillio){window.history.back();return}
-  const fid=projectParentFolderId(currentProjectId);
-  if(fid)showFolderView(fid);
-  else showProjectHome();
 }
 function openProject(id,historyMode="push"){
   if(!projectStore.projects[id])return;
@@ -247,13 +241,6 @@ function restoreBackup(data){
   if(!persistProjectStore())throw new Error("save-failed");
   showProjectHome();
   return "all";
-}
-function resizeProgress(n){
-  n=Math.max(1,Math.min(PROJECT_PAGE_MAX,Number(n)||48));
-  const old=progress;
-  progress=Array.from({length:n},(_,p)=>old[p]?[...old[p]]:Array(stages.length).fill(0));
-  totalPages=n;
-  save();render();
 }
 
 let stickyPage=null,stickyColor="",stickyTodos=[];
@@ -584,7 +571,7 @@ helpModal.addEventListener("click",e=>{if(e.target===helpModal)closeHelp()});
 });
 
 
-// Library drag/reorder moved to app-library-drag.js (v36).
+// Library drag/reorder lives in app-library-drag.js.
 
 // フォルダ・プロトタイプ：1階層のみ
 let currentFolderId=null;
@@ -611,7 +598,7 @@ function ensureFolders(){
 }
 function folderCount(fid){return Object.values(projectStore.projects||{}).filter(p=>p.folderId===fid&&!p.trashedAt).length}
 
-// Folder UI operations moved to app-folder.js (v34).
+// Folder UI operations live in app-folder.js.
 
 // 既存renderProjectHome後にフォルダ表示を重ねる
 let folderRendering=false;
@@ -625,7 +612,7 @@ const folderObserver=new MutationObserver(()=>{
 const folderList=document.getElementById("projectList");
 if(folderList)folderObserver.observe(folderList,{childList:true});
 
-// Library drag/drop handlers moved to app-library-drag.js (v36).
+// Library drag/drop handlers live in app-library-drag.js.
 
 ensureFolders();
 applyLanguage();
@@ -740,7 +727,7 @@ languageObserver.observe(document.body,{subtree:true,childList:true,characterDat
 
 /* ---- extracted script block ---- */
 
-/* ---- i18n completion patch ---- */
+/* ---- i18n helpers ---- */
 const I18N_MORE_EN={
  "作品編集":"Edit Project","作品名":"Project title","制作ページ":"Pages","制作ページ数":"Pages",
  "作業開始日":"Start Date","締切予定日":"Deadline","工程設定":"Stage Settings",
@@ -986,7 +973,7 @@ if(defaultStageReset){
 
 /* ---- extracted script block ---- */
 
-/* ---- Persistence + default-settings language patch ---- */
+/* ---- Persistence + default-settings language ---- */
 function localizeDefaultsSettingsUi(){
  const en=languageSettings.language==="en";
  const set=(id,ja,enText)=>{const el=document.getElementById(id);if(el)el.textContent=en?enText:ja};
@@ -1027,7 +1014,7 @@ setTimeout(()=>{syncStockDefaultsToLanguage();localizeDefaultsSettingsUi()},0);
 
 /* ---- extracted script block ---- */
 
-/* ---- reload folder render race fix + localized default stage names ---- */
+/* ---- Folder rendering + localized default stage names ---- */
 const DEFAULT_STAGE_NAME_MAP={
  jaToEn:{
    "ネーム":"Storyboard",
@@ -1214,7 +1201,7 @@ document.querySelectorAll(".language-option").forEach(btn=>{
 /* ===== /I18N CLEAN AUTHORITY ===== */
 
 
-/* ---- Modal/list i18n consistency patch ---- */
+/* ---- Modal/list i18n consistency ---- */
 function localizeNoColorSwatch(){
  const el=document.querySelector(".color-pick-none");
  if(!el)return;
@@ -1251,7 +1238,7 @@ applyCurrentLanguageNow=function(){_applyCurrentLanguageNowI18n();localizeOpenUi
 setTimeout(localizeOpenUi,0);
 
 
-/* ===== Dynamic UI i18n audit patch 2026-09-23 =====
+/* ===== Dynamic UI i18n =====
    Covers UI created/re-rendered by JavaScript. User-authored text is never translated. */
 const DYNAMIC_UI_EN={
   "ページ":"Pages","完成":"Completed","全工程":"All stages","編集":"Edit","この作品を削除":"Delete this project",
@@ -1300,12 +1287,12 @@ const dynamicAuditObserver=new MutationObserver(muts=>{
 });
 if(uiLang()==="en")dynamicAuditObserver.observe(document.body,{subtree:true,childList:true,characterData:true});
 setTimeout(()=>auditDynamicUiLanguage(document),0);
-/* ===== /Dynamic UI i18n audit patch ===== */
+/* ===== /Dynamic UI i18n ===== */
 
 
-/* Library trash-drop compatibility moved to app-library-drag.js (v36). */
+/* Library trash-drop behavior lives in app-library-drag.js. */
 
-/* ===== Home controls v2: unified create menu ===== */
+/* ===== Unified create menu ===== */
 (function setupUnifiedCreateMenu(){
  const toggle=document.getElementById("createMenuButton");
  const menu=document.getElementById("createMenu");
@@ -1333,4 +1320,4 @@ setTimeout(()=>auditDynamicUiLanguage(document),0);
  const mo=new MutationObserver(syncLabels);mo.observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
  syncLabels();
 })();
-/* ===== /Home controls v2 ===== */
+/* ===== /Unified create menu ===== */

@@ -1,7 +1,7 @@
 /* Fillio — Library drag/drop and reorder module
-   Active Pointer Events implementation only. Obsolete Touch-event implementations removed after v38 audit. */
+   Active Pointer Events implementation only. Uses the active Pointer Events implementation only. */
 
-// Library reorder v11 — same pointer model as Stage editor.
+// Library reorder uses the same pointer model as Stage editor.
 // ≡ starts immediately; the real card stays in the list and only moves vertically.
 (function initLibraryStageStyleReorder(){
  const list=document.getElementById("projectList"); if(!list)return;
@@ -19,7 +19,7 @@
    const zone=document.getElementById("dragTrashZone");
    if(!zone)return false;
    zone.classList.add("show");
-   // v58: destructive hit target exactly matches the visible 100 x 80px trash box.
+   // Destructive hit target exactly matches the visible 100 x 80px trash box.
    // Auto-scroll keeps its separate edge band, so ordinary scrolling/reordering stays easy.
    const width=100;
    const left=(window.innerWidth-width)/2;

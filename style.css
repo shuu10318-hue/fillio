@@ -6,20 +6,15 @@ h1{margin:0 0 20px;font-size:22px}
 .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:15px;margin-bottom:14px}
 .label{color:var(--muted);font-size:12px;margin-bottom:7px}
 input{width:100%;min-height:44px;border:1px solid var(--border);border-radius:9px;padding:0 11px;font-size:16px}
-.page-buttons{display:flex;gap:7px;flex-wrap:wrap}
 button{font:inherit;color:inherit}
-.page-button,.nav-button{min-height:42px;padding:0 14px;border:1px solid var(--border);border-radius:9px;background:white}
-.page-button.active{background:#222;color:white;border-color:#222}
 
 .table-toolbar{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:10px}
 .section-title{font-weight:700;font-size:15px;margin-bottom:12px}
 .range{color:var(--muted);font-size:12px}
-.percentages{margin-top:4px;display:flex;gap:14px;color:var(--muted);font-size:12px}
 
 
 
 
-.legend{display:flex;gap:15px;font-size:11px;color:var(--muted);margin-top:8px}
 
 .table-head,.page-row{display:grid;grid-template-columns:25px repeat(5,minmax(0,1fr));gap:3px;align-items:center}
 .table-head{margin-bottom:5px}.head{color:var(--muted);font-size:9px;line-height:1.15;text-align:center}
@@ -46,66 +41,58 @@ button{font:inherit;color:inherit}
 .page-range{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}.page-range>div{display:grid;grid-template-columns:1fr auto;gap:5px;align-items:center}.page-range input,.page-range select{width:100%;box-sizing:border-box}.page-range b{font-size:14px;color:var(--muted)}@media(max-width:360px){.app{padding-left:9px;padding-right:9px}.table-head,.page-row{grid-template-columns:22px repeat(5,minmax(0,1fr));gap:2px}.progress-cell{height:36px}.head{font-size:8px}}
 
 .page-number{cursor:pointer;position:relative;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
-.page-number.note-marked{font-weight:800}
-.note-badge{display:inline-block;width:7px;height:7px;border-radius:50%;margin-left:4px;vertical-align:middle;background:#555}
+
+
 .sticky-modal{position:fixed;inset:0;background:rgba(0,0,0,.32);display:none;align-items:flex-end;justify-content:center;z-index:999}
 .sticky-modal.open{display:flex}
 .sticky-sheet{width:min(520px,100%);background:#fff;border-radius:18px 18px 0 0;padding:18px 14px 24px;box-sizing:border-box}
 .sticky-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.sticky-head h2{margin:0;font-size:18px}.sticky-close{border:0;background:transparent;font-size:24px}
+.sticky-head h2{margin:0;font-size:18px}
 .sticky-sheet textarea{width:100%;min-height:110px;box-sizing:border-box;border:1px solid var(--border);border-radius:10px;padding:11px;font:inherit}
 .color-picks{display:flex;gap:11px;margin:10px 0 16px}
 .color-pick{width:34px;height:34px;border-radius:50%;border:2px solid transparent;box-shadow:0 0 0 1px #bbb}
 .color-pick.selected{border-color:#222;box-shadow:0 0 0 2px #fff,0 0 0 4px #222}
-.sticky-save{width:100%;height:44px;border:0;border-radius:10px;background:#222;color:#fff;font-weight:800}
+
 .sticky-actions{display:grid;grid-template-columns:1fr 1.7fr;gap:9px;margin-top:2px}
 .sticky-delete{height:44px;border:1px solid #ddd;border-radius:10px;background:#fff;color:#777;font-weight:700}
 .sticky-delete:active{background:#f3f3f3}
 
 /* Symbol-free progress cells */
-.state-swatch{
-  display:inline-block;
-  width:12px;height:12px;
-  border-radius:3px;
-  vertical-align:-1px;
-  border:1px solid #c9c9c9;
-}
 
 
 
-/* Multi-project v2 */
+
+/* Project library */
 .top-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:20px}
 .top-title h1{margin:0}
-.project-list-button,.project-add-button,.project-open-button,.project-cancel-button,.project-create-button{
-  min-height:42px;border:1px solid var(--border);border-radius:9px;background:#fff;font-weight:700
-}
-.project-list-button{padding:0 13px;font-size:12px}
+
+
 #projectHome{max-width:520px;margin:auto;padding:18px 14px 40px}
 .project-home-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px}
 .project-home-head h1{margin:0;font-size:22px}
-.project-add-button{padding:0 14px;background:#222;color:#fff;border-color:#222}
+
 .project-item{background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px}
 .project-item-main{display:flex;justify-content:space-between;gap:12px;align-items:center}
 .project-item-title{font-weight:800;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.project-item-meta{font-size:11px;color:var(--muted);margin-top:5px;display:grid;grid-template-columns:1fr 1fr;gap:5px 12px;line-height:1.4}
-.project-open-button{padding:0 14px;flex:none}
+
+
 .project-edit-button{min-height:42px;padding:0 12px;border:1px solid var(--border);border-radius:9px;background:#fff;font-weight:700;flex:none}
 .project-item-actions{display:flex;gap:7px;align-items:center}
 .project-empty{background:#fff;border:1px dashed var(--border);border-radius:14px;padding:28px 18px;text-align:center;color:var(--muted);font-size:13px;line-height:1.7}
-.project-actions{display:flex;justify-content:flex-end;margin-top:9px}
+
 .project-delete-button{border:0;background:transparent;color:#999;font-size:11px;padding:5px}
 .project-modal{position:fixed;inset:0;background:rgba(0,0,0,.32);display:none;align-items:flex-end;justify-content:center;z-index:1100}
 .project-modal.open{display:flex}
 .project-sheet{width:min(520px,100%);background:#fff;border-radius:18px 18px 0 0;padding:18px 14px 24px}
 .project-sheet h2{font-size:18px;margin:0 0 14px}
 .project-sheet .page-range{margin-top:10px}
-.project-modal-actions{display:grid;grid-template-columns:1fr 1.7fr;gap:9px;margin-top:16px}
-.project-cancel-button,.project-create-button{height:44px}
-.project-create-button{background:#222;color:#fff;border-color:#222}
+
+
+
 .project-backup-note{font-size:11px;color:var(--muted);margin-top:12px;line-height:1.6}
 
 
-/* Memo list v2 */
+/* Memo list */
 .memo-list-button{min-height:42px;padding:0 12px;border:1px solid var(--border);border-radius:9px;background:#fff;font-weight:700;font-size:12px;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
 .memo-list-icon{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
 .top-actions{display:flex;gap:7px;flex:none}
@@ -149,7 +136,7 @@ button{font:inherit;color:inherit}
   align-items:center;
   flex:0 0 auto;
 }
-.project-edit-button,.project-open-button{
+.project-edit-button{
   min-width:0;
   width:auto;
   padding:0 11px;
@@ -158,7 +145,7 @@ button{font:inherit;color:inherit}
 @media(max-width:390px){
   .project-item{padding:12px}
   .project-item-main{gap:8px}
-  .project-edit-button,.project-open-button{
+  .project-edit-button{
     padding:0 9px;
     font-size:12px;
   }
@@ -203,18 +190,16 @@ button{font:inherit;color:inherit}
 
 
 /* 作品カードは余白を長押しして直接並び替え */
-.project-list-toolbar{display:none!important}
-body.project-reorder-mode .project-item::before{content:none!important}
+
+
 .project-item{
   user-select:none;-webkit-user-select:none;touch-action:none;-webkit-touch-callout:none;
   transition:transform .18s ease, box-shadow .18s ease, opacity .18s ease;
   will-change:transform;
 }
-.project-item.reorder-dragging{opacity:.86;transform:scale(.985);box-shadow:0 10px 28px rgba(0,0,0,.15);touch-action:none;transition:box-shadow .16s ease,opacity .16s ease}
-.project-item.reorder-over{}
 
-.folder-toolbar{display:flex;justify-content:flex-end;margin:0 0 10px}
-.folder-add{min-height:34px;padding:0 12px;border:1px solid var(--border);border-radius:9px;background:#fff;font-size:12px;font-weight:700}
+
+
 .folder-item{border:1px solid var(--border);border-radius:12px;padding:13px 14px;margin-bottom:10px;background:#fff;user-select:none;-webkit-user-select:none;touch-action:none;transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .18s ease,background .18s ease}
 .folder-item.drag-over{
   transform:translateY(-2px) scale(1.006);
@@ -225,53 +210,48 @@ body.project-reorder-mode .project-item::before{content:none!important}
 }
 .folder-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .folder-name{font-weight:800}.folder-meta{font-size:12px;color:var(--muted);margin-top:3px}
-.folder-open{border:1px solid var(--border);border-radius:8px;background:#fff;padding:7px 11px;font-weight:700}
 .folder-head{display:none;align-items:center;gap:9px;margin:0 0 12px}
-.folder-head.show{display:flex}.folder-back{border:1px solid var(--border);border-radius:8px;background:#fff;padding:7px 10px;font-weight:700}
+.folder-head.show{display:flex}
 .folder-head-title{font-weight:800;flex:1}.folder-remove{font-size:12px;border:0;background:transparent;text-decoration:underline;color:var(--muted)}
 .folder-modal{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:100;display:none;align-items:flex-end;justify-content:center}
 .folder-modal.open{display:flex}.folder-sheet{width:min(520px,100%);background:#fff;border-radius:18px 18px 0 0;padding:18px;box-sizing:border-box}
 .folder-sheet h3{margin:0 0 12px}.folder-sheet input{width:100%;box-sizing:border-box;padding:11px;border:1px solid var(--border);border-radius:9px;font-size:16px}
-.folder-sheet-actions{display:flex;gap:8px;margin-top:12px}.folder-sheet-actions button{flex:1;padding:10px;border-radius:9px;border:1px solid var(--border);background:#fff;font-weight:700}
 
-/* ---- extracted block ---- */
+
+
 
 .stage-editor-list{display:flex;flex-direction:column;gap:7px;margin-top:7px}
 .stage-editor-row{display:grid;grid-template-columns:minmax(0,1fr) 38px 38px 38px;gap:6px;align-items:center}
 .stage-editor-row input{min-width:0;height:40px;border:1px solid var(--border);border-radius:8px;padding:0 10px;font:inherit;box-sizing:border-box}
-.stage-mini-button,.stage-add-button{border:1px solid var(--border);background:#fff;border-radius:8px;font-weight:700}
-.stage-mini-button{width:38px;height:38px;padding:0}
-.stage-mini-button.danger{color:#a44}
+.stage-add-button{border:1px solid var(--border);background:#fff;border-radius:8px;font-weight:700}
+
+
 .stage-add-button{width:100%;height:40px;margin-top:8px}
 .stage-add-button:disabled{opacity:.4}
 .stage-editor-note{font-size:10px;color:var(--muted);margin-top:6px;line-height:1.5}
 
-/* ---- extracted block ---- */
+
 
 /* 工程数に合わせて、見出しと実際のマスを同じ列数で描画 */
-#tableHead,
-
-/* ---- extracted block ---- */
-
-.new-stage-toggle{
+#tableHead{
   width:100%;min-height:44px;margin-top:14px;padding:0 4px;
   border:0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);
   background:transparent;display:flex;align-items:center;justify-content:space-between;
   font-weight:700;text-align:left;
 }
-.new-stage-toggle span:last-child{font-size:18px;color:var(--muted);transition:transform .18s ease}
-.new-stage-toggle.open span:last-child{transform:rotate(180deg)}
-.new-stage-panel{display:none;padding:10px 0 2px}
-.new-stage-panel.open{display:block}
 
-/* ---- extracted block ---- */
+
+
+
+
+
 
 #projectHome .project-item,
 #projectHome .folder-item{cursor:pointer}
 #projectHome .project-item:active,
 #projectHome .folder-item:active{background:#fafafa}
 
-/* ---- extracted block ---- */
+
 
 /* 作品編集：画面内固定＋内容だけスクロール */
 #editProjectModal .project-edit-sheet{
@@ -297,47 +277,41 @@ body.project-reorder-mode .project-item::before{content:none!important}
   -webkit-overflow-scrolling:touch;
   padding:8px 14px 14px;
 }
-#editProjectModal .project-edit-actions{
-  flex:none;
-  margin:0;
-  padding:12px 14px calc(14px + env(safe-area-inset-bottom));
-  background:#fff;
-  border-top:1px solid var(--border);
-}
+
 #editProjectModal .stage-editor-row{gap:7px;margin-bottom:7px}
 #editProjectModal .stage-editor-row input{min-height:42px}
-#editProjectModal .stage-mini-button{min-height:42px}
+
 .folder-rename{border:1px solid var(--border);background:#fff;border-radius:8px;padding:7px 9px;font-size:11px;white-space:nowrap}
 
-/* ---- extracted block ---- */
+
 
 .home-head-actions{display:flex;gap:8px;align-items:center}
 .settings-sheet{max-height:88dvh;overflow-y:auto;box-sizing:border-box}
 .settings-section-title{font-size:14px;font-weight:800;margin:20px 0 12px;padding-top:14px;border-top:1px solid var(--border)}
 #appLanguage{width:100%;height:44px;border:1px solid var(--border);border-radius:9px;background:#fff;padding:0 10px;font-size:14px}
 
-/* ---- extracted block ---- */
+
 
 .language-sheet{max-width:420px}
 .language-choice{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0 8px}
 .language-option{height:52px;border:1px solid var(--border);border-radius:11px;background:#fff;font-weight:700;font-size:15px}
 .language-option.active{background:#222;color:#fff;border-color:#222}
 .settings-first-section{margin-top:4px!important;padding-top:0!important;border-top:0!important}
-@media(max-width:430px){.project-add-button{padding-left:13px!important;padding-right:13px!important}}
+@media(max-width:430px){}
 
-/* ---- extracted block ---- */
+
 
 .current-project-title-wrap{margin:0 0 14px;padding:0 2px}
 .current-project-title-label{font-size:11px;color:var(--muted);margin-bottom:2px;font-weight:600}
 .current-project-title{font-size:20px;line-height:1.35;font-weight:800;overflow-wrap:anywhere}
 
-/* ---- extracted block ---- */
+
 
 #projectHome .folder-item{
   -webkit-touch-callout:none;
 }
 
-/* ---- extracted block ---- */
+
 
 #projectHome .folder-item,
 #projectHome .project-item{
@@ -346,9 +320,9 @@ body.project-reorder-mode .project-item::before{content:none!important}
   user-select:none;
 }
 
-/* ---- extracted block ---- */
 
-/* ---- extracted block ---- */
+
+
 
 .project-breadcrumb{
   display:flex;align-items:center;
@@ -369,7 +343,7 @@ body.project-reorder-mode .project-item::before{content:none!important}
 .crumb-sep{padding:0 7px;color:#aaa;flex:none}
 .crumb-current{font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis}
 
-/* ---- extracted block ---- */
+
 
 /* 大見出しは場所を取るので非表示 */
 #projectHome .project-home-head > h1,
@@ -417,19 +391,18 @@ body.project-reorder-mode .project-item::before{content:none!important}
 #projectHome .home-head-actions,
 #editorApp .top-actions{margin-left:auto}
 
-/* ---- extracted block ---- */
 
-/* Folder navigation fix */
+
+/* Folder navigation */
 #folderHead.show{display:flex!important}
 #folderHead{position:relative;z-index:5}
-#folderBack{display:inline-flex!important;align-items:center;justify-content:center}
-.project-item.reorder-over,.project-item.drag-over{
+.project-item.drag-over{
   outline:none!important;
   box-shadow:none!important;
   background:inherit!important;
 }
 
-/* ---- extracted block ---- */
+
 
 .folder-eject{
   border:1px solid var(--border);
@@ -440,14 +413,14 @@ body.project-reorder-mode .project-item::before{content:none!important}
   white-space:nowrap;
 }
 
-/* ---- extracted block ---- */
+
 
 .project-meta-row{display:flex;justify-content:space-between;gap:7px;min-width:0}
 .project-meta-row span{color:#999;white-space:nowrap}
 .project-meta-row b{font-weight:700;color:#555;white-space:nowrap}
-.mixed-root-dragging{opacity:.78;transform:scale(1.01);position:relative;z-index:20}
 
-/* ---- extracted block ---- */
+
+
 
 html,body{min-height:100%;overflow-x:hidden}
 body{overflow-y:auto;-webkit-overflow-scrolling:touch}
@@ -459,17 +432,14 @@ body{overflow-y:auto;-webkit-overflow-scrolling:touch}
 }
 #projectList{overflow:visible;touch-action:pan-y}
 
-/* ---- extracted block ---- */
+
 
 /* 作品一覧では通常スワイプをブラウザの縦スクロールに渡す */
 #projectHome .project-item,
 #projectHome .folder-item{
   touch-action:pan-y!important;
 }
-#projectHome .project-item.reorder-dragging,
-#projectHome .mixed-root-dragging{
-  touch-action:none!important;
-}
+
 /* Data management: app-wide backup/restore lives in Settings, not per project. */
 .data-management-title{
   margin-top:22px!important;
@@ -489,10 +459,7 @@ body{overflow-y:auto;-webkit-overflow-scrolling:touch}
 }
 
 /* 工程表の高さ：12P以下は実ページ数、12P以上は従来の固定高さ */
-#pages.short-project{
-  min-height:0!important;
-  height:auto!important;
-}
+
 
 
 /* ===== Modern Cute UI — visual layer only ===== */
@@ -512,8 +479,8 @@ input{border-color:var(--border);border-radius:12px}
 .section-title{font-size:14px;letter-spacing:.01em}
 #editorApp #projectBreadcrumb{color:#8b9097!important}
 #editorApp #projectBreadcrumb .crumb-current{color:#34373b!important}
-.memo-list-button,.settings-button,.language-button,.project-add-button,.folder-add,
-.backup-button,.page-button{
+.memo-list-button,.settings-button,.language-button,
+.backup-button{
   border-color:var(--border);border-radius:12px;
   box-shadow:0 2px 8px rgba(32,40,50,.025);
 }
@@ -531,7 +498,7 @@ input{border-color:var(--border);border-radius:12px}
 .memo-sheet,.folder-sheet,.project-sheet,.settings-sheet,.language-sheet{
   border-radius:24px 24px 0 0!important;
 }
-.memo-filter,.memo-close,.folder-sheet-actions button,.stage-mini-button,.stage-add-button{
+.memo-filter,.memo-close,.stage-add-button{
   border-radius:11px!important;
 }
 
@@ -541,7 +508,7 @@ input{border-color:var(--border);border-radius:12px}
 }
 
 
-/* tapfix: production cells must not use the global button press-scale effect */
+/* Production cells must not use the global button press-scale effect */
 .progress-cell:active{transform:none!important;}
 
 
@@ -558,7 +525,7 @@ input{border-color:var(--border);border-radius:12px}
 .default-stage-reset{margin-top:8px;background:#fff;color:#555}
 
 /* Page selectors for new-project defaults and creation */
-.page-range select.page-select{min-height:44px;border:1px solid var(--border);border-radius:12px;background:#fff;padding:0 34px 0 11px;font-size:16px;color:inherit}
+
 
 /* Modal background scroll lock support */
 .project-modal,
@@ -589,7 +556,7 @@ input{border-color:var(--border);border-radius:12px}
 #pages .progress-cell.paint-source{outline:none!important;box-shadow:inset 0 0 0 2px #777}
 @media(max-width:360px){:root{--progress-cell-size:48px;--progress-page-col:26px;--progress-grid-gap:2px}}
 
-/* --- Excel-style native two-axis production grid (2026-09-23 rebuild) ---
+/* --- Two-axis production grid ---
    The grid itself owns both scroll axes, so sticky top/left are browser-native.
    No JS header-position or scrollLeft synchronization is used. */
 .stage-table-scroll{
@@ -620,7 +587,7 @@ input{border-color:var(--border);border-radius:12px}
   transform:none!important;
   will-change:auto!important;
 }
-#tableHead,#tableHead.stage-head-fixed{
+#tableHead{
   position:relative!important;
   top:auto!important;
   left:auto!important;
@@ -659,7 +626,7 @@ input{border-color:var(--border);border-radius:12px}
   z-index:20!important;
   background:var(--card)!important;
 }
-.table-head-anchor.is-vertically-following{z-index:40!important;}
+
 
 /* Sticky note TODO */
 .sticky-todo-head{display:flex;align-items:center;justify-content:space-between;margin-top:14px;margin-bottom:7px}.sticky-todo-head .label{margin:0}.sticky-todo-head span{font-size:11px;color:var(--muted);font-weight:700}.sticky-todo-list{display:grid;gap:6px;max-height:150px;overflow:auto}.sticky-todo-item{display:grid;grid-template-columns:24px 1fr 30px;align-items:center;gap:7px;min-height:38px;padding:4px 5px;border:1px solid var(--border);border-radius:9px;background:#fff}.sticky-todo-item input{width:18px;height:18px;margin:0}.sticky-todo-item span{font-size:13px;line-height:1.35;overflow-wrap:anywhere}.sticky-todo-item.done span{text-decoration:line-through;color:var(--muted)}.sticky-todo-remove{width:30px;height:30px;border:0;background:transparent;color:#999;font-size:19px}.sticky-todo-add{display:grid;grid-template-columns:1fr 42px;gap:7px;margin-top:7px}.sticky-todo-add input{min-width:0;height:40px;box-sizing:border-box;border:1px solid var(--border);border-radius:9px;padding:0 10px;font:inherit;font-size:13px}.sticky-todo-add button{height:40px;border:1px solid var(--border);border-radius:9px;background:#fff;font-size:20px;font-weight:700}
@@ -669,17 +636,14 @@ input{border-color:var(--border);border-radius:12px}
 
 /* --- Home design: monochrome icon language + drag trash --- */
 .icon-line{width:20px;height:20px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.home-head-actions .settings-button,.folder-add,.project-icon-button,.trash-open-button{color:var(--text);background:#fff}
+.home-head-actions .settings-button,.project-icon-button,.trash-open-button{color:var(--text);background:#fff}
 .project-icon-button{width:38px;height:38px;min-width:38px;padding:0;border:1px solid var(--border);border-radius:10px;display:inline-flex;align-items:center;justify-content:center}
 .project-icon-button:active{background:#f3f3f3}
 .project-item-actions{align-self:flex-start}
-.project-actions{display:none!important}
+
 .folder-name{display:flex;align-items:center;gap:8px}
 .folder-icon{width:21px;height:21px;display:inline-flex;align-items:center;justify-content:center;color:var(--text);flex:none}
 .folder-icon .icon-line{width:21px;height:21px}
-.folder-toolbar{gap:8px;align-items:center}
-.folder-add{display:inline-flex;align-items:center;gap:7px}
-.folder-add .icon-line{width:17px;height:17px}
 .home-head-actions .language-button,.home-head-actions #appSettingsButton{font-size:0;display:inline-flex;align-items:center;justify-content:center}
 /* Library drag trash: single source of truth.
    States: base (hidden) -> .show (visible) -> .over (drop target active). */
@@ -715,27 +679,10 @@ body.library-drag-active .drag-trash-zone.over{
 .trash-list{overflow:auto;min-height:80px}.trash-item{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--border);border-radius:12px;padding:11px 12px;margin-bottom:8px}.trash-item-name{font-weight:750;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.trash-item-actions{display:flex;gap:6px;flex:none}.trash-item-actions button{border:1px solid var(--border);background:#fff;border-radius:8px;padding:7px 9px;font-size:11px;font-weight:700}.trash-item-actions .danger{color:#777}.trash-empty{text-align:center;color:var(--muted);padding:28px 10px;font-size:12px}
 
 /* Stronger tactile drag feedback */
-#projectHome .project-item.mixed-root-dragging,
-#projectHome .folder-item.mixed-root-dragging{
-  opacity:.28!important;
-  transform:scale(.985)!important;
-  box-shadow:none!important;
-}
-.drag-ghost{
-  position:fixed!important;
-  z-index:5000!important;
-  width:min(420px,calc(100vw - 32px))!important;
-  max-width:calc(100vw - 32px)!important;
-  margin:0!important;
-  pointer-events:none!important;
-  opacity:.96!important;
-  transform:translate(-50%,-50%) scale(1.035) rotate(-1deg)!important;
-  transform-origin:center!important;
-  box-shadow:0 18px 44px rgba(0,0,0,.22),0 3px 10px rgba(0,0,0,.12)!important;
-  transition:none!important;
-}
 
-/* --- Home controls v2: globe / settings / trash / unified create --- */
+
+
+/* --- Library header controls --- */
 .visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
 .home-head-actions .settings-button{width:44px;height:44px;padding:0;border:1px solid var(--border);border-radius:11px;background:#fff;color:var(--text);display:inline-flex;align-items:center;justify-content:center;position:relative}
 .home-head-actions .trash-open-button{width:44px;height:44px;padding:0;gap:0;font-size:0}
@@ -747,7 +694,6 @@ body.library-drag-active .drag-trash-zone.over{
 .create-menu button{width:100%;height:44px;padding:0 10px;border:0;border-radius:8px;background:transparent;color:var(--text);display:flex;align-items:center;gap:10px;text-align:left;font:inherit;font-size:13px;font-weight:700}
 .create-menu button:active{background:#f2f2f2}
 .create-menu .icon-line{width:18px;height:18px;flex:none}
-#folderToolbar{display:none!important}
 /* Drag target stays at the top; positioning is defined in the unified trash block above. */
 @media(max-width:430px){.home-head-actions{gap:6px!important}.home-head-actions .settings-button{width:42px;height:42px}.create-menu{width:184px}}
 
@@ -801,7 +747,7 @@ body.library-drag-active .drag-trash-zone.over{
 .fillio-home-link{appearance:none;-webkit-appearance:none;border:0;background:transparent;padding:0;margin:0;display:block;line-height:0;cursor:pointer}
 
 
-/* 2026-09-23 fillio header consistency fix */
+/* Header consistency */
 #projectHome .brand-head,
 #editorApp .editor-brand{
   height:44px!important;
@@ -855,11 +801,10 @@ body.library-drag-active .drag-trash-zone.over{
 }
 
 /* Library help + theme color + long create sheet */
-.page-button.active{background:var(--accent)!important;border-color:var(--accent)!important}
 
 
 
-/* ===== 2026-09-23 help/theme/create-sheet fixes ===== */
+/* ===== Help, theme, and create sheet ===== */
 #libraryHelpModal{z-index:4200!important}
 #libraryHelpModal .help-sheet{max-height:min(78dvh,720px);height:min(78dvh,720px)}
 
@@ -898,7 +843,7 @@ body.library-drag-active .drag-trash-zone.over{
 
 /* Theme color: apply the selected accent to progress/completion and selected UI states. */
 
-.memo-filter.active,.project-reorder-toggle.active,.language-option.active{
+.memo-filter.active,.language-option.active{
   background:var(--accent)!important;border-color:var(--accent)!important;
 }
 #themeColorPicker .theme-color-option.selected{border-color:var(--accent)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)!important}
@@ -912,9 +857,9 @@ body.library-drag-active .drag-trash-zone.over{
 .progress-cell{background:var(--cell-empty);border-color:var(--cell-border);color:var(--text)}
 .progress-cell.state1{background:var(--cell-mid);border-color:var(--cell-mid);color:#222}
 .progress-cell.state2{background:var(--cell-done);border-color:var(--cell-done);color:var(--cell-done-text)}
-.state-swatch,.help-swatch{background:var(--cell-empty);border-color:var(--cell-border)}
-.state-swatch.started,.help-swatch.started{background:var(--cell-mid);border-color:var(--cell-mid)}
-.state-swatch.done,.help-swatch.done{background:var(--cell-done);border-color:var(--cell-done)}
+.help-swatch{background:var(--cell-empty);border-color:var(--cell-border)}
+.help-swatch.started{background:var(--cell-mid);border-color:var(--cell-mid)}
+.help-swatch.done{background:var(--cell-done);border-color:var(--cell-done)}
 
 
 /* Cell shape: the button remains the full square touch target; only its visual layer changes. */
@@ -939,7 +884,7 @@ body.library-drag-active .drag-trash-zone.over{
 :root[data-cell-shape="star"] .progress-cell.state1::before{background:var(--cell-mid)}
 :root[data-cell-shape="star"] .progress-cell.state2::before{background:var(--cell-done)}
 
-/* ===== Soft full-app themes 2026-09-23 ===== */
+/* ===== Soft full-app themes ===== */
 
 /* In color themes, tint the whole interface softly while keeping text readable. */
 :root[data-theme="color"]{
@@ -954,8 +899,6 @@ body.library-drag-active .drag-trash-zone.over{
 :root[data-theme="color"] #projectHome,
 :root[data-theme="color"] #editorApp{background:var(--bg)!important}
 :root[data-theme="color"] .card,
-:root[data-theme="color"] .project-card,
-:root[data-theme="color"] .folder-card,
 :root[data-theme="color"] .project-sheet,
 :root[data-theme="color"] .settings-sheet,
 :root[data-theme="color"] .help-sheet,
@@ -964,15 +907,12 @@ body.library-drag-active .drag-trash-zone.over{
 :root[data-theme="color"] input,
 :root[data-theme="color"] select,
 :root[data-theme="color"] textarea,
-:root[data-theme="color"] button:not(.progress-cell):not(.page-button.active){border-color:var(--border)}
-:root[data-theme="color"] .icon-button,
-:root[data-theme="color"] .project-add-button,
-:root[data-theme="color"] .project-list-button,
+:root[data-theme="color"] button:not(.progress-cell){border-color:var(--border)}
+
 :root[data-theme="color"] .memo-list-button,
-:root[data-theme="color"] .stage-mini-button,
 :root[data-theme="color"] .backup-button{background:color-mix(in srgb,var(--accent) 3%,#fff)!important}
-:root[data-theme="color"] .project-stat{background:color-mix(in srgb,var(--accent) 7%,#f6f6f6)!important}
-:root[data-theme="color"] .note-badge{background:var(--accent)!important}
+
+
 :root[data-theme="color"] a{color:color-mix(in srgb,var(--accent) 82%,#222)}
 /* Brand stays monochrome intentionally: stable identity across every theme. */
 .fillio-logo{filter:none!important}
@@ -1002,7 +942,7 @@ body.library-drag-active .drag-trash-zone.over{
 .folder-eject.project-icon-button .icon-line{width:18px;height:18px}
 .folder-eject.project-icon-button:hover{background:var(--soft);color:var(--text)}
 
-/* ===== Library interaction + stage details 2026-09-23 ===== */
+/* ===== Library interaction + stage details ===== */
 .project-open-title{display:flex;align-items:center;gap:7px;width:100%;min-width:0;padding:0;border:0;background:transparent;color:var(--text);text-align:left;cursor:pointer}
 .project-open-title .icon-line{width:17px;height:17px;flex:0 0 17px;color:var(--muted)}
 .project-open-title .project-item-title{min-width:0;display:block}
@@ -1027,7 +967,7 @@ body.library-drag-active .drag-trash-zone.over{
 .project-stage-track{height:5px;border-radius:999px;background:color-mix(in srgb,var(--accent) 10%,#eceeef);overflow:hidden}
 .project-stage-track>i{display:block;height:100%;border-radius:inherit;background:var(--accent)}
 
-/* ===== Library stage-detail polish 2026-09-23 ===== */
+/* ===== Library stage details ===== */
 .project-open-title{min-height:34px}
 .project-stage-track.dual{position:relative;overflow:hidden}
 .project-stage-track.dual>i{position:absolute;left:0;top:0;height:100%;border-radius:inherit}
@@ -1054,14 +994,14 @@ body.library-drag-active .drag-trash-zone.over{
 .stage-add-button{height:44px;margin-top:8px;border:0;background:transparent;text-align:left;padding:0 8px;border-radius:8px;color:var(--text);font-weight:700}
 .stage-add-button:active{background:rgba(0,0,0,.045)}
 
-/* Stage editor v3: unified line icons and stable multi-row reorder */
+/* Stage editor: unified line icons and stable multi-row reorder */
 .stage-edit-button,.stage-delete-button,.stage-drag-handle{display:grid;place-items:center;padding:0;filter:none!important;opacity:1!important}
 .stage-edit-button .icon-line,.stage-delete-button .icon-line,.stage-drag-handle .icon-line{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .stage-drag-handle .stage-grip-icon{width:23px;height:23px}
 .stage-editor-row.dragging{opacity:.68;background:var(--surface,#fff);z-index:4}
 .stage-editor-row.dragging .stage-drag-handle{cursor:grabbing}
 
-/* Library reorder v11: Stage-equivalent handles and vertical-only real-item drag */
+/* Library reorder: Stage-equivalent handles and vertical-only real-item drag */
 .project-drag-handle.project-icon-button,
 .folder-drag-handle.project-icon-button{
   width:40px;height:40px;min-height:40px;padding:0;display:grid;place-items:center;
@@ -1079,7 +1019,7 @@ body.library-drag-active .drag-trash-zone.over{
 
 /* Library trash drag states are defined once in the unified trash block above. */
 
-/* v45: keep the sticky page-number column fully opaque while scrolling */
+/* Keep the sticky page-number column fully opaque while scrolling */
 #pages .page-number{
   align-self:stretch!important;
   min-height:var(--progress-cell-size)!important;
@@ -1090,7 +1030,7 @@ body.library-drag-active .drag-trash-zone.over{
   box-shadow:0 5px 0 var(--card);
 }
 
-/* v45: vertically align memo-list TODO labels with their checkboxes */
+/* Vertically align memo-list TODO labels with their checkboxes */
 .memo-todo-item{align-items:center!important;}
 .memo-todo-item input{display:block;align-self:center;}
 
@@ -1099,7 +1039,7 @@ body.library-drag-active .drag-trash-zone.over{
 .date-clear-row input{min-width:0}
 .date-clear-button{height:44px;min-width:58px;padding:0 12px;border:1px solid var(--border);border-radius:9px;background:#fff;color:var(--muted);font-weight:700}
 
-/* v52: explicit no-marker swatch; empty value means no page-number background. */
+/* Explicit no-marker swatch; empty value means no page-number background. */
 .color-pick-none{
   position:relative;
   background:#fff!important;
@@ -1118,11 +1058,11 @@ body.library-drag-active .drag-trash-zone.over{
   pointer-events:none;
 }
 
-/* v53: neutral page label for colorless notes */
+/* Neutral page label for colorless notes */
 .memo-page.no-color{background:#fff;border-color:var(--border);color:var(--text)}
 
 
-/* v54: optional display-only page labels */
+/* Optional display-only page labels */
 :root{--progress-page-col:38px}
 .stage-grid-card{margin-left:-10px;width:calc(100% + 10px)}
 .sticky-label-field{margin-bottom:10px}
@@ -1177,9 +1117,7 @@ body.library-drag-active .drag-trash-zone.over{
 
 :root[data-display-mode="dark"] .card,
 :root[data-display-mode="dark"] .project-item,
-:root[data-display-mode="dark"] .project-card,
 :root[data-display-mode="dark"] .folder-item,
-:root[data-display-mode="dark"] .folder-card,
 :root[data-display-mode="dark"] .project-empty,
 :root[data-display-mode="dark"] .project-sheet,
 :root[data-display-mode="dark"] .settings-sheet,
@@ -1193,22 +1131,13 @@ body.library-drag-active .drag-trash-zone.over{
 :root[data-display-mode="dark"] input:not([type="checkbox"]):not([type="radio"]),
 :root[data-display-mode="dark"] textarea,
 :root[data-display-mode="dark"] select,
-:root[data-display-mode="dark"] .page-select,
 :root[data-display-mode="dark"] .page-step-value{background:#202225!important;color:var(--text)!important;border-color:var(--border)!important;color-scheme:dark}
 
 :root[data-display-mode="dark"] .settings-button,
 :root[data-display-mode="dark"] .memo-list-button,
-:root[data-display-mode="dark"] .page-button,
 :root[data-display-mode="dark"] .backup-button,
-:root[data-display-mode="dark"] .project-list-button,
-:root[data-display-mode="dark"] .project-open-button,
 :root[data-display-mode="dark"] .project-edit-button,
-:root[data-display-mode="dark"] .folder-add,
-:root[data-display-mode="dark"] .folder-open,
-:root[data-display-mode="dark"] .folder-back,
 :root[data-display-mode="dark"] .folder-rename,
-:root[data-display-mode="dark"] .folder-sheet-actions button,
-:root[data-display-mode="dark"] .stage-mini-button,
 :root[data-display-mode="dark"] .stage-add-button,
 :root[data-display-mode="dark"] .default-stage-reset,
 :root[data-display-mode="dark"] .page-step-button,
@@ -1228,10 +1157,9 @@ body.library-drag-active .drag-trash-zone.over{
 :root[data-display-mode="dark"] .create-menu{background:#202225!important;border-color:var(--border)!important;box-shadow:0 12px 34px rgba(0,0,0,.45)}
 :root[data-display-mode="dark"] .create-menu button{background:transparent!important;color:var(--text)!important}
 :root[data-display-mode="dark"] .memo-item,
-:root[data-display-mode="dark"] .memo-row,
 :root[data-display-mode="dark"] .sticky-todo-item,
 :root[data-display-mode="dark"] .trash-item{background:#202225!important;border-color:var(--border)!important}
-:root[data-display-mode="dark"] .project-stat,
+
 :root[data-display-mode="dark"] .project-dashboard-strip>div{background:#232529!important}
 :root[data-display-mode="dark"] .memo-filter{background:#202225!important;color:var(--text)!important;border-color:var(--border)!important}
 :root[data-display-mode="dark"] .memo-filter.active{background:var(--accent)!important;color:#fff!important;border-color:var(--accent)!important}
@@ -1241,8 +1169,7 @@ body.library-drag-active .drag-trash-zone.over{
 :root[data-display-mode="dark"] .table-head,
 :root[data-display-mode="dark"] .page-number{background:var(--card)!important}
 :root[data-display-mode="dark"] .fillio-logo{filter:invert(1)!important}
-:root[data-display-mode="dark"] .sticky-save,
-:root[data-display-mode="dark"] .project-create-button{background:#ececed!important;color:#151515!important;border-color:#ececed!important}
+
 
 
 

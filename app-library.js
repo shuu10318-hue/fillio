@@ -142,16 +142,16 @@ function renderFoldersAndFilter(){
  ensureFolders();
  const list=document.getElementById("projectList");if(!list)return;
  list.querySelectorAll(".folder-item").forEach(x=>x.remove());
- const head=document.getElementById("folderHead"),toolbar=document.getElementById("folderToolbar");
+ const head=document.getElementById("folderHead");
  if(currentFolderId&&projectStore.folders[currentFolderId]){
-   head?.classList.add("show");if(toolbar)toolbar.style.display="none";
+   head?.classList.add("show");
    document.getElementById("folderHeadTitle").innerHTML=`<button type="button" class="crumb-link" data-nav="root">${"Library"}</button><span class="crumb-sep">›</span><span class="crumb-current">${String(projectStore.folders[currentFolderId].name).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}</span>`;
  const renameBtn=document.getElementById("folderRename");
  const deleteBtn=document.getElementById("folderDelete");
  if(renameBtn)renameBtn.style.display="";
  if(deleteBtn){deleteBtn.style.display="";deleteBtn.textContent=languageSettings?.language==="en"?"Remove":"解除";}
  }else{
-   currentFolderId=null;head?.classList.remove("show");if(toolbar)toolbar.style.display="flex";
+   currentFolderId=null;head?.classList.remove("show");
    const renameBtn=document.getElementById("folderRename");
    const deleteBtn=document.getElementById("folderDelete");
    if(renameBtn)renameBtn.style.display="none";
