@@ -7,7 +7,6 @@
   const close=document.getElementById("trashClose");
   const empty=document.getElementById("trashEmpty");
   if(!zone||!modal||!list||!open||!close||!empty)return;
-  const isEn=()=>uiLang()==="en";
   function renderTrash(){
     list.innerHTML="";
     const folderEntries=Object.entries(projectStore.folders||{}).filter(([,f])=>f?.trashedAt);
@@ -18,7 +17,7 @@
       row.innerHTML=`<div class="trash-item-name" data-user-text="1"></div><div class="trash-item-actions"><button type="button" data-act="restore">${t("trash.restore")}</button><button type="button" class="danger" data-act="delete">${t("trash.delete")}</button></div>`;
       row.querySelector(".trash-item-name").textContent=t("trash.folderPrefix")+(f.name||"");
       row.querySelector('[data-act="restore"]').onclick=()=>{delete f.trashedAt;if(!projectStore.rootOrder.includes("f:"+id))projectStore.rootOrder.unshift("f:"+id);persistProjectStore();renderProjectList();renderFoldersAndFilter();renderTrash()};
-      row.querySelector('[data-act="delete"]').onclick=()=>{if(!confirm(isEn()?`Permanently delete folder “${f.name}” and all projects inside? This cannot be undone.`:`フォルダ「${f.name}」と中の作品を完全に削除しますか？\nこの操作は元に戻せません。`))return;const childIds=Object.keys(projectStore.projects||{}).filter(pid=>projectStore.projects[pid]?.folderId===id);childIds.forEach(pid=>delete projectStore.projects[pid]);projectStore.projectOrder=(projectStore.projectOrder||[]).filter(pid=>!childIds.includes(pid));projectStore.rootOrder=(projectStore.rootOrder||[]).filter(k=>k!=="f:"+id&&!childIds.some(pid=>k==="p:"+pid));delete projectStore.folders[id];persistProjectStore();renderTrash();renderProjectList();renderFoldersAndFilter()};
+      row.querySelector('[data-act="delete"]').onclick=()=>{if(!confirm(t("trash.confirmDeleteFolder",{name:f.name})))return;const childIds=Object.keys(projectStore.projects||{}).filter(pid=>projectStore.projects[pid]?.folderId===id);childIds.forEach(pid=>delete projectStore.projects[pid]);projectStore.projectOrder=(projectStore.projectOrder||[]).filter(pid=>!childIds.includes(pid));projectStore.rootOrder=(projectStore.rootOrder||[]).filter(k=>k!=="f:"+id&&!childIds.some(pid=>k==="p:"+pid));delete projectStore.folders[id];persistProjectStore();renderTrash();renderProjectList();renderFoldersAndFilter()};
       list.appendChild(row);
     });
     entries.sort((a,b)=>(b[1].trashedAt||0)-(a[1].trashedAt||0)).forEach(([id,p])=>{
@@ -26,7 +25,7 @@
       row.innerHTML=`<div class="trash-item-name" data-user-text="1"></div><div class="trash-item-actions"><button type="button" data-act="restore">${t("trash.restore")}</button><button type="button" class="danger" data-act="delete">${t("trash.delete")}</button></div>`;
       row.querySelector(".trash-item-name").textContent=p.title||(t("trash.untitled"));
       row.querySelector('[data-act="restore"]').onclick=()=>{delete p.trashedAt;p.folderId=null;persistProjectStore();renderProjectList();renderFoldersAndFilter();renderTrash()};
-      row.querySelector('[data-act="delete"]').onclick=()=>{const name=p.title||(t("trash.untitled"));if(!confirm(isEn()?`Permanently delete “${name}”? This cannot be undone.`:`「${name}」を完全に削除しますか？\nこの操作は元に戻せません。`))return;delete projectStore.projects[id];projectStore.projectOrder=(projectStore.projectOrder||[]).filter(x=>x!==id);projectStore.rootOrder=(projectStore.rootOrder||[]).filter(x=>x!=="p:"+id);if(projectStore.activeProjectId===id)projectStore.activeProjectId=null;persistProjectStore();renderTrash();renderProjectList();renderFoldersAndFilter()};
+      row.querySelector('[data-act="delete"]').onclick=()=>{const name=p.title||(t("trash.untitled"));if(!confirm(t("trash.confirmDeleteProject",{name})))return;delete projectStore.projects[id];projectStore.projectOrder=(projectStore.projectOrder||[]).filter(x=>x!==id);projectStore.rootOrder=(projectStore.rootOrder||[]).filter(x=>x!=="p:"+id);if(projectStore.activeProjectId===id)projectStore.activeProjectId=null;persistProjectStore();renderTrash();renderProjectList();renderFoldersAndFilter()};
       list.appendChild(row);
     });
   }

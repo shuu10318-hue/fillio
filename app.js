@@ -92,7 +92,7 @@ function renderProjectBreadcrumb(){
   const fid=projectParentFolderId(currentProjectId);
   const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
   const rawProjectName=p?.title||"";
-  const projectName=esc(rawProjectName||(languageSettings?.language==="en"?"Untitled":"無題"));
+  const projectName=esc(rawProjectName||(t("project.defaultTitle")));
   const rootLabel="Library";
   if(fid){
     el.innerHTML=`<button type="button" class="crumb-link" data-nav="root">${rootLabel}</button><span class="crumb-sep">›</span><button type="button" class="crumb-link" data-nav="folder" data-folder-id="${esc(fid)}">${esc(projectStore.folders[fid].name)}</button><span class="crumb-sep">›</span><span class="crumb-current" data-user-text="1">${projectName}</span>`;
@@ -265,7 +265,7 @@ function renderStickyTodos(){
   count.textContent=`${done}/${stickyTodos.length}`;
   stickyTodos.forEach((todo,i)=>{
     const row=document.createElement("div"); row.className="sticky-todo-item"+(todo.done?" done":"");
-    const check=document.createElement("input"); check.type="checkbox"; check.checked=todo.done; check.setAttribute("aria-label",uiLang()==="en"?"Complete TODO":"TODO完了");
+    const check=document.createElement("input"); check.type="checkbox"; check.checked=todo.done; check.setAttribute("aria-label",t("memo.completeTodo"));
     check.onchange=()=>{stickyTodos[i].done=check.checked;renderStickyTodos();};
     const text=document.createElement("span"); text.textContent=todo.text;
     const del=document.createElement("button"); del.type="button";del.className="sticky-todo-remove";del.textContent="×";del.setAttribute("aria-label",t("memo.deleteTodo"));
@@ -290,7 +290,7 @@ document.getElementById("stickyClose").onclick=()=>document.getElementById("stic
 document.getElementById("stickyModal").onclick=e=>{if(e.target.id==="stickyModal")e.currentTarget.classList.remove("open")};
 document.getElementById("stickyDelete").onclick=()=>{
   if(stickyPage===null)return;
-  const deleteMessage=uiLang()==="en"?"Delete this note?":"この付箋を削除しますか？";
+  const deleteMessage=t("memo.confirmDelete");
   if(!confirm(deleteMessage))return;
   delete pageNotes[String(stickyPage)];
   stickyColor="";stickyTodos=[];
@@ -407,7 +407,7 @@ function renderMemoList(){
       todos.forEach((todo,todoIndex)=>{
         const item=document.createElement("label");item.className="memo-todo-item"+(todo.done?" done":"");
         const check=document.createElement("input");check.type="checkbox";check.checked=!!todo.done;
-        check.setAttribute("aria-label",uiLang()==="en"?"Toggle TODO":"TODOを切り替え");
+        check.setAttribute("aria-label",t("memo.toggleTodo"));
         const label=document.createElement("span");label.textContent=String(todo.text||"");
         check.onchange=()=>{
           note.todos[todoIndex].done=check.checked;item.classList.toggle("done",check.checked);
@@ -438,10 +438,10 @@ function renderMemoList(){
     del.className="memo-delete";
     del.type="button";
     del.innerHTML='<svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg>';
-    del.setAttribute("aria-label",uiLang()==="en"?"Delete note":"付箋を削除");
-    del.title=uiLang()==="en"?"Delete note":"付箋を削除";
+    del.setAttribute("aria-label",t("memo.delete"));
+    del.title=t("memo.delete");
     del.onclick=()=>{
-      const deleteMessage=uiLang()==="en"?"Delete this note?":"この付箋を削除しますか？";
+      const deleteMessage=t("memo.confirmDelete");
       if(!confirm(deleteMessage))return;
       delete pageNotes[String(page)];
       save();
@@ -621,7 +621,7 @@ function applyCurrentLanguageNow(){
 function updateLanguageButtons(){
  document.querySelectorAll(".language-option").forEach(b=>b.classList.toggle("active",b.dataset.lang===languageSettings.language));
  const cancel=document.getElementById("languageCancel");
- if(cancel){cancel.textContent="×";cancel.setAttribute("aria-label",languageSettings.language==="en"?"Close":"閉じる");}
+ if(cancel){cancel.textContent="×";cancel.setAttribute("aria-label",t("common.close"));}
 }
 document.getElementById("languageButton").onclick=()=>{
  updateLanguageButtons();
@@ -721,7 +721,7 @@ function refreshCurrentProjectTitle(){
  const el=document.getElementById("currentProjectTitle");
  if(el&&p)el.textContent=p.title||"";
  const lab=document.getElementById("currentProjectTitleLabel");
- if(lab)lab.textContent=languageSettings.language==="en"?"Project":"作品";
+ if(lab)lab.textContent=t("project.label");
 }
 document.addEventListener("click",()=>setTimeout(refreshCurrentProjectTitle,0),true);
 setTimeout(refreshCurrentProjectTitle,0);
@@ -767,7 +767,6 @@ setTimeout(localizeOpenUi,0);
  const folderBtn=document.getElementById("folderAdd");
  const trashBtn=document.getElementById("trashOpen");
  if(!toggle||!menu||!projectBtn||!folderBtn)return;
- const isEn=()=>languageSettings?.language==="en";
  const closeMenu=()=>{menu.classList.remove("open");toggle.setAttribute("aria-expanded","false")};
  const syncLabels=()=>{
    toggle.setAttribute("aria-label",t("create.label"));

@@ -2,7 +2,6 @@
 /* ===== Help, theme, and i18n ===== */
 (function fillioUiFixes(){
   const $=id=>document.getElementById(id);
-  function isEn(){return languageSettings?.language==="en"}
 
   const helpBtn=$("libraryHelpButton"), helpModal=$("libraryHelpModal"), helpClose=$("libraryHelpClose");
   const openHelp=()=>{if(!helpModal)return;lockPageScroll();helpModal.classList.add("open");helpModal.setAttribute("aria-hidden","false")};

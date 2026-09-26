@@ -49,7 +49,7 @@ document.getElementById("folderRenameModal")?.addEventListener("click",e=>{if(e.
 document.getElementById("folderDelete")?.addEventListener("click",()=>{
  if(!currentFolderId)return;
  const f=projectStore.folders[currentFolderId];if(!f)return;
- if(!confirm(languageSettings?.language==="en"?`Remove folder “${f.name}”?\nProjects inside will return to Projects.`:`「${f.name}」を解除しますか？\n中の作品は作品一覧へ戻ります。`))return;
+ if(!confirm(t("folder.confirmRemove",{name:f.name})))return;
  const deletedFolderId=currentFolderId;
  Object.values(projectStore.projects).forEach(p=>{if(p.folderId===deletedFolderId)p.folderId=null});
  delete projectStore.folders[deletedFolderId];
