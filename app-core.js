@@ -28,12 +28,13 @@ function normalizeAppSettings(raw){
  if(b-a+1>500)b=a+499;
  let ss=Array.isArray(raw?.defaultStages)?raw.defaultStages.map(x=>String(x||"").trim()).filter(Boolean).slice(0,MAX_STAGES):[];
  if(!ss.length)ss=[...DEFAULT_STAGES];
- const allowedColors=["#222222","#d9788d","#6e9fd0","#70ad98","#9a83c6","#dc9878"];
+ const allowedColors=["#222222","#d9788d","#6e9fd0","#70ad98","#9a83c6","#dc9878","#d6b94c","#d86f67","#7656a8"];
  const legacyThemeMap={"#4f6bed":"#6e9fd0","#3f8f6b":"#70ad98","#7a5cc7":"#9a83c6","#c7663d":"#dc9878"};
  const rawTheme=raw?.themeColor ?? appSettings?.themeColor;
  const requested=legacyThemeMap[rawTheme]||rawTheme;
  const themeColor=allowedColors.includes(requested)?requested:"#222222";
- return {language:lang,defaultStartPage:a,defaultEndPage:b,defaultStages:ss,themeColor};
+ const displayMode=["light","dark","auto"].includes(raw?.displayMode)?raw.displayMode:"light";
+ return {language:lang,defaultStartPage:a,defaultEndPage:b,defaultStages:ss,themeColor,displayMode};
 }
 function syncSplitSettings(){
  languageSettings={language:appSettings?.language==="en"?"en":"ja"};
@@ -52,11 +53,26 @@ function persistAppSettings(){
  syncSplitSettings();
  localStorage.setItem(APP_SETTINGS_KEY,JSON.stringify(appSettings));
 }
+
+function resolvedDisplayMode(mode=appSettings?.displayMode||"light"){
+ return mode==="auto"?(window.matchMedia?.("(prefers-color-scheme: dark)").matches?"dark":"light"):mode;
+}
+function applyDisplayMode(mode=appSettings?.displayMode||"light"){
+ const resolved=resolvedDisplayMode(mode);
+ document.documentElement.dataset.displayMode=resolved;
+ document.documentElement.dataset.displayPreference=mode;
+ document.querySelectorAll(".display-mode-option").forEach(b=>{const on=b.dataset.displayMode===mode;b.classList.toggle("selected",on);b.setAttribute("aria-checked",on?"true":"false")});
+ const meta=document.querySelector('meta[name="theme-color"]');
+ if(meta)meta.content=resolved==="dark"?"#151515":"#f6f6f6";
+}
+const fillioColorSchemeQuery=window.matchMedia?.("(prefers-color-scheme: dark)");
+fillioColorSchemeQuery?.addEventListener?.("change",()=>{if(appSettings?.displayMode==="auto")applyDisplayMode("auto")});
+
 function applyThemeColor(color=appSettings?.themeColor||"#222222"){
  document.documentElement.style.setProperty("--accent",color);
  document.documentElement.dataset.theme=color==="#222222"?"mono":"color";
  const meta=document.querySelector('meta[name="theme-color"]');
- if(meta) meta.content=color==="#222222"?"#f6f6f6":`color-mix(in srgb, ${color} 8%, #f8f8f8)`;
+ if(meta && resolvedDisplayMode()!=="dark") meta.content="#f6f6f6";
  document.querySelectorAll(".theme-color-option").forEach(b=>{
    const on=b.dataset.themeColor===color;b.classList.toggle("selected",on);b.setAttribute("aria-checked",on?"true":"false");
  });

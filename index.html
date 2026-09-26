@@ -14,7 +14,7 @@
 <title>fillio</title>
 
 
-<link rel="stylesheet" href="style.css?v=61">
+<link rel="stylesheet" href="style.css?v=62">
 </head>
 <body>
 
@@ -209,6 +209,13 @@
     <button id="defaultStageAdd" class="stage-add-button" type="button">＋ 工程を追加</button>
     <button id="defaultStageReset" class="stage-add-button default-stage-reset" type="button">初期設定に戻す</button>
     <div class="stage-editor-note" id="settingsNote">新しいプロジェクトを作るときの初期値です。プロジェクトごとに変更できます。</div>
+    <div class="settings-section-title" id="displayModeTitle">表示モード</div>
+    <div id="displayModePicker" class="display-mode-picker" role="radiogroup" aria-label="表示モード">
+      <button type="button" class="display-mode-option" data-display-mode="light" data-ja="ライト" data-en="Light">ライト</button>
+      <button type="button" class="display-mode-option" data-display-mode="dark" data-ja="ダーク" data-en="Dark">ダーク</button>
+      <button type="button" class="display-mode-option" data-display-mode="auto" data-ja="自動" data-en="Auto">自動</button>
+    </div>
+    <div class="stage-editor-note" id="displayModeNote">画面の明るさを選べます。自動は端末の設定に合わせます。</div>
     <div class="settings-section-title" id="themeColorTitle">テーマカラー</div>
     <div id="themeColorPicker" class="theme-color-picker" role="radiogroup" aria-label="テーマカラー">
       <button type="button" class="theme-color-option" data-theme-color="#222222" data-ja="モノクロ" data-en="Mono"><i class="theme-swatch" style="--swatch:#222222"></i><span class="theme-option-label">モノクロ</span></button>
@@ -217,6 +224,9 @@
       <button type="button" class="theme-color-option" data-theme-color="#70ad98" data-ja="ミント" data-en="Mint"><i class="theme-swatch" style="--swatch:#70ad98"></i><span class="theme-option-label">ミント</span></button>
       <button type="button" class="theme-color-option" data-theme-color="#9a83c6" data-ja="ラベンダー" data-en="Lavender"><i class="theme-swatch" style="--swatch:#9a83c6"></i><span class="theme-option-label">ラベンダー</span></button>
       <button type="button" class="theme-color-option" data-theme-color="#dc9878" data-ja="ピーチ" data-en="Peach"><i class="theme-swatch" style="--swatch:#dc9878"></i><span class="theme-option-label">ピーチ</span></button>
+      <button type="button" class="theme-color-option" data-theme-color="#d6b94c" data-ja="レモン" data-en="Lemon"><i class="theme-swatch" style="--swatch:#d6b94c"></i><span class="theme-option-label">レモン</span></button>
+      <button type="button" class="theme-color-option" data-theme-color="#d86f67" data-ja="コーラル" data-en="Coral"><i class="theme-swatch" style="--swatch:#d86f67"></i><span class="theme-option-label">コーラル</span></button>
+      <button type="button" class="theme-color-option" data-theme-color="#7656a8" data-ja="グレープ" data-en="Grape"><i class="theme-swatch" style="--swatch:#7656a8"></i><span class="theme-option-label">グレープ</span></button>
     </div>
     <div class="stage-editor-note" id="themeColorNote">完了セルや選択状態などのアクセントカラーに使われます。</div>
     <div class="settings-section-title data-management-title" id="dataManagementTitle">データ管理</div>
@@ -285,19 +295,19 @@
 </div>
 
 
-<script src="app-core.js?v=61"></script>
-<script src="app-data.js?v=61"></script>
-<script src="app-stage.js?v=61"></script>
-<script src="app.js?v=61"></script>
-<script src="app-cells.js?v=61"></script>
-<script src="app-library.js?v=61"></script>
-<script src="app-folder.js?v=61"></script>
-<script src="app-library-drag.js?v=61"></script>
-<script src="app-trash.js?v=61"></script>
-<script src="app-project-settings.js?v=61"></script>
-<script src="app-settings.js?v=61"></script>
-<script src="app-ui.js?v=61"></script>
-<script src="app-project-modal.js?v=61"></script>
+<script src="app-core.js?v=62"></script>
+<script src="app-data.js?v=62"></script>
+<script src="app-stage.js?v=62"></script>
+<script src="app.js?v=62"></script>
+<script src="app-cells.js?v=62"></script>
+<script src="app-library.js?v=62"></script>
+<script src="app-folder.js?v=62"></script>
+<script src="app-library-drag.js?v=62"></script>
+<script src="app-trash.js?v=62"></script>
+<script src="app-project-settings.js?v=62"></script>
+<script src="app-settings.js?v=62"></script>
+<script src="app-ui.js?v=62"></script>
+<script src="app-project-modal.js?v=62"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
