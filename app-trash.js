@@ -48,7 +48,7 @@
   open.onclick=()=>{renderTrash();modal.classList.add("open");lockPageScroll()};
   close.onclick=()=>{modal.classList.remove("open");unlockPageScroll()};
   modal.addEventListener("click",e=>{if(e.target===modal)close.click()});
-  function setZoneText(){document.getElementById("trashTitle").textContent=isEn()?"Trash":"ゴミ箱";document.getElementById("dragTrashLabel").textContent=isEn()?"Hold to move to Trash":"長押しでゴミ箱へ";open.querySelector("span").textContent=isEn()?"Trash":"ゴミ箱";empty.textContent=isEn()?"Empty Trash":"空にする";close.textContent="×";close.setAttribute("aria-label",isEn()?"Close":"閉じる")}
+  function setZoneText(){document.getElementById("trashTitle").textContent=isEn()?"Trash":"ゴミ箱";document.getElementById("dragTrashLabel").textContent=isEn()?"Move to Trash":"ゴミ箱へ";open.querySelector("span").textContent=isEn()?"Trash":"ゴミ箱";empty.textContent=isEn()?"Empty Trash":"空にする";close.textContent="×";close.setAttribute("aria-label",isEn()?"Close":"閉じる")}
   setZoneText();
   const langObserver=new MutationObserver(setZoneText);langObserver.observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
 })();

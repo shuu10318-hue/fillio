@@ -734,10 +734,10 @@ input{border-color:var(--border);border-radius:12px}
 .drag-trash-zone{
   position:fixed;left:50%;top:72px;bottom:auto;
   transform:translate(-50%,-18px) scale(1);
-  width:min(210px,calc(100% - 112px));height:50px;
+  width:100px;height:80px;
   border:1.5px dashed #888;border-radius:14px;
-  background:rgba(255,255,255,.96);color:#555;
-  display:flex;align-items:center;justify-content:center;gap:9px;
+  background:#f5f5f5;color:#555;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
   font-size:13px;font-weight:800;z-index:3000;
   opacity:0;visibility:hidden;pointer-events:none;
   transition:opacity .12s ease,transform .12s ease,background .12s ease,border-color .12s ease,color .12s ease,box-shadow .12s ease;
@@ -750,11 +750,11 @@ body.library-drag-active .drag-trash-zone{
 body.library-drag-active .drag-trash-zone.over{
   opacity:1;visibility:visible;
   transform:translate(-50%,2px) scale(1.06);
-  background:var(--accent);border:2px solid var(--accent);color:#fff;
-  box-shadow:0 10px 28px color-mix(in srgb,var(--accent) 35%,transparent);
+  background:#fff0f0;border:2px solid #d98b8b;color:#9b5555;
+  box-shadow:0 8px 22px rgba(180,90,90,.18);
 }
 .drag-trash-zone .icon-line{width:22px;height:22px;transition:transform .12s ease,color .12s ease}
-.drag-trash-zone.over .icon-line{transform:scale(1.28);color:#fff;stroke:#fff}
+.drag-trash-zone.over .icon-line{transform:scale(1.18);color:#9b5555;stroke:#9b5555}
 .trash-open-button{height:38px;padding:0 11px;border:1px solid var(--border);border-radius:9px;display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:12px}
 .trash-open-button .icon-line{width:17px;height:17px}
 .trash-modal{position:fixed;inset:0;background:rgba(0,0,0,.32);display:none;align-items:flex-end;justify-content:center;z-index:3200}.trash-modal.open{display:flex}
