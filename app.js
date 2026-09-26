@@ -548,7 +548,7 @@ function renderMemoList(){
       return {index,page,note};
     })
     .filter(x=>Number.isInteger(x.page)&&x.index>=0&&x.index<totalPages&&x.note&&typeof x.note==="object")
-    .filter(x=>memoListFilter==="all"||x.note.color===memoListFilter)
+    .filter(x=>memoListFilter==="all"||(memoListFilter==="none"?!x.note.color:x.note.color===memoListFilter))
     .sort((a,b)=>a.page-b.page);
   if(!entries.length){
     body.innerHTML=`<div class="memo-empty">${uiLang()==="en"?"No matching notes.":"該当するメモはありません。"}</div>`;
@@ -559,7 +559,7 @@ function renderMemoList(){
     row.className="memo-item";
     const pg=document.createElement("div");
     pg.className="memo-page";
-    pg.style.background=note.color||"#f4dc8a";
+    if(note.color)pg.style.background=note.color;else pg.classList.add("no-color");
     pg.textContent=page+"P";
     const content=document.createElement("div");
     content.className="memo-content";
@@ -1343,7 +1343,7 @@ function localizeOpenUi(){
  const ph=(sel,ja,enText)=>{const el=document.querySelector(sel);if(el)el.placeholder=en?enText:ja};
  set("#memoListModal .memo-head h2","メモ一覧","Notes");
  {const el=document.querySelector("#closeMemoList");if(el){el.textContent="×";el.setAttribute("aria-label",en?"Close":"閉じる");}}
- const filters=[["all","すべて","All"],["#f4a6a6","赤","Red"],["#f4dc8a","黄","Yellow"],["#9ec8f4","青","Blue"],["#a9ddb0","緑","Green"]];
+ const filters=[["all","すべて","All"],["none","無色","No color"],["#f4a6a6","赤","Red"],["#f4dc8a","黄","Yellow"],["#9ec8f4","青","Blue"],["#a9ddb0","緑","Green"]];
  filters.forEach(([key,ja,enText])=>{const el=document.querySelector(`.memo-filter[data-filter="${key}"]`);if(el)el.textContent=en?enText:ja});
  ph("#stickyText","修正点・忘れたくないことなど","Corrections, reminders, etc.");
  ph("#stickyTodoInput","チェック項目を追加","Add checklist item");

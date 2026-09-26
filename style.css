@@ -1131,3 +1131,6 @@ body.library-drag-active .drag-trash-zone.over{
   transform:translate(-50%,-50%) rotate(-45deg);
   pointer-events:none;
 }
+
+/* v53: neutral page label for colorless notes */
+.memo-page.no-color{background:#fff;border-color:var(--border);color:var(--text)}
