@@ -481,29 +481,13 @@ function renderPages(){
       b.dataset.stageIndex=String(s);
       b.classList.toggle("state-started",progress[p][s]===1);
       b.classList.toggle("state-done",progress[p][s]===2);
-      // N/A操作感テスト: 3連続タップは斜線のON/OFFだけ。データには保存しない。
-      let naTestTapCount=0,naTestTapTimer=null;
       b.onclick=()=>{
         if(Date.now()<suppressCellClickUntil)return;
-        naTestTapCount++;
-        if(naTestTapTimer)clearTimeout(naTestTapTimer);
-        if(naTestTapCount>=3){
-          naTestTapCount=0;
-          b.classList.toggle("na-triple-test");
-          fillioHaptic(16);
-          return;
-        }
-        naTestTapTimer=setTimeout(()=>{
-          if(naTestTapCount===1){
-            progress[p][s]=(progress[p][s]+1)%3;
-            setCellVisual(b,progress[p][s]);
-            fillioHaptic(8);
-            save();
-            requestAnimationFrame(()=>updateSummary());
-          }
-          // 2タップはこの試験版では何もしない。3タップ判定だけを確認する。
-          naTestTapCount=0;
-        },280);
+        progress[p][s]=(progress[p][s]+1)%3;
+        setCellVisual(b,progress[p][s]);
+        fillioHaptic(8);
+        save();
+        requestAnimationFrame(()=>updateSummary());
       };
       row.appendChild(b);
     }

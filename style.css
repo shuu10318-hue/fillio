@@ -1150,12 +1150,3 @@ body.library-drag-active .drag-trash-zone.over{
 #pages .page-number.has-page-label.page-label-long{font-size:8px;letter-spacing:-.2px}
 .memo-page.has-page-label{font-size:10px;line-height:1.1;overflow-wrap:anywhere}
 @media(max-width:360px){:root{--progress-page-col:36px}.prototype-input-card{margin-left:-7px;width:calc(100% + 7px)}}
-
-
-/* N/A triple-tap feel test only: visual slash, no data/model changes */
-#pages .progress-cell.na-triple-test{position:relative;overflow:hidden}
-#pages .progress-cell.na-triple-test::after{
-  content:"";position:absolute;left:50%;top:50%;width:135%;height:2px;
-  background:currentColor;opacity:.45;transform:translate(-50%,-50%) rotate(-42deg);
-  pointer-events:none;
-}
