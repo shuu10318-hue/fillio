@@ -36,27 +36,25 @@ jobs:
         shell: bash
         run: |
           ZIP="${{ steps.zip.outputs.file }}"
+          TEMP_DIR="$RUNNER_TEMP/fillio_unpack"
 
-          rm -rf _fillio_unpack
-          mkdir _fillio_unpack
-          unzip -q "$ZIP" -d _fillio_unpack
+          rm -rf "$TEMP_DIR"
+          mkdir -p "$TEMP_DIR"
+          unzip -q "$ZIP" -d "$TEMP_DIR"
 
-          # ZIP must contain fillio's index.html.
-          ROOT=$(find _fillio_unpack -type f -name index.html -printf '%h\n' | head -n 1)
+          ROOT=$(find "$TEMP_DIR" -type f -name index.html -printf '%h\n' | head -n 1)
 
           if [ -z "$ROOT" ]; then
             echo "index.html was not found. Aborting."
             exit 1
           fi
 
-          # Keep GitHub configuration and Git metadata intact.
           rsync -a --delete \
             --exclude='.git/' \
             --exclude='.github/' \
             --exclude='fillio-v*.zip' \
             "$ROOT/" ./
 
-          rm -rf _fillio_unpack
           rm -f fillio-v*.zip
 
       - name: Commit updated fillio
