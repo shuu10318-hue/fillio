@@ -480,8 +480,6 @@ function renderPages(){
       b.textContent="";
       b.dataset.pageIndex=String(p);
       b.dataset.stageIndex=String(s);
-      b.classList.toggle("state-started",progress[p][s]===1);
-      b.classList.toggle("state-done",progress[p][s]===2);
       b.onclick=()=>{
         if(Date.now()<suppressCellClickUntil)return;
         progress[p][s]=(progress[p][s]+1)%3;

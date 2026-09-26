@@ -70,16 +70,6 @@ button{font:inherit;color:inherit}
 }
 
 
-button.state-started{
-  background:var(--started) !important;
-  color:#222 !important;
-}
-button.state-done{
-  background:#171717 !important;
-  color:#fff !important;
-  border-color:#171717 !important;
-}
-
 
 /* Multi-project v2 */
 .top-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:20px}
@@ -988,7 +978,7 @@ body.library-drag-active .drag-trash-zone.over{
 :root[data-theme="color"] input,
 :root[data-theme="color"] select,
 :root[data-theme="color"] textarea,
-:root[data-theme="color"] button:not(.progress-cell):not(.page-button.active):not(.state-done){border-color:var(--border)}
+:root[data-theme="color"] button:not(.progress-cell):not(.page-button.active){border-color:var(--border)}
 :root[data-theme="color"] .icon-button,
 :root[data-theme="color"] .project-add-button,
 :root[data-theme="color"] .project-list-button,
@@ -1266,7 +1256,6 @@ body.library-drag-active .drag-trash-zone.over{
 :root[data-display-mode="dark"] .memo-filter.active{background:var(--accent)!important;color:#fff!important;border-color:var(--accent)!important}
 :root[data-display-mode="dark"] .memo-page.no-color{background:#202225!important;color:var(--text)!important;border-color:var(--border)!important}
 
-/* Progress semantics reverse in dark mode: unstarted dark -> started mid -> done light. */
 :root[data-display-mode="dark"] .table-head-anchor,
 :root[data-display-mode="dark"] .table-head,
 :root[data-display-mode="dark"] .page-number{background:var(--card)!important}

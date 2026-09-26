@@ -28,10 +28,8 @@ const PAINT_SCROLL_EDGE=72;
 const PAINT_SCROLL_MAX=12;
 
 function setCellVisual(cell,value){
-  cell.classList.remove("state0","state1","state2","state-started","state-done");
+  cell.classList.remove("state0","state1","state2");
   cell.classList.add("state"+value);
-  cell.classList.toggle("state-started",value===1);
-  cell.classList.toggle("state-done",value===2);
 }
 function cancelPaintHold(){
   if(paintHoldTimer){clearTimeout(paintHoldTimer);paintHoldTimer=null}
