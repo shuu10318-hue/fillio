@@ -1297,3 +1297,44 @@ body.library-drag-active .drag-trash-zone.over{
 :root[data-display-mode="dark"][data-theme="color"] .help-swatch.started{background:color-mix(in srgb,var(--accent) 38%,#d7d7d7)!important}
 :root[data-display-mode="dark"] .state-swatch.done,
 :root[data-display-mode="dark"] .help-swatch.done{background:var(--accent)!important;border-color:var(--accent)!important}
+
+/* ===== v65: progress cells derive from surface + theme color ===== */
+:root{
+  --cell-empty:#fff;
+  --cell-mid:color-mix(in srgb,var(--accent) 38%,#d7d7d7);
+  --cell-done:var(--accent);
+  --cell-border:#cfd2d6;
+}
+:root[data-theme="mono"]{
+  --cell-mid:#aaa;
+  --cell-done:#222;
+}
+:root[data-display-mode="dark"]{
+  --cell-empty:#242629;
+  --cell-mid:color-mix(in srgb,var(--accent) 58%,#777b80);
+  --cell-done:var(--accent);
+  --cell-border:#414348;
+}
+/* Monochrome needs its own dark ramp so progress remains visible. */
+:root[data-display-mode="dark"][data-theme="mono"]{
+  --cell-mid:#85888d;
+  --cell-done:#e2e3e5;
+}
+#pages .progress-cell,.progress-cell{
+  background:var(--cell-empty)!important;
+  border-color:var(--cell-border)!important;
+}
+#pages .progress-cell.state1,.progress-cell.state1{
+  background:var(--cell-mid)!important;
+  border-color:var(--cell-mid)!important;
+}
+#pages .progress-cell.state2,.progress-cell.state2{
+  background:var(--cell-done)!important;
+  border-color:var(--cell-done)!important;
+  color:#fff!important;
+}
+:root[data-display-mode="dark"][data-theme="mono"] #pages .progress-cell.state2,
+:root[data-display-mode="dark"][data-theme="mono"] .progress-cell.state2{color:#151515!important}
+.state-swatch,.help-swatch{background:var(--cell-empty)!important;border-color:var(--cell-border)!important}
+.state-swatch.started,.help-swatch.started{background:var(--cell-mid)!important;border-color:var(--cell-mid)!important}
+.state-swatch.done,.help-swatch.done{background:var(--cell-done)!important;border-color:var(--cell-done)!important}
