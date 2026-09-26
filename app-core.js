@@ -108,11 +108,16 @@ function applyCellShape(shape=appSettings?.cellShape||"rounded"){
  });
 }
 
+function resolveThemeAccent(color=appSettings?.themeColor||"#222222"){
+ return color==="#222222"?(resolvedDisplayMode()==="dark"?"#f2f3f4":"#222222"):color;
+}
 function applyThemeColor(color=appSettings?.themeColor||"#222222"){
  const mono=color==="#222222";
- const accent=mono?(resolvedDisplayMode()==="dark"?"#f2f3f4":"#222222"):color;
+ const accent=resolveThemeAccent(color);
  document.documentElement.style.setProperty("--accent",accent);
  document.documentElement.dataset.theme=mono?"mono":"color";
+ const monoSwatch=document.querySelector('.theme-color-option[data-theme-color="#222222"] .theme-swatch');
+ if(monoSwatch)monoSwatch.style.setProperty("--swatch",resolveThemeAccent("#222222"));
  const meta=document.querySelector('meta[name="theme-color"]');
  if(meta && resolvedDisplayMode()!=="dark") meta.content="#f6f6f6";
  document.querySelectorAll(".theme-color-option").forEach(b=>{
