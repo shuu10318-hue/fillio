@@ -630,6 +630,24 @@ document.getElementById("languageButton").onclick=()=>{
 document.getElementById("languageCancel").onclick=()=>document.getElementById("languageModal").classList.remove("open");
 document.getElementById("languageModal").onclick=e=>{if(e.target.id==="languageModal")e.currentTarget.classList.remove("open")};
 
+document.querySelectorAll(".language-option").forEach(btn=>{
+ btn.onclick=()=>{
+   const selected=btn.dataset.lang==="en"?"en":"ja";
+   if(selected===languageSettings.language){
+     document.getElementById("languageModal")?.classList.remove("open");
+     return;
+   }
+   appSettings=normalizeAppSettings({
+     ...appSettings,
+     language:selected,
+     defaultPages:projectDefaults.pages,
+     defaultStages:cloneStages(projectDefaults.stages)
+   });
+   if(!persistAppSettings())return;
+   location.reload();
+ };
+});
+
 document.getElementById("appSettingsButton").onclick=()=>{
  refreshSettingsLanguage();
  document.getElementById("defaultPages").value=clampPageCount(projectDefaults.pages);
