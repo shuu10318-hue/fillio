@@ -24,6 +24,7 @@ function setupPageStepper(inputId){
 }
 loadAppSettings();
 applyThemeColor();
+applyCellShape();
 applyDisplayMode();
 
 // Explicit editor DOM references; do not rely on legacy window.<id> globals.
@@ -664,6 +665,7 @@ document.getElementById("appSettingsButton").onclick=()=>{
  document.getElementById("defaultPages").value=clampPageCount(projectDefaults.endPage-projectDefaults.startPage+1);
  defaultStageDraft=[...projectDefaults.stages];renderDefaultStageEditor();
  applyThemeColor(appSettings.themeColor);
+ applyCellShape(appSettings.cellShape);
  applyDisplayMode(appSettings.displayMode);
  lockPageScroll();
  document.getElementById("appSettingsModal").classList.add("open");
@@ -677,7 +679,7 @@ document.getElementById("settingsSave").onclick=()=>{
  const ss=defaultStageDraft.map(x=>String(x||"").trim()).filter(Boolean);
  if(!ss.length)return;
  appSettings=normalizeAppSettings({language:document.getElementById("appLanguage").value,defaultStartPage:a,defaultEndPage:b,defaultStages:ss,themeColor:document.querySelector(".theme-color-option.selected")?.dataset.themeColor||appSettings.themeColor,displayMode:document.querySelector(".display-mode-option.selected")?.dataset.displayMode||appSettings.displayMode});
- persistAppSettings();applyLanguage();applyThemeColor();applyDisplayMode();
+ persistAppSettings();applyLanguage();applyThemeColor();applyCellShape();applyDisplayMode();
  closeAppSettings();
 };
 

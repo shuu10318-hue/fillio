@@ -11,6 +11,8 @@
     text("displayModeNote","画面の明るさを選べます。自動は端末の設定に合わせます。","Choose the appearance. Auto follows your device setting.");
     text("themeColorTitle","テーマカラー","Theme Color");
     text("themeColorNote","完了セルや選択状態などのアクセントカラーに使われます。","Used as the accent color for completed cells and selected states.");
+    text("cellShapeTitle","セル形状","Cell Shape");
+    text("cellShapeNote","タッチ領域はそのまま、セルの見た目だけを変更します。","Changes only the cell appearance; the touch area stays square.");
     text("dataManagementTitle","データ管理","Data Management");
     text("dataManagementNote","全作品・フォルダ・進捗・付箋・作業履歴を1つのJSONに保存します。","Save all projects, folders, progress, notes, and work history in one JSON file.");
     text("exportBackup","💾 バックアップ","💾 Backup");
@@ -24,6 +26,7 @@
     items?.forEach((it,i)=>{const a=(en?ee:ja)[i];if(!a)return;it.querySelector(".help-item-title").textContent=a[0];it.querySelector(".help-item-text").textContent=a[1]});
     document.querySelectorAll(".display-mode-option").forEach(btn=>{const label=en?btn.dataset.en:btn.dataset.ja;btn.textContent=label;btn.setAttribute("aria-label",label)});
     document.querySelectorAll(".theme-color-option").forEach(btn=>{const label=en?btn.dataset.en:btn.dataset.ja;btn.setAttribute("aria-label",label);btn.title=label;btn.querySelector(".theme-option-label").textContent=label});
+    document.querySelectorAll(".cell-shape-option").forEach(btn=>{const label=en?btn.dataset.en:btn.dataset.ja;btn.setAttribute("aria-label",label);btn.title=label;btn.querySelector(".cell-shape-label").textContent=label});
   }
 
   const helpBtn=$("libraryHelpButton"), helpModal=$("libraryHelpModal"), helpClose=$("libraryHelpClose");
@@ -44,6 +47,14 @@
     const color=btn.dataset.themeColor;
     appSettings.themeColor=color;
     applyThemeColor(color);
+    persistAppSettings();
+  },{capture:true}));
+
+  document.querySelectorAll(".cell-shape-option").forEach(btn=>btn.addEventListener("click",e=>{
+    e.preventDefault();
+    const shape=btn.dataset.cellShape;
+    appSettings.cellShape=shape;
+    applyCellShape(shape);
     persistAppSettings();
   },{capture:true}));
 

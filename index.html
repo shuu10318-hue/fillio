@@ -14,7 +14,7 @@
 <title>fillio</title>
 
 
-<link rel="stylesheet" href="style.css?v=74">
+<link rel="stylesheet" href="style.css?v=75">
 </head>
 <body>
 
@@ -217,6 +217,13 @@
       <button type="button" class="theme-color-option" data-theme-color="#7656a8" data-ja="グレープ" data-en="Grape"><i class="theme-swatch" style="--swatch:#7656a8"></i><span class="theme-option-label">グレープ</span></button>
     </div>
     <div class="stage-editor-note" id="themeColorNote">完了セルや選択状態などのアクセントカラーに使われます。</div>
+    <div class="settings-section-title" id="cellShapeTitle">セル形状</div>
+    <div id="cellShapePicker" class="cell-shape-picker" role="radiogroup" aria-label="セル形状">
+      <button type="button" class="cell-shape-option" data-cell-shape="rounded" data-ja="四角" data-en="Square"><i class="cell-shape-preview shape-rounded"></i><span class="cell-shape-label">四角</span></button>
+      <button type="button" class="cell-shape-option" data-cell-shape="circle" data-ja="丸" data-en="Circle"><i class="cell-shape-preview shape-circle"></i><span class="cell-shape-label">丸</span></button>
+      <button type="button" class="cell-shape-option" data-cell-shape="star" data-ja="星" data-en="Star"><i class="cell-shape-preview shape-star"></i><span class="cell-shape-label">星</span></button>
+    </div>
+    <div class="stage-editor-note" id="cellShapeNote">タッチ領域はそのまま、セルの見た目だけを変更します。</div>
     <div class="settings-section-title" id="settingsDefaultsTitle">新規プロジェクトのデフォルト</div>
     <div class="label" id="settingsPagesLabel">制作ページ</div>
     <div class="page-stepper" data-stepper="defaultPages">
@@ -295,19 +302,19 @@
 </div>
 
 
-<script src="app-core.js?v=74"></script>
-<script src="app-data.js?v=74"></script>
-<script src="app-stage.js?v=74"></script>
-<script src="app.js?v=74"></script>
-<script src="app-cells.js?v=74"></script>
-<script src="app-library.js?v=74"></script>
-<script src="app-folder.js?v=74"></script>
-<script src="app-library-drag.js?v=74"></script>
-<script src="app-trash.js?v=74"></script>
-<script src="app-project-settings.js?v=74"></script>
-<script src="app-settings.js?v=74"></script>
-<script src="app-ui.js?v=74"></script>
-<script src="app-project-modal.js?v=74"></script>
+<script src="app-core.js?v=75"></script>
+<script src="app-data.js?v=75"></script>
+<script src="app-stage.js?v=75"></script>
+<script src="app.js?v=75"></script>
+<script src="app-cells.js?v=75"></script>
+<script src="app-library.js?v=75"></script>
+<script src="app-folder.js?v=75"></script>
+<script src="app-library-drag.js?v=75"></script>
+<script src="app-trash.js?v=75"></script>
+<script src="app-project-settings.js?v=75"></script>
+<script src="app-settings.js?v=75"></script>
+<script src="app-ui.js?v=75"></script>
+<script src="app-project-modal.js?v=75"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

@@ -35,7 +35,9 @@ function normalizeAppSettings(raw){
  const themeColor=allowedColors.includes(requested)?requested:"#222222";
  const rawDisplayMode=raw?.displayMode ?? appSettings?.displayMode;
  const displayMode=["light","dark","auto"].includes(rawDisplayMode)?rawDisplayMode:"light";
- return {language:lang,defaultStartPage:a,defaultEndPage:b,defaultStages:ss,themeColor,displayMode};
+ const rawCellShape=raw?.cellShape ?? appSettings?.cellShape;
+ const cellShape=["rounded","circle","star"].includes(rawCellShape)?rawCellShape:"rounded";
+ return {language:lang,defaultStartPage:a,defaultEndPage:b,defaultStages:ss,themeColor,displayMode,cellShape};
 }
 function syncSplitSettings(){
  languageSettings={language:appSettings?.language==="en"?"en":"ja"};
@@ -68,6 +70,14 @@ function applyDisplayMode(mode=appSettings?.displayMode||"light"){
 }
 const fillioColorSchemeQuery=window.matchMedia?.("(prefers-color-scheme: dark)");
 fillioColorSchemeQuery?.addEventListener?.("change",()=>{if(appSettings?.displayMode==="auto")applyDisplayMode("auto")});
+
+function applyCellShape(shape=appSettings?.cellShape||"rounded"){
+ const safe=["rounded","circle","star"].includes(shape)?shape:"rounded";
+ document.documentElement.dataset.cellShape=safe;
+ document.querySelectorAll(".cell-shape-option").forEach(b=>{
+   const on=b.dataset.cellShape===safe;b.classList.toggle("selected",on);b.setAttribute("aria-checked",on?"true":"false");
+ });
+}
 
 function applyThemeColor(color=appSettings?.themeColor||"#222222"){
  document.documentElement.style.setProperty("--accent",color);
