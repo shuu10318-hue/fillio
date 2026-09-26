@@ -17,7 +17,7 @@ document.getElementById("clearNewProjectDeadline")?.addEventListener("click",()=
 
 document.getElementById("newStageAddButton").addEventListener("click",()=>{
   if(newProjectStageDraft.length>=MAX_STAGES){
-    alert(languageSettings?.language==="en"?`Up to ${MAX_STAGES} stages.`:`工程は最大${MAX_STAGES}個までです。`);
+    alert(t("stage.max",{max:MAX_STAGES}));
     return;
   }
   newProjectStageDraft.push({name:""});

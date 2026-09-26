@@ -7,7 +7,7 @@ const STAGE_VALUE_MODE_KEY="fillio-stage-value-mode-v1";
 function reportStorageFailure(err){
  console.error("Fillio: local storage write failed",err);
  const m=document.getElementById("saveMessage");
- if(m)m.textContent=languageSettings?.language==="en"?"Save failed — export a backup":"保存に失敗しました — バックアップしてください";
+ if(m)m.textContent=t("save.failed");
 }
 function safeStorageSet(key,value){
  try{localStorage.setItem(key,value);return true}catch(err){reportStorageFailure(err);return false}

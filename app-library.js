@@ -111,7 +111,7 @@ function renderProjectList(){
     <button class="project-stage-toggle" type="button" aria-expanded="${expanded}"><span>${isEn?"Stage details":"工程別"}</span><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></button>
     <div class="project-stage-details${expanded?" open":""}">${detailRows}</div>`;
     item.querySelector(".project-item-title").textContent=title;
-    item.querySelectorAll(".project-stage-name").forEach((el,i)=>{el.textContent=stageStats[i]?.name||(isEn?"New stage":"新しい工程")});
+    item.querySelectorAll(".project-stage-name").forEach((el,i)=>{el.textContent=stageStats[i]?.name||t("stage.new")});
     item.querySelector(".project-open-title").onclick=e=>{e.stopPropagation();openProject(id)};
     item.querySelector(".project-edit-button").onclick=e=>{e.stopPropagation();openProjectEdit(id)};
     item.querySelectorAll(".project-stage-value").forEach(btn=>btn.onclick=e=>{

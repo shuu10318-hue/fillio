@@ -71,9 +71,9 @@ function save(){
   const saved=persistProjectStore();
   const m=document.getElementById("saveMessage");
   if(!saved)return false;
-  m.textContent=languageSettings?.language==="en"?"Saved ✓":"保存しました ✓";
+  m.textContent=t("save.saved");
   clearTimeout(save.timer);
-  save.timer=setTimeout(()=>m.textContent=languageSettings?.language==="en"?"Changes are saved automatically":"変更は自動保存されます",1200);
+  save.timer=setTimeout(()=>m.textContent=t("save.auto"),1200);
   return true;
 }
 function normalizeProjectData(s){

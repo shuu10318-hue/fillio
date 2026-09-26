@@ -8,7 +8,7 @@ function makeStageRow(stage,i,arr,render,meta){
  const pencil='<svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
  const trash='<svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg>';
  const grip='<svg class="icon-line stage-grip-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14M5 12h14M5 16h14"/></svg>';
- row.innerHTML=`<button type="button" class="stage-edit-button" title="名前を変更" aria-label="名前を変更">${pencil}</button><input type="text" maxlength="12" value="${escapeStageHtml(name)}" aria-label="工程名" readonly enterkeyhint="done"><button type="button" class="stage-delete-button" title="工程を削除" aria-label="工程を削除">${trash}</button><button type="button" class="stage-drag-handle" title="並べ替え" aria-label="並べ替え">${grip}</button>`;
+ row.innerHTML=`<button type="button" class="stage-edit-button" title="${t("stage.rename")}" aria-label="${t("stage.rename")}">${pencil}</button><input type="text" maxlength="12" value="${escapeStageHtml(name)}" aria-label="${t("stage.name")}" readonly enterkeyhint="done"><button type="button" class="stage-delete-button" title="${t("stage.delete")}" aria-label="${t("stage.delete")}">${trash}</button><button type="button" class="stage-drag-handle" title="${t("stage.reorder")}" aria-label="${t("stage.reorder")}">${grip}</button>`;
  const input=row.querySelector("input"),edit=row.querySelector(".stage-edit-button"),del=row.querySelector(".stage-delete-button"),handle=row.querySelector(".stage-drag-handle");
  edit.addEventListener("click",()=>{
    input.readOnly=false;row.classList.add("editing");input.focus();
@@ -21,9 +21,9 @@ function makeStageRow(stage,i,arr,render,meta){
  input.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();endEdit()}});
  del.addEventListener("click",()=>{
    const idx=Number(row.dataset.stageIndex);
-   if(arr.length<=1){alert(languageSettings?.language==="en"?"At least one stage is required.":"工程は1つ以上必要です。");return}
+   if(arr.length<=1){alert(t("stage.min"));return}
    const label=stageLabel(arr[idx]);
-   const ok=confirm(languageSettings?.language==="en"?`Delete stage “${label}”?`:`工程「${label}」を削除しますか？`);
+   const ok=confirm(t("stage.confirmDelete",{name:label}));
    if(!ok)return;
    arr.splice(idx,1);if(meta)meta.splice(idx,1);render();
  });

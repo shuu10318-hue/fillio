@@ -214,9 +214,9 @@ function exportBackup(){
     link.href=url;link.download=fileName;link.style.display="none";
     document.body.appendChild(link);link.click();link.remove();
     setTimeout(()=>URL.revokeObjectURL(url),5000);
-    showBackupStatus(`✅ 全作品のバックアップを保存しました。<br><b>${fileName}</b><br><span style="color:var(--muted)">Chromeのダウンロード一覧または端末の「Downloads」を確認してください。</span>`);
+    showBackupStatus(`${t("backup.saved")}<br><b>${fileName}</b><br><span style="color:var(--muted)">${t("backup.downloadHint")}</span>`);
   }catch(err){
-    showBackupStatus(`❌ バックアップを保存できませんでした。<br><span style="color:var(--muted)">${String(err.message||err)}</span>`);
+    showBackupStatus(`${t("backup.saveFailed")}<br><span style="color:var(--muted)">${String(err.message||err)}</span>`);
   }
 }
 function restoreBackup(data){
@@ -247,7 +247,7 @@ function openSticky(page){
   const n=pageNotes[String(page)]||{text:"",color:""};
   stickyColor=n.color||"";
   stickyTodos=Array.isArray(n.todos)?n.todos.map((t,i)=>({id:t.id||(`${Date.now()}-${i}`),text:String(t.text||""),done:!!t.done})):[];
-  document.getElementById("stickyTitle").textContent=uiLang()==="en"?`Page ${page} note`:`${page}P 付箋`;
+  document.getElementById("stickyTitle").textContent=t("memo.pageNote",{page});
   document.getElementById("stickyLabel").value=String(n.label||"").slice(0,6);
   document.getElementById("stickyText").value=n.text||"";
   document.getElementById("stickyTodoInput").value="";
@@ -268,7 +268,7 @@ function renderStickyTodos(){
     const check=document.createElement("input"); check.type="checkbox"; check.checked=todo.done; check.setAttribute("aria-label",uiLang()==="en"?"Complete TODO":"TODO完了");
     check.onchange=()=>{stickyTodos[i].done=check.checked;renderStickyTodos();};
     const text=document.createElement("span"); text.textContent=todo.text;
-    const del=document.createElement("button"); del.type="button";del.className="sticky-todo-remove";del.textContent="×";del.setAttribute("aria-label",uiLang()==="en"?"Delete TODO":"TODOを削除");
+    const del=document.createElement("button"); del.type="button";del.className="sticky-todo-remove";del.textContent="×";del.setAttribute("aria-label",t("memo.deleteTodo"));
     del.onclick=()=>{stickyTodos.splice(i,1);renderStickyTodos();};
     row.append(check,text,del);list.appendChild(row);
   });
@@ -346,7 +346,7 @@ function renderPages(){
     pages.appendChild(row);
   }
   pages.classList.add("all-pages");
-  range.textContent=languageSettings?.language==="en" ? `${totalPages} pages` : `全${totalPages}P`;
+  range.textContent=t("pages.total",{count:totalPages});
 }
 
 function render(){renderDynamicTableHead();renderPages()}
@@ -357,8 +357,8 @@ document.getElementById("backupFile").addEventListener("change",async e=>{
   try{
     const data=JSON.parse(await file.text());
     restoreBackup(data);
-    showBackupStatus(`✅ 全作品のバックアップを復元しました。<br><b>${file.name}</b>`);
-  }catch(err){showBackupStatus("❌ このバックアップファイルは読み込めませんでした。")}
+    showBackupStatus(`${t("backup.restored")}<br><b>${file.name}</b>`);
+  }catch(err){showBackupStatus(t("backup.readFailed"))}
   e.target.value="";
 });
 
@@ -383,7 +383,7 @@ function renderMemoList(){
     .filter(x=>memoListFilter==="all"||(memoListFilter==="none"?!x.note.color:x.note.color===memoListFilter))
     .sort((a,b)=>a.page-b.page);
   if(!entries.length){
-    body.innerHTML=`<div class="memo-empty">${uiLang()==="en"?"No matching notes.":"該当するメモはありません。"}</div>`;
+    body.innerHTML=`<div class="memo-empty">${t("memo.empty")}</div>`;
     return;
   }
   entries.forEach(({index,page,note})=>{
@@ -399,7 +399,7 @@ function renderMemoList(){
     content.className="memo-content";
     const tx=document.createElement("div");
     tx.className="memo-text";
-    tx.textContent=(note.text||"").trim()||(uiLang()==="en"?"(No note text)":"（メモ本文なし）");
+    tx.textContent=(note.text||"").trim()||t("memo.noText");
     content.appendChild(tx);
     const todos=Array.isArray(note.todos)?note.todos:[];
     if(todos.length){
@@ -422,7 +422,7 @@ function renderMemoList(){
     }
     const jump=document.createElement("button");
     jump.className="memo-jump";
-    jump.textContent=uiLang()==="en"?"Go":"移動";
+    jump.textContent=t("memo.go");
     jump.onclick=()=>{
       if(index<0||index>=totalPages)return;
       document.getElementById("memoListModal").classList.remove("open");
@@ -486,7 +486,7 @@ function closeAppSettings(){
 
 document.getElementById("settingsCancel").onclick=closeAppSettings;
 document.getElementById("appSettingsModal").onclick=e=>{if(e.target.id==="appSettingsModal")closeAppSettings()};
-document.getElementById("defaultStageAdd").onclick=()=>{if(defaultStageDraft.length>=MAX_STAGES){alert(languageSettings?.language==="en"?`Up to ${MAX_STAGES} stages.`:`工程は最大${MAX_STAGES}個までです。`);return}defaultStageDraft.push({name:""});renderDefaultStageEditor()};
+document.getElementById("defaultStageAdd").onclick=()=>{if(defaultStageDraft.length>=MAX_STAGES){alert(t("stage.max",{max:MAX_STAGES}));return}defaultStageDraft.push({name:""});renderDefaultStageEditor()};
 
 
 

@@ -16,7 +16,7 @@ function renderStageEditor(){
  const add=document.getElementById("stageAddButton");if(add)add.disabled=false;
 }
 document.getElementById("stageAddButton")?.addEventListener("click",()=>{
-  if(stageDraft.length>=MAX_STAGES){alert(languageSettings?.language==="en"?`Up to ${MAX_STAGES} stages.`:`工程は最大${MAX_STAGES}個までです。`);return}
+  if(stageDraft.length>=MAX_STAGES){alert(t("stage.max",{max:MAX_STAGES}));return}
   stageDraft.push({name:""});
   stageDraftMeta.push({originalIndex:null});
   renderStageEditor();
