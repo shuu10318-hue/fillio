@@ -2,7 +2,8 @@
    Stage editor, stage progress display, and production-table header/sizing.
    Progress-cell tap / long-press paint behavior remains in app.js. */
 
-function makeStageRow(name,i,arr,render,meta){
+function makeStageRow(stage,i,arr,render,meta){
+ const name=stageLabel(stage);
  const row=document.createElement("div"); row.className="stage-editor-row"; row.dataset.stageIndex=String(i);
  const pencil='<svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
  const trash='<svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg>';
@@ -14,14 +15,14 @@ function makeStageRow(name,i,arr,render,meta){
    // Keep the existing name unselected; editing starts from the end.
    const n=input.value.length;try{input.setSelectionRange(n,n)}catch{}
  });
- input.addEventListener("input",()=>arr[Number(row.dataset.stageIndex)]=input.value);
+ input.addEventListener("input",()=>arr[Number(row.dataset.stageIndex)]={name:input.value});
  const endEdit=()=>{input.readOnly=true;row.classList.remove("editing");input.blur()};
  input.addEventListener("blur",()=>{input.readOnly=true;row.classList.remove("editing")});
  input.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();endEdit()}});
  del.addEventListener("click",()=>{
    const idx=Number(row.dataset.stageIndex);
    if(arr.length<=1){alert(languageSettings?.language==="en"?"At least one stage is required.":"工程は1つ以上必要です。");return}
-   const label=arr[idx]||"";
+   const label=stageLabel(arr[idx]);
    const ok=confirm(languageSettings?.language==="en"?`Delete stage “${label}”?`:`工程「${label}」を削除しますか？`);
    if(!ok)return;
    arr.splice(idx,1);if(meta)meta.splice(idx,1);render();
@@ -73,20 +74,16 @@ function makeStageRow(name,i,arr,render,meta){
 let defaultStageDraft=[];
 function renderDefaultStageEditor(){
  const box=document.getElementById("defaultStageList"); if(!box)return; box.innerHTML="";
- defaultStageDraft.forEach((name,i)=>box.appendChild(makeStageRow(name,i,defaultStageDraft,renderDefaultStageEditor)));
+ defaultStageDraft.forEach((stage,i)=>box.appendChild(makeStageRow(stage,i,defaultStageDraft,renderDefaultStageEditor)));
  document.getElementById("defaultStageAdd").disabled=false;
 }
 
 
-function displayStageName(name,index){
-  const value=String(name??"").trim();
-  if(value)return value;
-  return languageSettings?.language==="en"?"New Stage":"新しい工程";
-}
+function displayStageName(stage){return stageLabel(stage)}
 function renderDynamicTableHead(){
   const head=document.getElementById("tableHead"); if(!head)return;
   document.documentElement.style.setProperty("--stage-count",String(stages.length));
-  head.innerHTML=`<div class="table-head-corner"></div>${stages.map((n,i)=>`<div class="head">${escapeStageHtml(displayStageName(n,i))}</div>`).join("")}`;
+  head.innerHTML=`<div class="table-head-corner"></div>${stages.map((n,i)=>`<div class="head">${escapeStageHtml(displayStageName(n))}</div>`).join("")}`;
   requestAnimationFrame(updateInitialTableCellSize);
 }
 

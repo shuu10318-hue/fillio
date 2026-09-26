@@ -19,23 +19,46 @@ function saveProjectStageValueModes(){return safeStorageSet(STAGE_VALUE_MODE_KEY
 let appSettings=null;
 let languageSettings={language:"ja"};
 let projectDefaults={pages:48,stages:[]};
-const DATA_VERSION=2;
-const BACKUP_VERSION=2;
+const DATA_VERSION=3;
+const BACKUP_VERSION=3;
 const PROJECT_PAGE_MAX=500;
 let projectStore={version:DATA_VERSION,activeProjectId:null,projects:{}};
 let currentProjectId=null;
-const DEFAULT_STAGES=["ネーム","ペン","背景","トーン","写植"];
-const MAX_STAGES=100;
-
-const UI_TEXT={
- ja:{home:"Library",newProject:"＋ プロジェクト",settings:"アプリ設定",language:"言語",defaults:"新規プロジェクトのデフォルト",pages:"制作ページ",stages:"工程",addStage:"＋ 工程を追加",cancel:"キャンセル",save:"保存",note:"新しいプロジェクトを作るときの初期値です。プロジェクトごとに変更できます。",folderAdd:"＋ フォルダ",memo:"メモ一覧",backProjects:"作品一覧"},
- en:{home:"Library",newProject:"+ Project",settings:"App Settings",language:"Language",defaults:"New Project Defaults",pages:"Pages",stages:"Stages",addStage:"+ Add Stage",cancel:"Cancel",save:"Save",note:"These are the initial values for new projects. Each project can be changed separately.",folderAdd:"+ Folder",memo:"Notes",backProjects:"Projects"}
+const DEFAULT_STAGE_LABELS={
+ ja:{storyboard:"ネーム",lineArt:"ペン",background:"背景",tone:"トーン",lettering:"写植"},
+ en:{storyboard:"Storyboard",lineArt:"Line Art",background:"Background",tone:"Tone",lettering:"Lettering"}
 };
+const DEFAULT_STAGE_KEYS=Object.keys(DEFAULT_STAGE_LABELS.ja);
+const DEFAULT_STAGES=DEFAULT_STAGE_KEYS.map(defaultKey=>({defaultKey}));
+const MAX_STAGES=100;
+function cloneStage(stage){return stage?.defaultKey?{defaultKey:stage.defaultKey}:{name:String(stage?.name??"")}}
+function cloneStages(list){return (list||[]).map(cloneStage)}
+function normalizeStage(stage){
+ if(stage&&typeof stage==="object"){
+   if(DEFAULT_STAGE_KEYS.includes(stage.defaultKey))return {defaultKey:stage.defaultKey};
+   return {name:String(stage.name??"").trim()};
+ }
+ const name=String(stage??"").trim();
+ for(const lang of ["ja","en"]){
+   const key=DEFAULT_STAGE_KEYS.find(k=>DEFAULT_STAGE_LABELS[lang][k]===name);
+   if(key)return {defaultKey:key};
+ }
+ return {name};
+}
+function normalizeStages(list){
+ const out=Array.isArray(list)?list.slice(0,MAX_STAGES).map(normalizeStage):[];
+ return out.length?out:cloneStages(DEFAULT_STAGES);
+}
+function stageLabel(stage,lang=languageSettings?.language||"ja"){
+ if(stage?.defaultKey)return DEFAULT_STAGE_LABELS[lang]?.[stage.defaultKey]||DEFAULT_STAGE_LABELS.ja[stage.defaultKey]||"";
+ const name=String(stage?.name??"").trim();
+ return name||(lang==="en"?"New Stage":"新しい工程");
+}
+
 function normalizeAppSettings(raw){
  const lang=raw?.language==="en"?"en":"ja";
  const pages=Math.max(1,Math.min(PROJECT_PAGE_MAX,Number(raw?.defaultPages)||48));
- let ss=Array.isArray(raw?.defaultStages)?raw.defaultStages.map(x=>String(x||"").trim()).filter(Boolean).slice(0,MAX_STAGES):[];
- if(!ss.length)ss=[...DEFAULT_STAGES];
+ let ss=normalizeStages(raw?.defaultStages);
  const allowedColors=["#222222","#d9788d","#6e9fd0","#70ad98","#9a83c6","#dc9878","#d6b94c","#d86f67","#7656a8"];
  const requested=raw?.themeColor ?? appSettings?.themeColor;
  const themeColor=allowedColors.includes(requested)?requested:"#222222";
@@ -49,7 +72,7 @@ function syncSplitSettings(){
  languageSettings={language:appSettings?.language==="en"?"en":"ja"};
  projectDefaults={
    pages:appSettings?.defaultPages||48,
-   stages:[...(appSettings?.defaultStages||DEFAULT_STAGES)]
+   stages:cloneStages(appSettings?.defaultStages||DEFAULT_STAGES)
  };
 }
 function loadAppSettings(){
@@ -93,12 +116,4 @@ function applyThemeColor(color=appSettings?.themeColor||"#222222"){
    const on=b.dataset.themeColor===color;b.classList.toggle("selected",on);b.setAttribute("aria-checked",on?"true":"false");
  });
 }
-function applyLanguage(){
- const t=UI_TEXT[languageSettings.language]||UI_TEXT.ja;
- document.documentElement.lang=languageSettings.language;
- const set=(id,s)=>{const e=document.getElementById(id);if(e)e.textContent=s};
- set("homeTitle",t.home); set("newProjectButton",t.newProject); set("settingsTitle",t.settings);
- set("settingsLanguageLabel",t.language);set("settingsDefaultsTitle",t.defaults);set("settingsPagesLabel",t.pages);
- set("settingsStagesLabel",t.stages);set("defaultStageAdd",t.addStage);set("settingsCancel",t.cancel);set("settingsSave",t.save);set("settingsNote",t.note);
- set("folderAdd",t.folderAdd);const memoLabel=document.querySelector("#memoListButton .memo-list-label");if(memoLabel)memoLabel.textContent=t.memo;set("backToProjects",t.backProjects);
-}
+

@@ -43,7 +43,7 @@ function makeProjectData(){
     deadline:current.deadline||"",
     totalPages,
     progress:progress.map(r=>[...r]),
-    stages:[...stages],
+    stages:cloneStages(stages),
     history:JSON.parse(JSON.stringify(history)),
     pageNotes:JSON.parse(JSON.stringify(pageNotes))
   };
@@ -51,7 +51,7 @@ function makeProjectData(){
 function freshProjectData(title="新しいプロジェクト",pages=1){
   const n=Math.max(1,Math.min(PROJECT_PAGE_MAX,pages));
   return {
-    title,creationStartDate:localDate(),deadline:"",totalPages:n,progress:createProgress(n),stages:[...DEFAULT_STAGES],folderId:null,
+    title,creationStartDate:localDate(),deadline:"",totalPages:n,progress:createProgress(n),stages:cloneStages(DEFAULT_STAGES),folderId:null,
     history:{day:localDate(),baselineDone:0,baselineWeighted:0,weightedDays:{},days:{}},
     pageNotes:{}
   };
@@ -78,9 +78,7 @@ function save(){
 }
 function normalizeProjectData(s){
   let n=Number.isInteger(s?.totalPages)&&s.totalPages>0?Math.min(PROJECT_PAGE_MAX,s.totalPages):48;
-const projectStages=Array.isArray(s?.stages)&&s.stages.length
-    ? s.stages.map(x=>String(x??"").trim()).slice(0,MAX_STAGES)
-    : [...DEFAULT_STAGES];
+const projectStages=normalizeStages(s?.stages);
   let pg=Array.from({length:n},(_,p)=>Array.from({length:projectStages.length},(_,i)=>[0,1,2].includes(s?.progress?.[p]?.[i])?s.progress[p][i]:0));
   return {
     title:typeof s?.title==="string"?s.title:"",
@@ -122,7 +120,7 @@ function applyProjectData(s){
   const p=normalizeProjectData(s);
   totalPages=p.totalPages;
   progress=p.progress;
-  stages=[...(p.stages||DEFAULT_STAGES)];
+  stages=cloneStages(p.stages||DEFAULT_STAGES);
   pageNotes=p.pageNotes;
   const currentTitleEl=document.getElementById("currentProjectTitle");
   if(currentTitleEl)currentTitleEl.textContent=p.title;

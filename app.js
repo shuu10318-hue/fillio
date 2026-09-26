@@ -30,7 +30,7 @@ applyDisplayMode();
 const pages=document.getElementById("pages");
 const range=document.getElementById("range");
 
-let stages=[...DEFAULT_STAGES];
+let stages=cloneStages(DEFAULT_STAGES);
 let totalPages=48,progress=createProgress(48);
 let history={day:"",baselineDone:0,days:{}};
 let pageNotes={};
@@ -486,7 +486,7 @@ function closeAppSettings(){
 
 document.getElementById("settingsCancel").onclick=closeAppSettings;
 document.getElementById("appSettingsModal").onclick=e=>{if(e.target.id==="appSettingsModal")closeAppSettings()};
-document.getElementById("defaultStageAdd").onclick=()=>{if(defaultStageDraft.length>=MAX_STAGES){alert(languageSettings?.language==="en"?`Up to ${MAX_STAGES} stages.`:`工程は最大${MAX_STAGES}個までです。`);return}defaultStageDraft.push(languageSettings.language==="en"?"New Stage":"新しい工程");renderDefaultStageEditor()};
+document.getElementById("defaultStageAdd").onclick=()=>{if(defaultStageDraft.length>=MAX_STAGES){alert(languageSettings?.language==="en"?`Up to ${MAX_STAGES} stages.`:`工程は最大${MAX_STAGES}個までです。`);return}defaultStageDraft.push({name:""});renderDefaultStageEditor()};
 
 
 
@@ -628,9 +628,6 @@ const FULL_I18N={
  "工程マスを約0.5秒長押しし、上下または左右になぞると範囲をプレビューできます。指を離すと確定します。振動したら開始です。":"Long-press a stage cell for about 0.5 seconds, then slide vertically or horizontally to preview the range. Release to apply it. It starts when the device vibrates.",
  "そのページに付箋メモを付けられます。赤・黄・青・緑で分類でき、「メモ一覧」から絞り込みやページ移動もできます。":"Add a note to a page and classify it by red, yellow, blue or green. Filter notes and jump to pages from Notes.",
  }};
-const JA_STAGE_DEFAULTS=["ネーム","ペン","背景","トーン","写植"];
-const EN_STAGE_DEFAULTS=["Storyboard","Line Art","Background","Tone","Lettering"];
-function uiLang(){return languageSettings?.language==="en"?"en":"ja"}
 function translateExactText(root=document){
  if(uiLang()!=="en")return;
  const map=FULL_I18N.en;
@@ -777,7 +774,7 @@ document.getElementById("languageModal").onclick=e=>{if(e.target.id==="languageM
 document.getElementById("appSettingsButton").onclick=()=>{
  refreshSettingsLanguage();
  document.getElementById("defaultPages").value=clampPageCount(projectDefaults.pages);
- defaultStageDraft=[...projectDefaults.stages];
+ defaultStageDraft=cloneStages(projectDefaults.stages);
  renderDefaultStageEditor();
  localizeDefaultsSettingsUi();
  lockPageScroll();
@@ -785,12 +782,12 @@ document.getElementById("appSettingsButton").onclick=()=>{
 };
 document.getElementById("settingsSave").onclick=()=>{
  const b=clampPageCount(document.getElementById("defaultPages").value);
- const ss=defaultStageDraft.map(x=>String(x||"").trim()).filter(Boolean);
+ const ss=defaultStageDraft.map(normalizeStage);
  if(!ss.length)return;
  appSettings=normalizeAppSettings({
    language:languageSettings.language,
    defaultPages:b,
-   defaultStages:ss
+   defaultStages:cloneStages(ss)
  });
  persistAppSettings();
  document.getElementById("appSettingsModal").classList.remove("open");
@@ -814,7 +811,7 @@ if(defaultStageReset){
      ?"Reset the default stages for new projects?\nExisting projects will not be affected."
      :"新規プロジェクト用の工程を初期設定に戻しますか？\n既存の作品には影響しません。");
    if(!ok)return;
-   defaultStageDraft=[...(en?EN_STAGE_DEFAULTS:JA_STAGE_DEFAULTS)];
+   defaultStageDraft=cloneStages(DEFAULT_STAGES);
    renderDefaultStageEditor();
  };
 }
@@ -836,30 +833,14 @@ function localizeDefaultsSettingsUi(){
  set("settingsCancel","キャンセル","Cancel");
  set("settingsSave","保存","Save");
 }
-function stockStageSet(arr,set){return arr.length===set.length&&arr.every((x,i)=>x===set[i])}
-function syncStockDefaultsToLanguage(){
- let ss=[...projectDefaults.stages];
- if(languageSettings.language==="en"&&stockStageSet(ss,JA_STAGE_DEFAULTS))ss=[...EN_STAGE_DEFAULTS];
- if(languageSettings.language==="ja"&&stockStageSet(ss,EN_STAGE_DEFAULTS))ss=[...JA_STAGE_DEFAULTS];
- if(!stockStageSet(ss,projectDefaults.stages)){
-   appSettings=normalizeAppSettings({
-     language:languageSettings.language,
-     defaultPages:projectDefaults.pages,
-     defaultStages:ss
-   });
-   persistAppSettings();
- }
-}
 function refreshSettingsLanguage(){
- syncStockDefaultsToLanguage();
  localizeDefaultsSettingsUi();
  if(document.getElementById("appSettingsModal").classList.contains("open")){
-   defaultStageDraft=[...projectDefaults.stages];
+   defaultStageDraft=cloneStages(projectDefaults.stages);
    renderDefaultStageEditor();
  }
 }
-setTimeout(()=>{syncStockDefaultsToLanguage();localizeDefaultsSettingsUi()},0);
-
+setTimeout(()=>localizeDefaultsSettingsUi(),0);
 
 
 /* ---- Folder rendering + localized default stage names ---- */
@@ -997,7 +978,7 @@ document.querySelectorAll(".language-option").forEach(btn=>{
    appSettings=normalizeAppSettings({
      language:selected,
      defaultPages:projectDefaults.pages,
-     defaultStages:[...projectDefaults.stages]
+     defaultStages:cloneStages(projectDefaults.stages)
    });
    persistAppSettings();
    location.reload();
@@ -1010,7 +991,7 @@ document.querySelectorAll(".language-option").forEach(btn=>{
 function localizeNoColorSwatch(){
  const el=document.querySelector(".color-pick-none");
  if(!el)return;
- const label=uiLang()==="en"?"No color":"色なし";
+ const label=t("color.none");
  el.setAttribute("aria-label",label);
  el.setAttribute("title",label);
 }
@@ -1019,16 +1000,16 @@ function localizeOpenUi(){
  const en=uiLang()==="en";
  const set=(sel,ja,enText)=>{const el=document.querySelector(sel);if(el)el.textContent=en?enText:ja};
  const ph=(sel,ja,enText)=>{const el=document.querySelector(sel);if(el)el.placeholder=en?enText:ja};
- set("#memoListModal .memo-head h2","メモ一覧","Notes");
- {const el=document.querySelector("#closeMemoList");if(el){el.textContent="×";el.setAttribute("aria-label",en?"Close":"閉じる");}}
+ set("#memoListModal .memo-head h2",t("notes.title"),t("notes.title"));
+ {const el=document.querySelector("#closeMemoList");if(el){el.textContent="×";el.setAttribute("aria-label",t("common.close"));}}
  const filters=[["all","すべて","All"],["none","無色","No color"],["#f4a6a6","赤","Red"],["#f4dc8a","黄","Yellow"],["#9ec8f4","青","Blue"],["#a9ddb0","緑","Green"]];
  filters.forEach(([key,ja,enText])=>{const el=document.querySelector(`.memo-filter[data-filter="${key}"]`);if(el)el.textContent=en?enText:ja});
- set("#stickyLabelCaption","ラベル","Label");
- ph("#stickyLabel","表紙・扉・あとがき など","Cover, Title, After, etc.");
- ph("#stickyText","修正点・忘れたくないことなど","Corrections, reminders, etc.");
- ph("#stickyTodoInput","チェック項目を追加","Add checklist item");
- set("#stickyDelete","付箋を削除","Delete Note");
- set("#stickySave","保存","Save");
+ set("#stickyLabelCaption",t("memo.label"),t("memo.label"));
+ ph("#stickyLabel",t("memo.labelPlaceholder"),t("memo.labelPlaceholder"));
+ ph("#stickyText",t("memo.textPlaceholder"),t("memo.textPlaceholder"));
+ ph("#stickyTodoInput",t("memo.todoPlaceholder"),t("memo.todoPlaceholder"));
+ set("#stickyDelete",t("memo.delete"),t("memo.delete"));
+ set("#stickySave",t("common.save"),t("common.save"));
  // fixed UI in any currently open JS modal is normalized on every call.
  document.querySelectorAll('.project-modal.open,.folder-modal.open,.memo-modal.open,.sticky-modal.open').forEach(root=>{
    if(en){translateExactText(root);translateUiPatterns(root)}
@@ -1108,11 +1089,11 @@ setTimeout(()=>auditDynamicUiLanguage(document),0);
  const isEn=()=>languageSettings?.language==="en";
  const closeMenu=()=>{menu.classList.remove("open");toggle.setAttribute("aria-expanded","false")};
  const syncLabels=()=>{
-   toggle.setAttribute("aria-label",isEn()?"Create":"作成");
-   trashBtn?.setAttribute("aria-label",isEn()?"Trash":"ゴミ箱");
+   toggle.setAttribute("aria-label",t("create.label"));
+   trashBtn?.setAttribute("aria-label",t("trash.title"));
    const p=projectBtn.querySelector("span"),f=folderBtn.querySelector("span");
-   if(p)p.textContent=isEn()?"New Project":"新しいプロジェクト";
-   if(f)f.textContent=isEn()?"New Folder":"新しいフォルダ";
+   if(p)p.textContent=t("create.project");
+   if(f)f.textContent=t("create.folder");
    // One-level folder model: creating another folder while inside one is not available.
    folderBtn.style.display=(typeof currentFolderId!=="undefined"&&currentFolderId)?"none":"flex";
  };
@@ -1122,7 +1103,6 @@ setTimeout(()=>auditDynamicUiLanguage(document),0);
  folderBtn.addEventListener("click",closeMenu);
  document.addEventListener("click",closeMenu);
  document.addEventListener("keydown",e=>{if(e.key==="Escape")closeMenu()});
- const mo=new MutationObserver(syncLabels);mo.observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
  syncLabels();
 })();
 /* ===== /Unified create menu ===== */

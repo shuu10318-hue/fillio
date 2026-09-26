@@ -7,17 +7,17 @@ function escapeStageHtml(s){
 }
 function initStageDraft(p){
   const arr=Array.isArray(p?.stages)&&p.stages.length?p.stages:DEFAULT_STAGES;
-  stageDraft=[...arr];
+  stageDraft=cloneStages(arr);
   stageDraftMeta=arr.map((_,i)=>({originalIndex:i}));
 }
 function renderStageEditor(){
  const box=document.getElementById("stageEditorList"); if(!box)return; box.innerHTML="";
- stageDraft.forEach((name,i)=>box.appendChild(makeStageRow(name,i,stageDraft,renderStageEditor,stageDraftMeta)));
+ stageDraft.forEach((stage,i)=>box.appendChild(makeStageRow(stage,i,stageDraft,renderStageEditor,stageDraftMeta)));
  const add=document.getElementById("stageAddButton");if(add)add.disabled=false;
 }
 document.getElementById("stageAddButton")?.addEventListener("click",()=>{
   if(stageDraft.length>=MAX_STAGES){alert(languageSettings?.language==="en"?`Up to ${MAX_STAGES} stages.`:`工程は最大${MAX_STAGES}個までです。`);return}
-  stageDraft.push("");
+  stageDraft.push({name:""});
   stageDraftMeta.push({originalIndex:null});
   renderStageEditor();
 });
@@ -52,8 +52,8 @@ document.getElementById("saveEditProject").addEventListener("click",()=>{
   const p=projectStore.projects[editingProjectId];
   const newTotal=clampPageCount(document.getElementById("editProjectPages").value);
   const oldProgress=Array.isArray(p.progress)?p.progress:[];
-  const oldStages=Array.isArray(p.stages)&&p.stages.length?[...p.stages]:[...DEFAULT_STAGES];
-  const cleanedStages=stageDraft.map(x=>String(x??"").trim());
+  const oldStages=Array.isArray(p.stages)&&p.stages.length?cloneStages(p.stages):cloneStages(DEFAULT_STAGES);
+  const cleanedStages=stageDraft.map(normalizeStage);
   // Each draft item carries its original column index, so rename/reorder preserves the exact progress column.
   const mapping=stageDraftMeta.map(x=>x.originalIndex);
   p.stages=cleanedStages;

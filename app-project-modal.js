@@ -1,13 +1,13 @@
 // Fillio — New project modal controller
 // Kept separate from Library drag/drop and Stage editing logic.
 
-let newProjectStageDraft=[...DEFAULT_STAGES];
+let newProjectStageDraft=cloneStages(DEFAULT_STAGES);
 
 function renderNewProjectStageEditor(){
   const box=document.getElementById("newStageEditorList");
   if(!box)return;
   box.innerHTML="";
-  newProjectStageDraft.forEach((name,i)=>box.appendChild(makeStageRow(name,i,newProjectStageDraft,renderNewProjectStageEditor)));
+  newProjectStageDraft.forEach((stage,i)=>box.appendChild(makeStageRow(stage,i,newProjectStageDraft,renderNewProjectStageEditor)));
   document.getElementById("newStageAddButton").disabled=false;
 }
 
@@ -20,7 +20,7 @@ document.getElementById("newStageAddButton").addEventListener("click",()=>{
     alert(languageSettings?.language==="en"?`Up to ${MAX_STAGES} stages.`:`工程は最大${MAX_STAGES}個までです。`);
     return;
   }
-  newProjectStageDraft.push("");
+  newProjectStageDraft.push({name:""});
   renderNewProjectStageEditor();
 });
 
@@ -28,7 +28,7 @@ document.getElementById("newProjectButton").onclick=()=>{
   document.getElementById("newProjectTitle").value="";
   document.getElementById("newProjectPages").value=clampPageCount(projectDefaults.pages);
   document.getElementById("newProjectDeadline").value="";
-  newProjectStageDraft=[...projectDefaults.stages];
+  newProjectStageDraft=cloneStages(projectDefaults.stages);
   renderNewProjectStageEditor();
   lockPageScroll();
   document.getElementById("projectModal").classList.add("open");
@@ -50,7 +50,7 @@ document.getElementById("createNewProject").onclick=()=>{
   projectStore.projects[id]=freshProjectData(title,pages);
   // フォルダ内から作成した場合は、そのフォルダに所属させる
   projectStore.projects[id].folderId=currentFolderId||null;
-  const newStages=newProjectStageDraft.map(x=>String(x??"").trim());
+  const newStages=newProjectStageDraft.map(normalizeStage);
   projectStore.projects[id].stages=newStages;
   projectStore.projects[id].progress=Array.from({length:pages},()=>Array(newStages.length).fill(0));
   projectStore.projects[id].deadline=document.getElementById("newProjectDeadline").value||"";

@@ -47,7 +47,7 @@ function projectStageStats(p){
     const total=Math.max(1,vals.length);
     const started=vals.filter(v=>v>0).length;
     const done=vals.filter(v=>v===2).length;
-    return {name:String(name||""),startedPct:Math.round(started/total*100),pct:Math.round(done/total*100),done,total};
+    return {name:stageLabel(name),startedPct:Math.round(started/total*100),pct:Math.round(done/total*100),done,total};
   });
 }
 
