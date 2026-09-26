@@ -95,7 +95,6 @@ function applyDisplayMode(mode=appSettings?.displayMode||"light"){
  document.querySelectorAll(".display-mode-option").forEach(b=>{const on=b.dataset.displayMode===mode;b.classList.toggle("selected",on);b.setAttribute("aria-checked",on?"true":"false")});
  const meta=document.querySelector('meta[name="theme-color"]');
  if(meta)meta.content=resolved==="dark"?"#151515":"#f6f6f6";
- applyThemeColor(appSettings?.themeColor||"#222222");
 }
 const fillioColorSchemeQuery=window.matchMedia?.("(prefers-color-scheme: dark)");
 fillioColorSchemeQuery?.addEventListener?.("change",()=>{if(appSettings?.displayMode==="auto")applyDisplayMode("auto")});
@@ -110,8 +109,7 @@ function applyCellShape(shape=appSettings?.cellShape||"rounded"){
 
 function applyThemeColor(color=appSettings?.themeColor||"#222222"){
  const mono=color==="#222222";
- const effectiveAccent=mono&&resolvedDisplayMode()==="dark"?"#f2f3f4":color;
- document.documentElement.style.setProperty("--accent",effectiveAccent);
+ document.documentElement.style.setProperty("--accent",color);
  document.documentElement.dataset.theme=mono?"mono":"color";
  const meta=document.querySelector('meta[name="theme-color"]');
  if(meta && resolvedDisplayMode()!=="dark") meta.content="#f6f6f6";
