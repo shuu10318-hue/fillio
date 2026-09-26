@@ -1152,3 +1152,129 @@ body.library-drag-active .drag-trash-zone.over{
 .memo-page.has-page-label{font-size:10px;line-height:1.1;overflow-wrap:anywhere}
 @media(max-width:360px){:root{--progress-page-col:36px}.prototype-input-card{margin-left:-7px;width:calc(100% + 7px)}}
 \n\n/* v62: display mode */\n.display-mode-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}\n.display-mode-option{min-height:48px;border:1px solid var(--border);border-radius:12px;background:var(--card);font-weight:700}\n.display-mode-option.selected{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)}\n:root[data-display-mode="dark"]{--bg:#151515;--card:#202020;--text:#f1f1f1;--muted:#a6a6a6;--border:#3a3a3a;--soft:#303030;--started:#777}\n:root[data-display-mode="dark"] body{background:var(--bg);color:var(--text)}\n:root[data-display-mode="dark"] .card,\n:root[data-display-mode="dark"] .project-card,\n:root[data-display-mode="dark"] .folder-card,\n:root[data-display-mode="dark"] .project-sheet,\n:root[data-display-mode="dark"] .settings-sheet,\n:root[data-display-mode="dark"] .help-sheet,\n:root[data-display-mode="dark"] .memo-sheet,\n:root[data-display-mode="dark"] .sticky-sheet,\n:root[data-display-mode="dark"] .trash-sheet{background:var(--card);color:var(--text)}\n:root[data-display-mode="dark"] input,\n:root[data-display-mode="dark"] textarea,\n:root[data-display-mode="dark"] select,\n:root[data-display-mode="dark"] .page-button,\n:root[data-display-mode="dark"] .nav-button,\n:root[data-display-mode="dark"] .backup-button,\n:root[data-display-mode="dark"] .sticky-delete,\n:root[data-display-mode="dark"] .settings-button,\n:root[data-display-mode="dark"] .memo-list-button,\n:root[data-display-mode="dark"] #themeColorPicker .theme-color-option,\n:root[data-display-mode="dark"] .display-mode-option{background:#262626;color:var(--text);border-color:var(--border)}\n:root[data-display-mode="dark"] .progress-cell{background:#f3f3f3;border-color:#555}\n:root[data-display-mode="dark"] .progress-cell.state1{background:var(--started)}\n:root[data-display-mode="dark"] .progress-cell.state2{background:#222;border-color:#666;color:#fff}\n:root[data-display-mode="dark"] .memo-item,\n:root[data-display-mode="dark"] .memo-row{background:#242424;border-color:var(--border)}\n:root[data-display-mode="dark"] .memo-filter{background:#262626;color:var(--text);border-color:var(--border)}\n:root[data-display-mode="dark"] .memo-filter.active{background:#f1f1f1;color:#191919;border-color:#f1f1f1}\n:root[data-display-mode="dark"] .create-menu{background:#262626;border-color:var(--border)}\n:root[data-display-mode="dark"] .create-menu button{background:#262626;color:var(--text)}\n:root[data-display-mode="dark"] .history-stat{background:#292929}\n:root[data-display-mode="dark"] .fillio-logo{filter:invert(1)}\n
+/* ===== v63: full dark appearance + segmented display control ===== */
+.display-mode-picker{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:0;
+  padding:3px;
+  margin-top:10px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:var(--soft);
+}
+.display-mode-option{
+  min-height:42px;
+  border:0!important;
+  border-radius:10px;
+  background:transparent!important;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:750;
+  box-shadow:none!important;
+}
+.display-mode-option.selected{
+  background:var(--card)!important;
+  color:var(--text);
+  box-shadow:0 1px 4px rgba(0,0,0,.12)!important;
+}
+
+/* Keep this block after the color-theme rules: appearance must win over tinting. */
+:root[data-display-mode="dark"]{
+  color-scheme:dark;
+  --bg:#101112;
+  --card:#1b1c1e;
+  --text:#f1f1f1;
+  --muted:#989b9f;
+  --border:#34363a;
+  --soft:#26282b;
+  --started:#85888d;
+}
+:root[data-display-mode="dark"] body,
+:root[data-display-mode="dark"] #projectHome,
+:root[data-display-mode="dark"] #editorApp{background:var(--bg)!important;color:var(--text)!important}
+
+:root[data-display-mode="dark"] .card,
+:root[data-display-mode="dark"] .project-item,
+:root[data-display-mode="dark"] .project-card,
+:root[data-display-mode="dark"] .folder-item,
+:root[data-display-mode="dark"] .folder-card,
+:root[data-display-mode="dark"] .project-empty,
+:root[data-display-mode="dark"] .project-sheet,
+:root[data-display-mode="dark"] .settings-sheet,
+:root[data-display-mode="dark"] .help-sheet,
+:root[data-display-mode="dark"] .memo-sheet,
+:root[data-display-mode="dark"] .sticky-sheet,
+:root[data-display-mode="dark"] .folder-sheet,
+:root[data-display-mode="dark"] .trash-sheet,
+:root[data-display-mode="dark"] .language-sheet{background:var(--card)!important;color:var(--text)!important;border-color:var(--border)!important}
+
+:root[data-display-mode="dark"] input:not([type="checkbox"]):not([type="radio"]),
+:root[data-display-mode="dark"] textarea,
+:root[data-display-mode="dark"] select,
+:root[data-display-mode="dark"] .page-select,
+:root[data-display-mode="dark"] .page-step-value{background:#202225!important;color:var(--text)!important;border-color:var(--border)!important;color-scheme:dark}
+
+:root[data-display-mode="dark"] .settings-button,
+:root[data-display-mode="dark"] .memo-list-button,
+:root[data-display-mode="dark"] .page-button,
+:root[data-display-mode="dark"] .nav-button,
+:root[data-display-mode="dark"] .backup-button,
+:root[data-display-mode="dark"] .project-list-button,
+:root[data-display-mode="dark"] .project-open-button,
+:root[data-display-mode="dark"] .project-edit-button,
+:root[data-display-mode="dark"] .folder-add,
+:root[data-display-mode="dark"] .folder-open,
+:root[data-display-mode="dark"] .folder-back,
+:root[data-display-mode="dark"] .folder-rename,
+:root[data-display-mode="dark"] .folder-sheet-actions button,
+:root[data-display-mode="dark"] .stage-mini-button,
+:root[data-display-mode="dark"] .stage-add-button,
+:root[data-display-mode="dark"] .default-stage-reset,
+:root[data-display-mode="dark"] .page-step-button,
+:root[data-display-mode="dark"] .date-clear-button,
+:root[data-display-mode="dark"] .sticky-delete,
+:root[data-display-mode="dark"] .sticky-todo-add button,
+:root[data-display-mode="dark"] .trash-item-actions button,
+:root[data-display-mode="dark"] .trash-empty-button,
+:root[data-display-mode="dark"] #themeColorPicker .theme-color-option{
+  background:#202225!important;color:var(--text)!important;border-color:var(--border)!important
+}
+
+:root[data-display-mode="dark"] .display-mode-picker{background:#111214;border-color:#34363a}
+:root[data-display-mode="dark"] .display-mode-option{background:transparent!important;color:#999da2!important}
+:root[data-display-mode="dark"] .display-mode-option.selected{background:#303237!important;color:#fff!important;box-shadow:0 1px 5px rgba(0,0,0,.45)!important}
+
+:root[data-display-mode="dark"] .create-menu{background:#202225!important;border-color:var(--border)!important;box-shadow:0 12px 34px rgba(0,0,0,.45)}
+:root[data-display-mode="dark"] .create-menu button{background:transparent!important;color:var(--text)!important}
+:root[data-display-mode="dark"] .memo-item,
+:root[data-display-mode="dark"] .memo-row,
+:root[data-display-mode="dark"] .sticky-todo-item,
+:root[data-display-mode="dark"] .trash-item{background:#202225!important;border-color:var(--border)!important}
+:root[data-display-mode="dark"] .history-stat,
+:root[data-display-mode="dark"] .project-stat,
+:root[data-display-mode="dark"] .project-dashboard-strip>div{background:#232529!important}
+:root[data-display-mode="dark"] .dual-bar{background:#303237!important}
+:root[data-display-mode="dark"] .memo-filter{background:#202225!important;color:var(--text)!important;border-color:var(--border)!important}
+:root[data-display-mode="dark"] .memo-filter.active{background:var(--accent)!important;color:#fff!important;border-color:var(--accent)!important}
+:root[data-display-mode="dark"] .memo-page.no-color{background:#202225!important;color:var(--text)!important;border-color:var(--border)!important}
+
+/* Progress semantics reverse in dark mode: unstarted dark -> started mid -> done light. */
+:root[data-display-mode="dark"] #pages .progress-cell,
+:root[data-display-mode="dark"] .progress-cell{background:#242629!important;border-color:#414348!important;color:#f1f1f1!important}
+:root[data-display-mode="dark"] #pages .progress-cell.state1,
+:root[data-display-mode="dark"] .progress-cell.state1{background:#85888d!important;border-color:#85888d!important;color:#111!important}
+:root[data-display-mode="dark"] #pages .progress-cell.state2,
+:root[data-display-mode="dark"] .progress-cell.state2{background:#ececed!important;border-color:#ececed!important;color:#151515!important}
+:root[data-display-mode="dark"] .state-swatch{background:#242629!important;border-color:#55585d!important}
+:root[data-display-mode="dark"] .state-swatch.started,
+:root[data-display-mode="dark"] .help-swatch.started{background:#85888d!important;border-color:#85888d!important}
+:root[data-display-mode="dark"] .state-swatch.done,
+:root[data-display-mode="dark"] .help-swatch.done{background:#ececed!important;border-color:#ececed!important}
+
+:root[data-display-mode="dark"] .table-head-anchor,
+:root[data-display-mode="dark"] .table-head,
+:root[data-display-mode="dark"] .page-number{background:var(--card)!important}
+:root[data-display-mode="dark"] .fillio-logo{filter:invert(1)!important}
+:root[data-display-mode="dark"] .sticky-save,
+:root[data-display-mode="dark"] .project-create-button{background:#ececed!important;color:#151515!important;border-color:#ececed!important}
