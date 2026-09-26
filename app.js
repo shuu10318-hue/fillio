@@ -614,7 +614,7 @@ function renderMemoList(){
     const del=document.createElement("button");
     del.className="memo-delete";
     del.type="button";
-    del.textContent="🗑";
+    del.innerHTML='<svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg>';
     del.setAttribute("aria-label",uiLang()==="en"?"Delete note":"付箋を削除");
     del.title=uiLang()==="en"?"Delete note":"付箋を削除";
     del.onclick=()=>{

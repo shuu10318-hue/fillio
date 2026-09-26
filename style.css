@@ -128,12 +128,12 @@ button.state-done{
 .memo-filter{border:1px solid var(--border);background:#fff;border-radius:999px;padding:7px 11px;font-size:11px;font-weight:700}
 .memo-filter.active{background:#222;color:#fff;border-color:#222}
 
-.memo-item{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;border:1px solid var(--border);border-radius:12px;padding:10px;margin-bottom:8px;background:#fff}
+.memo-item{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:start;border:1px solid var(--border);border-radius:12px;padding:10px;margin-bottom:8px;background:#fff}
 .memo-page{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;border:1px solid rgba(0,0,0,.08)}
 .memo-text{font-size:12px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
-.memo-actions{display:flex;align-items:center;gap:5px}
+.memo-actions{display:flex;align-items:flex-start;gap:5px}
 .memo-jump{border:0;background:#f1f1f1;border-radius:8px;padding:8px 10px;font-size:11px;font-weight:700}
-.memo-delete{width:30px;height:30px;border:0;background:transparent;border-radius:8px;padding:0;display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1;opacity:.62}
+.memo-delete{width:30px;height:30px;border:0;background:transparent;border-radius:8px;padding:0;display:flex;align-items:center;justify-content:center;color:var(--muted);line-height:1}.memo-delete .icon-line{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .memo-delete:active{background:#f1f1f1;opacity:1}
 .memo-empty{text-align:center;color:var(--muted);font-size:12px;padding:30px 10px}
 
