@@ -1179,3 +1179,15 @@ body.library-drag-active .drag-trash-zone.over{
 :root[data-display-mode="dark"] .project-progress-track.dual>.started{
   background:color-mix(in srgb,var(--accent) 14%,#a9adb2);
 }
+
+/* Dark mode: language choices use the same dark control surface as other pickers. */
+:root[data-display-mode="dark"] .language-option{
+  background:#202225;
+  color:var(--text);
+  border-color:var(--border);
+}
+:root[data-display-mode="dark"] .language-option.active{
+  background:var(--accent);
+  color:#fff;
+  border-color:var(--accent);
+}
