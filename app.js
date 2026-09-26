@@ -796,7 +796,7 @@ else window.addEventListener("load",restoreInitialView,{once:true});
 const FULL_I18N={
  en:{
  "作品一覧":"Projects","プロジェクト":"Projects","＋ プロジェクト":"+ Project","＋ 新しいプロジェクト":"+ New Project","＋ フォルダ":"+ Folder","← 戻る":"← Back","名前変更":"Rename","削除":"Delete",
- "漫画制作進捗":"Manga Production Tracker","メモ":"Notes","メモ一覧":"Notes","作品名":"Project title","制作ページ数":"Pages","制作ページ":"Pages",
+ "漫画制作進捗":"Manga Production Tracker","メモ一覧":"Notes","作品名":"Project title","制作ページ数":"Pages","制作ページ":"Pages",
  "作業開始日":"Start Date","締切予定日":"Deadline","総合進捗":"Overall Progress","制作進捗":"Overall Progress","工程別進捗":"Progress by Stage","工程表":"Production Table",
  "作業履歴":"Work History","今日":"Today","直近7日":"Last 7 days","1日平均":"Daily average","完成予想":"Estimated Completion",
  "← 前":"← Prev","次 →":"Next →","未着手":"Not started","着手中":"In progress","完成済み":"Completed","着手":"Started","完成":"Completed",
@@ -977,7 +977,7 @@ setTimeout(refreshWholeLanguage,0);
    Keep user-authored project/folder/stage/note text untouched.
    Re-render first, then localize fixed/dynamic UI in one direction. */
 const JA_STATIC_BY_ID={
-  memoListButton:"メモ",
+  memoListButton:"メモ一覧",
   settingsTitle:"アプリ設定",
   settingsDefaultsTitle:"新規プロジェクトのデフォルト",
   settingsPagesLabel:"制作ページ",
