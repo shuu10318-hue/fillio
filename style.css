@@ -5,7 +5,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,B
 h1{margin:0 0 20px;font-size:22px}
 .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:15px;margin-bottom:14px}
 .label{color:var(--muted);font-size:12px;margin-bottom:7px}
-input{width:100%;min-height:44px;border:1px solid var(--border);border-radius:9px;background:white;padding:0 11px;font-size:16px}
+input{width:100%;min-height:44px;border:1px solid var(--border);border-radius:9px;padding:0 11px;font-size:16px}
 .page-buttons{display:flex;gap:7px;flex-wrap:wrap}
 button{font:inherit;color:inherit}
 .page-button,.nav-button{min-height:42px;padding:0 14px;border:1px solid var(--border);border-radius:9px;background:white}
@@ -23,7 +23,7 @@ button{font:inherit;color:inherit}
 .table-head{margin-bottom:5px}.head{color:var(--muted);font-size:9px;line-height:1.15;text-align:center}
 .page-number{text-align:center;color:var(--muted);font-size:11px}.page-row{margin-bottom:4px}
 .progress-cell{height:39px;padding:0;border:1px solid var(--border);border-radius:6px;background:white;font-size:15px;font-weight:700}
-.progress-cell.state1{background:var(--started)}.progress-cell.state2{background:#222;color:white;border-color:#222}.progress-cell.paint-source{outline:2px solid #777;outline-offset:1px}
+.progress-cell.paint-source{outline:2px solid #777;outline-offset:1px}
 .table-toolbar{align-items:center;margin-bottom:10px}.range,.nav-page{color:var(--muted);font-size:12px}
 .navigation{align-items:center;margin-top:12px}.nav-button:disabled{opacity:.3}.saved{text-align:center;color:var(--muted);font-size:11px;margin-top:12px}
 .backup-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -68,8 +68,7 @@ button{font:inherit;color:inherit}
   vertical-align:-1px;
   border:1px solid #c9c9c9;
 }
-.state-swatch.started{background:var(--started);}
-.state-swatch.done{background:#171717;border-color:#171717;}
+
 
 button.state-started{
   background:var(--started) !important;
@@ -208,8 +207,7 @@ button.state-done{
 .help-states{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap}
 .help-state{display:flex;align-items:center;gap:6px;font-size:12px}
 .help-swatch{width:22px;height:22px;border:1px solid var(--border);border-radius:5px;background:#fff}
-.help-swatch.started{background:var(--started,#aaa)}
-.help-swatch.done{background:#222;border-color:#222}
+
 
 
 /* 作品カードは余白を長押しして直接並び替え */
@@ -562,7 +560,7 @@ input{border-color:var(--border);border-radius:12px}
 
 /* Table stays the main work surface, just softened */
 .progress-cell{border-color:#cfd2d6;border-radius:8px}
-.progress-cell.state2{background:var(--done);border-color:var(--done)}
+
 .table-head{margin-bottom:6px}
 .page-row{margin-bottom:5px}
 .navigation{margin-top:14px}
@@ -904,7 +902,7 @@ body.library-drag-active .drag-trash-zone.over{
 }
 
 /* Library help + theme color + long create sheet */
-.page-button.active,.progress-cell.state2{background:var(--accent)!important;border-color:var(--accent)!important}
+.page-button.active{background:var(--accent)!important;border-color:var(--accent)!important}
 .history-bar{background:var(--accent)}
 
 
@@ -946,12 +944,24 @@ body.library-drag-active .drag-trash-zone.over{
 #projectModal .modal-action-head{position:sticky;top:-18px;z-index:5;background:#fff;padding-top:18px;padding-bottom:10px;margin-bottom:4px}
 
 /* Theme color: apply the selected accent to progress/completion and selected UI states. */
-.progress-cell.state2,.page-button.active,.done-bar,.history-bar,.ring-key.done,
+.page-button.active,.done-bar,.history-bar,.ring-key.done,
 .memo-filter.active,.project-reorder-toggle.active,.language-option.active{
   background:var(--accent)!important;border-color:var(--accent)!important;
 }
-.state-swatch.done,.help-swatch.done{background:var(--accent)!important;border-color:var(--accent)!important}
 #themeColorPicker .theme-color-option.selected{border-color:var(--accent)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)!important}
+
+/* Progress cells: canonical state colors. Empty inherits the current surface. */
+:root{--cell-empty:transparent;--cell-mid:#aaa;--cell-done:#222;--cell-border:#cfd2d6;--cell-done-text:#fff}
+:root[data-theme="color"]{--cell-mid:color-mix(in srgb,var(--accent) 42%,#d7d7d7);--cell-done:var(--accent)}
+:root[data-display-mode="dark"]{--cell-mid:#777b80;--cell-done:#d9dbde;--cell-border:#414348}
+:root[data-display-mode="dark"][data-theme="mono"]{--cell-done-text:#151515}
+:root[data-display-mode="dark"][data-theme="color"]{--cell-mid:color-mix(in srgb,var(--accent) 58%,#70747a);--cell-done:var(--accent)}
+.progress-cell{background:var(--cell-empty);border-color:var(--cell-border);color:var(--text)}
+.progress-cell.state1{background:var(--cell-mid);border-color:var(--cell-mid);color:#222}
+.progress-cell.state2{background:var(--cell-done);border-color:var(--cell-done);color:var(--cell-done-text)}
+.state-swatch,.help-swatch{background:var(--cell-empty);border-color:var(--cell-border)}
+.state-swatch.started,.help-swatch.started{background:var(--cell-mid);border-color:var(--cell-mid)}
+.state-swatch.done,.help-swatch.done{background:var(--cell-done);border-color:var(--cell-done)}
 
 /* ===== Soft full-app themes 2026-09-23 ===== */
 
@@ -985,8 +995,6 @@ body.library-drag-active .drag-trash-zone.over{
 :root[data-theme="color"] .memo-list-button,
 :root[data-theme="color"] .stage-mini-button,
 :root[data-theme="color"] .backup-button{background:color-mix(in srgb,var(--accent) 3%,#fff)!important}
-:root[data-theme="color"] .progress-cell{border-color:color-mix(in srgb,var(--accent) 20%,#d7d7d7)}
-:root[data-theme="color"] .progress-cell.state1{background:color-mix(in srgb,var(--accent) 38%,#d7d7d7)!important}
 :root[data-theme="color"] .history-stat,
 :root[data-theme="color"] .project-stat{background:color-mix(in srgb,var(--accent) 7%,#f6f6f6)!important}
 :root[data-theme="color"] .dual-bar{background:color-mix(in srgb,var(--accent) 10%,#e9e9e9)!important}
@@ -1151,8 +1159,7 @@ body.library-drag-active .drag-trash-zone.over{
 #pages .page-number.has-page-label.page-label-long{font-size:8px;letter-spacing:-.2px}
 .memo-page.has-page-label{font-size:10px;line-height:1.1;overflow-wrap:anywhere}
 @media(max-width:360px){:root{--progress-page-col:36px}.prototype-input-card{margin-left:-7px;width:calc(100% + 7px)}}
-\n\n/* v62: display mode */\n.display-mode-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}\n.display-mode-option{min-height:48px;border:1px solid var(--border);border-radius:12px;background:var(--card);font-weight:700}\n.display-mode-option.selected{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 18%,transparent)}\n:root[data-display-mode="dark"]{--bg:#151515;--card:#202020;--text:#f1f1f1;--muted:#a6a6a6;--border:#3a3a3a;--soft:#303030;--started:#777}\n:root[data-display-mode="dark"] body{background:var(--bg);color:var(--text)}\n:root[data-display-mode="dark"] .card,\n:root[data-display-mode="dark"] .project-card,\n:root[data-display-mode="dark"] .folder-card,\n:root[data-display-mode="dark"] .project-sheet,\n:root[data-display-mode="dark"] .settings-sheet,\n:root[data-display-mode="dark"] .help-sheet,\n:root[data-display-mode="dark"] .memo-sheet,\n:root[data-display-mode="dark"] .sticky-sheet,\n:root[data-display-mode="dark"] .trash-sheet{background:var(--card);color:var(--text)}\n:root[data-display-mode="dark"] input,\n:root[data-display-mode="dark"] textarea,\n:root[data-display-mode="dark"] select,\n:root[data-display-mode="dark"] .page-button,\n:root[data-display-mode="dark"] .nav-button,\n:root[data-display-mode="dark"] .backup-button,\n:root[data-display-mode="dark"] .sticky-delete,\n:root[data-display-mode="dark"] .settings-button,\n:root[data-display-mode="dark"] .memo-list-button,\n:root[data-display-mode="dark"] #themeColorPicker .theme-color-option,\n:root[data-display-mode="dark"] .display-mode-option{background:#262626;color:var(--text);border-color:var(--border)}\n:root[data-display-mode="dark"] .progress-cell{background:#f3f3f3;border-color:#555}\n:root[data-display-mode="dark"] .progress-cell.state1{background:var(--started)}\n:root[data-display-mode="dark"] .progress-cell.state2{background:#222;border-color:#666;color:#fff}\n:root[data-display-mode="dark"] .memo-item,\n:root[data-display-mode="dark"] .memo-row{background:#242424;border-color:var(--border)}\n:root[data-display-mode="dark"] .memo-filter{background:#262626;color:var(--text);border-color:var(--border)}\n:root[data-display-mode="dark"] .memo-filter.active{background:#f1f1f1;color:#191919;border-color:#f1f1f1}\n:root[data-display-mode="dark"] .create-menu{background:#262626;border-color:var(--border)}\n:root[data-display-mode="dark"] .create-menu button{background:#262626;color:var(--text)}\n:root[data-display-mode="dark"] .history-stat{background:#292929}\n:root[data-display-mode="dark"] .fillio-logo{filter:invert(1)}\n
-/* ===== v63: full dark appearance + segmented display control ===== */
+/* ===== Appearance: display mode + dark surfaces ===== */
 .display-mode-picker{
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
@@ -1260,18 +1267,6 @@ body.library-drag-active .drag-trash-zone.over{
 :root[data-display-mode="dark"] .memo-page.no-color{background:#202225!important;color:var(--text)!important;border-color:var(--border)!important}
 
 /* Progress semantics reverse in dark mode: unstarted dark -> started mid -> done light. */
-:root[data-display-mode="dark"] #pages .progress-cell,
-:root[data-display-mode="dark"] .progress-cell{background:#242629!important;border-color:#414348!important;color:#f1f1f1!important}
-:root[data-display-mode="dark"] #pages .progress-cell.state1,
-:root[data-display-mode="dark"] .progress-cell.state1{background:#85888d!important;border-color:#85888d!important;color:#111!important}
-:root[data-display-mode="dark"] #pages .progress-cell.state2,
-:root[data-display-mode="dark"] .progress-cell.state2{background:#ececed!important;border-color:#ececed!important;color:#151515!important}
-:root[data-display-mode="dark"] .state-swatch{background:#242629!important;border-color:#55585d!important}
-:root[data-display-mode="dark"] .state-swatch.started,
-:root[data-display-mode="dark"] .help-swatch.started{background:#85888d!important;border-color:#85888d!important}
-:root[data-display-mode="dark"] .state-swatch.done,
-:root[data-display-mode="dark"] .help-swatch.done{background:#ececed!important;border-color:#ececed!important}
-
 :root[data-display-mode="dark"] .table-head-anchor,
 :root[data-display-mode="dark"] .table-head,
 :root[data-display-mode="dark"] .page-number{background:var(--card)!important}
@@ -1280,61 +1275,3 @@ body.library-drag-active .drag-trash-zone.over{
 :root[data-display-mode="dark"] .project-create-button{background:#ececed!important;color:#151515!important;border-color:#ececed!important}
 
 
-/* ===== v64: keep progress-state colors consistent across appearance modes ===== */
-:root[data-display-mode="dark"] #pages .progress-cell,
-:root[data-display-mode="dark"] .progress-cell{background:#fff!important;border-color:#cfd2d6!important;color:var(--text)!important}
-:root[data-display-mode="dark"] #pages .progress-cell.state1,
-:root[data-display-mode="dark"] .progress-cell.state1{background:var(--started)!important;border-color:#cfd2d6!important;color:#222!important}
-:root[data-display-mode="dark"][data-theme="color"] #pages .progress-cell.state1,
-:root[data-display-mode="dark"][data-theme="color"] .progress-cell.state1{background:color-mix(in srgb,var(--accent) 38%,#d7d7d7)!important}
-:root[data-display-mode="dark"] #pages .progress-cell.state2,
-:root[data-display-mode="dark"] .progress-cell.state2{background:var(--accent)!important;border-color:var(--accent)!important;color:#fff!important}
-:root[data-display-mode="dark"] .state-swatch,
-:root[data-display-mode="dark"] .help-swatch{background:#fff!important;border-color:#cfd2d6!important}
-:root[data-display-mode="dark"] .state-swatch.started,
-:root[data-display-mode="dark"] .help-swatch.started{background:var(--started)!important;border-color:#cfd2d6!important}
-:root[data-display-mode="dark"][data-theme="color"] .state-swatch.started,
-:root[data-display-mode="dark"][data-theme="color"] .help-swatch.started{background:color-mix(in srgb,var(--accent) 38%,#d7d7d7)!important}
-:root[data-display-mode="dark"] .state-swatch.done,
-:root[data-display-mode="dark"] .help-swatch.done{background:var(--accent)!important;border-color:var(--accent)!important}
-
-/* ===== v65: progress cells derive from surface + theme color ===== */
-:root{
-  --cell-empty:#fff;
-  --cell-mid:color-mix(in srgb,var(--accent) 38%,#d7d7d7);
-  --cell-done:var(--accent);
-  --cell-border:#cfd2d6;
-}
-:root[data-theme="mono"]{
-  --cell-mid:#aaa;
-  --cell-done:#222;
-}
-:root[data-display-mode="dark"]{
-  --cell-empty:#242629;
-  --cell-mid:color-mix(in srgb,var(--accent) 58%,#777b80);
-  --cell-done:var(--accent);
-  --cell-border:#414348;
-}
-/* Monochrome needs its own dark ramp so progress remains visible. */
-:root[data-display-mode="dark"][data-theme="mono"]{
-  --cell-mid:#85888d;
-  --cell-done:#e2e3e5;
-}
-#pages .progress-cell,.progress-cell{
-  background:var(--cell-empty)!important;
-  border-color:var(--cell-border)!important;
-}
-#pages .progress-cell.state1,.progress-cell.state1{
-  background:var(--cell-mid)!important;
-  border-color:var(--cell-mid)!important;
-}
-#pages .progress-cell.state2,.progress-cell.state2{
-  background:var(--cell-done)!important;
-  border-color:var(--cell-done)!important;
-  color:#fff!important;
-}
-:root[data-display-mode="dark"][data-theme="mono"] #pages .progress-cell.state2,
-:root[data-display-mode="dark"][data-theme="mono"] .progress-cell.state2{color:#151515!important}
-.state-swatch,.help-swatch{background:var(--cell-empty)!important;border-color:var(--cell-border)!important}
-.state-swatch.started,.help-swatch.started{background:var(--cell-mid)!important;border-color:var(--cell-mid)!important}
-.state-swatch.done,.help-swatch.done{background:var(--cell-done)!important;border-color:var(--cell-done)!important}

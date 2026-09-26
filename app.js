@@ -683,7 +683,6 @@ document.getElementById("settingsSave").onclick=()=>{
  closeAppSettings();
 };
 
-document.querySelectorAll(".theme-color-option").forEach(btn=>btn.addEventListener("click",()=>applyThemeColor(btn.dataset.themeColor)));
 
 
 
