@@ -1,5 +1,4 @@
-// Fillio project data, persistence, migration, and history helpers.
-// Refactor phase 1: behavior and storage format intentionally unchanged.
+// Fillio project data, persistence, and history helpers.
 function localDate(d=new Date()){
   const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");
   return `${y}-${m}-${day}`;
@@ -51,7 +50,7 @@ function makeProjectData(){
   };
 }
 function freshProjectData(title="新しいプロジェクト",sp=1,ep=1){
-  const n=Math.max(1,Math.min(500,ep-sp+1));
+  const n=Math.max(1,Math.min(PROJECT_PAGE_MAX,ep-sp+1));
   const p=createProgress(n);
   return {
     title,creationStartDate:localDate(),deadline:"",totalPages:n,startPage:sp,progress:p,stages:[...DEFAULT_STAGES],folderId:null,
@@ -62,9 +61,7 @@ function freshProjectData(title="新しいプロジェクト",sp=1,ep=1){
 function newProjectId(){
   return "p_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,8);
 }
-function persistProjectStore(){
-  localStorage.setItem(PROJECTS_KEY,JSON.stringify(projectStore));
-}
+function persistProjectStore(){return safeStorageSet(PROJECTS_KEY,JSON.stringify(projectStore))}
 function save(){
   if(!currentProjectId)return;
   const oldProject=projectStore.projects[currentProjectId]||{};
@@ -73,14 +70,16 @@ function save(){
   if(oldProject.trashedAt)nextProject.trashedAt=oldProject.trashedAt;
   projectStore.projects[currentProjectId]=nextProject;
   projectStore.activeProjectId=currentProjectId;
-  persistProjectStore();
+  const saved=persistProjectStore();
   const m=document.getElementById("saveMessage");
+  if(!saved)return false;
   m.textContent=languageSettings?.language==="en"?"Saved ✓":"保存しました ✓";
   clearTimeout(save.timer);
   save.timer=setTimeout(()=>m.textContent=languageSettings?.language==="en"?"Changes are saved automatically":"変更は自動保存されます",1200);
+  return true;
 }
 function normalizeProjectData(s){
-  let n=Number.isInteger(s?.totalPages)&&s.totalPages>0?Math.min(500,s.totalPages):48;
+  let n=Number.isInteger(s?.totalPages)&&s.totalPages>0?Math.min(PROJECT_PAGE_MAX,s.totalPages):48;
   let sp=Number.isInteger(s?.startPage)&&s.startPage>0?s.startPage:1;
 const projectStages=Array.isArray(s?.stages)&&s.stages.length
     ? s.stages.map(x=>String(x??"").trim()).slice(0,MAX_STAGES)
@@ -103,26 +102,23 @@ function loadProjectStore(){
     const raw=JSON.parse(localStorage.getItem(PROJECTS_KEY));
     if(raw&&raw.projects&&typeof raw.projects==="object"){
       projectStore={
-        version:2,
+        version:DATA_VERSION,
         activeProjectId:raw.activeProjectId||null,
         projects:{},
         projectOrder:Array.isArray(raw.projectOrder)?raw.projectOrder:[],
         folders:(raw.folders&&typeof raw.folders==="object")?raw.folders:{},
         rootOrder:Array.isArray(raw.rootOrder)?raw.rootOrder:[]
       };
-      let migratedStartDate=false;
       Object.entries(raw.projects).forEach(([id,p])=>{
         if(p&&Array.isArray(p.progress)){
-          if(!(typeof p.creationStartDate==="string"&&p.creationStartDate))migratedStartDate=true;
           projectStore.projects[id]=normalizeProjectData(p);
         }
       });
       if(!projectStore.projects[projectStore.activeProjectId])projectStore.activeProjectId=null;
-      if(migratedStartDate)persistProjectStore();
       return;
     }
   }catch(e){}
-  projectStore={version:2,activeProjectId:null,projects:{},projectOrder:[],folders:{},rootOrder:[]};
+  projectStore={version:DATA_VERSION,activeProjectId:null,projects:{},projectOrder:[],folders:{},rootOrder:[]};
   persistProjectStore();
 }
 function applyProjectData(s){
@@ -147,7 +143,7 @@ function saveViewState(view){
   const state={view};
   if(view==="project"&&currentProjectId)state.projectId=currentProjectId;
   if(view==="folder"&&currentFolderId)state.folderId=currentFolderId;
-  localStorage.setItem(VIEW_STATE_KEY,JSON.stringify(state));
+  safeStorageSet(VIEW_STATE_KEY,JSON.stringify(state));
 }
 function loadViewState(){
   try{return JSON.parse(localStorage.getItem(VIEW_STATE_KEY)||"null")}catch(e){return null}

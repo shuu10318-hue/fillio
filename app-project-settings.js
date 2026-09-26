@@ -1,5 +1,5 @@
-/* fillio v31: existing project settings/edit module */
-// --- 工程カスタマイズ prototype ---
+/* Fillio — existing project settings/edit module */
+// --- 工程カスタマイズ ---
 let stageDraft=[];
 let stageDraftMeta=[];
 function escapeStageHtml(s){

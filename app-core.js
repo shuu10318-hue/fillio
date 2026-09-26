@@ -2,15 +2,27 @@
 const PROJECTS_KEY="fillio-projects-v1";
 const VIEW_STATE_KEY="fillio-view-state-v1";
 const APP_SETTINGS_KEY="fillio-settings-v1";
-const STAGE_VALUE_MODE_KEY="fillio-stage-value-mode-v2";
+const STAGE_VALUE_MODE_KEY="fillio-stage-value-mode-v1";
+
+function reportStorageFailure(err){
+ console.error("Fillio: local storage write failed",err);
+ const m=document.getElementById("saveMessage");
+ if(m)m.textContent=languageSettings?.language==="en"?"Save failed — export a backup":"保存に失敗しました — バックアップしてください";
+}
+function safeStorageSet(key,value){
+ try{localStorage.setItem(key,value);return true}catch(err){reportStorageFailure(err);return false}
+}
 let stageValueModes={};
 try{stageValueModes=JSON.parse(localStorage.getItem(STAGE_VALUE_MODE_KEY)||"{}")||{}}catch{stageValueModes={}}
 function projectStageValueMode(id){return stageValueModes[id]==="steps"?"steps":"percent"}
-function saveProjectStageValueModes(){localStorage.setItem(STAGE_VALUE_MODE_KEY,JSON.stringify(stageValueModes))}
+function saveProjectStageValueModes(){return safeStorageSet(STAGE_VALUE_MODE_KEY,JSON.stringify(stageValueModes))}
 let appSettings=null;
 let languageSettings={language:"ja"};
 let projectDefaults={startPage:1,endPage:48,stages:[]};
-let projectStore={version:2,activeProjectId:null,projects:{}};
+const DATA_VERSION=1;
+const BACKUP_VERSION=1;
+const PROJECT_PAGE_MAX=500;
+let projectStore={version:DATA_VERSION,activeProjectId:null,projects:{}};
 let currentProjectId=null;
 const DEFAULT_STAGES=["ネーム","ペン","背景","トーン","写植"];
 const MAX_STAGES=100;
@@ -21,15 +33,13 @@ const UI_TEXT={
 };
 function normalizeAppSettings(raw){
  const lang=raw?.language==="en"?"en":"ja";
- let a=Math.max(1,Math.min(500,Number(raw?.defaultStartPage)||1));
- let b=Math.max(a,Math.min(500,Number(raw?.defaultEndPage)||48));
- if(b-a+1>500)b=a+499;
+ let a=Math.max(1,Math.min(PROJECT_PAGE_MAX,Number(raw?.defaultStartPage)||1));
+ let b=Math.max(a,Math.min(PROJECT_PAGE_MAX,Number(raw?.defaultEndPage)||48));
+ if(b-a+1>PROJECT_PAGE_MAX)b=a+PROJECT_PAGE_MAX-1;
  let ss=Array.isArray(raw?.defaultStages)?raw.defaultStages.map(x=>String(x||"").trim()).filter(Boolean).slice(0,MAX_STAGES):[];
  if(!ss.length)ss=[...DEFAULT_STAGES];
  const allowedColors=["#222222","#d9788d","#6e9fd0","#70ad98","#9a83c6","#dc9878","#d6b94c","#d86f67","#7656a8"];
- const legacyThemeMap={"#4f6bed":"#6e9fd0","#3f8f6b":"#70ad98","#7a5cc7":"#9a83c6","#c7663d":"#dc9878"};
- const rawTheme=raw?.themeColor ?? appSettings?.themeColor;
- const requested=legacyThemeMap[rawTheme]||rawTheme;
+ const requested=raw?.themeColor ?? appSettings?.themeColor;
  const themeColor=allowedColors.includes(requested)?requested:"#222222";
  const rawDisplayMode=raw?.displayMode ?? appSettings?.displayMode;
  const displayMode=["light","dark","auto"].includes(rawDisplayMode)?rawDisplayMode:"light";
@@ -52,7 +62,7 @@ function loadAppSettings(){
 }
 function persistAppSettings(){
  syncSplitSettings();
- localStorage.setItem(APP_SETTINGS_KEY,JSON.stringify(appSettings));
+ return safeStorageSet(APP_SETTINGS_KEY,JSON.stringify(appSettings));
 }
 
 function resolvedDisplayMode(mode=appSettings?.displayMode||"light"){

@@ -1,4 +1,4 @@
-// fillio v34 — folder operations
+// Fillio — folder operations
 // Folder create / rename / delete / eject UI operations.
 // Rendering remains in app-library.js; drag/drop remains in app.js.
 

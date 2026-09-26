@@ -1,4 +1,4 @@
-// fillio v30 - New project modal controller
+// Fillio — New project modal controller
 // Kept separate from Library drag/drop and Stage editing logic.
 
 let newProjectStageDraft=[...DEFAULT_STAGES];

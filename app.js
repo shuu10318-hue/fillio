@@ -1,4 +1,3 @@
-const PROJECT_PAGE_MAX=300;
 function clampPageCount(v){return Math.max(1,Math.min(PROJECT_PAGE_MAX,Number(v)||1))}
 function setupPageStepper(inputId){
  const input=document.getElementById(inputId); if(!input)return;
@@ -205,7 +204,7 @@ function makeBackup(){
   persistProjectStore();
   return {
     app:"fillio",
-    version:5,
+    version:BACKUP_VERSION,
     type:"multi-project",
     exportedAt:new Date().toISOString(),
     projects:projectStore.projects,
@@ -233,36 +232,27 @@ function exportBackup(){
   }
 }
 function restoreBackup(data){
-  // v5: 全作品バックアップ
-  if(data&&data.type==="multi-project"&&data.projects&&typeof data.projects==="object"){
-    const restored={};
-    Object.entries(data.projects).forEach(([id,p])=>{
-      if(p&&Array.isArray(p.progress))restored[id]=normalizeProjectData(p);
-    });
-    if(!Object.keys(restored).length)throw new Error("invalid");
-    projectStore={
-      version:2,
-      activeProjectId:null,
-      projects:restored,
-      projectOrder:Array.isArray(data.projectOrder)?data.projectOrder:[],
-      folders:(data.folders&&typeof data.folders==="object")?data.folders:{},
-      rootOrder:Array.isArray(data.rootOrder)?data.rootOrder:[]
-    };
-    persistProjectStore();
-    showProjectHome();
-    return "all";
-  }
-  // v4以前: 1作品バックアップは新しいプロジェクトとして追加
-  if(!data||!Number.isInteger(data.totalPages)||data.totalPages<1||data.totalPages>500||!Array.isArray(data.progress))throw new Error("invalid");
-  const id=newProjectId();
-  projectStore.projects[id]=normalizeProjectData(data);
-  projectStore.activeProjectId=id;
-  persistProjectStore();
-  openProject(id);
-  return "single";
+  if(!data||data.app!=="fillio"||data.version!==BACKUP_VERSION||data.type!=="multi-project"||!data.projects||typeof data.projects!=="object"||Array.isArray(data.projects))throw new Error("invalid");
+  const restored={};
+  Object.entries(data.projects).forEach(([id,p])=>{
+    if(typeof id!=="string"||!id||!p||!Array.isArray(p.progress))throw new Error("invalid");
+    restored[id]=normalizeProjectData(p);
+  });
+  if(!Object.keys(restored).length)throw new Error("invalid");
+  projectStore={
+    version:DATA_VERSION,
+    activeProjectId:(typeof data.activeProjectId==="string"&&restored[data.activeProjectId])?data.activeProjectId:null,
+    projects:restored,
+    projectOrder:Array.isArray(data.projectOrder)?data.projectOrder.filter(id=>typeof id==="string"&&restored[id]):[],
+    folders:(data.folders&&typeof data.folders==="object"&&!Array.isArray(data.folders))?data.folders:{},
+    rootOrder:Array.isArray(data.rootOrder)?data.rootOrder.filter(x=>typeof x==="string"):[]
+  };
+  if(!persistProjectStore())throw new Error("save-failed");
+  showProjectHome();
+  return "all";
 }
 function resizeProgress(n){
-  n=Math.max(1,Math.min(500,Number(n)||48));
+  n=Math.max(1,Math.min(PROJECT_PAGE_MAX,Number(n)||48));
   const old=progress;
   progress=Array.from({length:n},(_,p)=>old[p]?[...old[p]]:Array(stages.length).fill(0));
   totalPages=n;currentView=Math.min(currentView,Math.max(0,Math.ceil(n/12)-1));
@@ -531,10 +521,8 @@ document.getElementById("backupFile").addEventListener("change",async e=>{
   const file=e.target.files?.[0];if(!file)return;
   try{
     const data=JSON.parse(await file.text());
-    const kind=restoreBackup(data);
-    showBackupStatus(kind==="all"
-      ?`✅ 全作品のバックアップを復元しました。<br><b>${file.name}</b>`
-      :`✅ 1作品を新しいプロジェクトとして復元しました。<br><b>${file.name}</b>`);
+    restoreBackup(data);
+    showBackupStatus(`✅ 全作品のバックアップを復元しました。<br><b>${file.name}</b>`);
   }catch(err){showBackupStatus("❌ このバックアップファイルは読み込めませんでした。")}
   e.target.value="";
 });
@@ -1088,7 +1076,7 @@ document.getElementById("appSettingsButton").onclick=()=>{
 document.getElementById("settingsSave").onclick=()=>{
  let a=1;
  let b=clampPageCount(document.getElementById("defaultPages").value);
- if(b-a+1>500){alert(uiLang()==="en"?"Up to 500 pages per project.":"1作品500ページまでです。");return}
+ if(b-a+1>PROJECT_PAGE_MAX){alert(uiLang()==="en"?`Up to ${PROJECT_PAGE_MAX} pages per project.`:`1作品${PROJECT_PAGE_MAX}ページまでです。`);return}
  const ss=defaultStageDraft.map(x=>String(x||"").trim()).filter(Boolean);
  if(!ss.length)return;
  appSettings=normalizeAppSettings({
@@ -1242,7 +1230,7 @@ setTimeout(refreshCurrentProjectTitle,0);
    if(e.target.closest(".folder-item,.project-item"))e.preventDefault();
  });
 })();
-/* App-wide data-management labels. Kept separate from backup behavior. */
+/* Data management labels. */
 (function(){
   const oldApply = window.applyCurrentLanguage;
   function localizeDataManagement(){

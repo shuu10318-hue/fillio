@@ -1,4 +1,4 @@
-/* fillio v43 - Library drag/drop and reorder module
+/* Fillio — Library drag/drop and reorder module
    Active Pointer Events implementation only. Obsolete Touch-event implementations removed after v38 audit. */
 
 // Library reorder v11 — same pointer model as Stage editor.

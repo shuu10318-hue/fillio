@@ -1,4 +1,4 @@
-/* fillio v37 - Stage UI module
+/* Fillio — Stage UI module
    Stage editor, stage progress display, and production-table header/sizing.
    Progress-cell tap / long-press paint behavior remains in app.js. */
 

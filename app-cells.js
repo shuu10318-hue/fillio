@@ -1,4 +1,4 @@
-/* fillio v38 - Stage cell interaction module
+/* Fillio — Stage cell interaction module
    Cell tap helpers and long-press slide painting. Behavior preserved from v37. */
 
 function fillioHaptic(ms){
