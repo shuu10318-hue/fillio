@@ -34,8 +34,7 @@ window.alert=(msg)=>{
     .replace("❌ このバックアップファイルは読み込めませんでした。","❌ This backup file could not be read.")
     .replace("❌ バックアップを保存できませんでした。","❌ Backup could not be saved.")
     .replace("✅ 全作品のバックアップを保存しました。","✅ All projects were backed up.")
-    .replace("✅ 全作品のバックアップを復元しました。","✅ All projects were restored.")
-    .replace("✅ 1作品を新しいプロジェクトとして復元しました。","✅ One project was restored as a new project.");
+    .replace("✅ 全作品のバックアップを復元しました。","✅ All projects were restored.");
  }
  return _alert(msg);
 };

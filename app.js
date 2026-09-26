@@ -600,8 +600,8 @@ else window.addEventListener("load",restoreInitialView,{once:true});
 /* Full-app UI language layer. User-entered titles, folder names, notes and custom stage names are never translated. */
 const FULL_I18N={
  en:{
- "作品一覧":"Projects","プロジェクト":"Projects","＋ プロジェクト":"+ Project","＋ 新しいプロジェクト":"+ New Project","＋ フォルダ":"+ Folder","← 戻る":"← Back","名前変更":"Rename","削除":"Delete",
- "漫画制作進捗":"Manga Production Tracker","メモ一覧":"Notes","作品名":"Project title","制作ページ数":"Pages","制作ページ":"Pages",
+ "作品一覧":"Projects","プロジェクト":"Projects","＋ プロジェクト":"+ Project","＋ 新しいプロジェクト":"+ New Project","＋ フォルダ":"+ Folder","名前変更":"Rename","削除":"Delete",
+ "メモ一覧":"Notes","作品名":"Project title","制作ページ数":"Pages","制作ページ":"Pages",
  "作業開始日":"Start Date","締切予定日":"Deadline","工程表":"Production Table",
 "未着手":"Not started","着手中":"In progress","完成済み":"Completed","着手":"Started","完成":"Completed",
  "新しいプロジェクト":"New Project","作品編集":"Edit Project","工程設定":"Stage Settings","工程をカスタマイズ":"Customize Stages",
@@ -610,9 +610,9 @@ const FULL_I18N={
  "付箋":"Page Note","付箋を削除":"Delete Note","閉じる":"Close","すべて":"All","赤":"Red","黄":"Yellow","青":"Blue","緑":"Green","移動":"Go",
  "使い方":"Help","工程マスをタップ":"Tap a stage cell","長押し＋スライド":"Long press + slide",
  "ページ番号をタップ":"Tap a page number","マーカー":"Legend",
- "💾 バックアップ":"💾 Backup","📂 復元":"📂 Restore","工程":"Stages","工程名":"Stage name","上へ":"Up","下へ":"Down",
- "言語":"Language","アプリ設定":"App Settings","新規プロジェクトのデフォルト":"New Project Defaults","設定":"Settings","Libraryの使い方":"Library Help","作品を作る":"Create a project","フォルダで整理":"Organize with folders","作品を編集":"Edit a project","ゴミ箱":"Trash","バックアップ":"Backup","テーマカラー":"Theme Color","完了セルや選択状態などのアクセントカラーに使われます。":"Used for completed cells and selected states.",
- "全工程":"All stages","締切":"Deadline","なし":"None","ページ":"Pages","未設定":"Not set","完了":"Done","完成工程":"completed stages",
+ "💾 バックアップ":"💾 Backup","📂 復元":"📂 Restore","工程":"Stages","工程名":"Stage name",
+ "言語":"Language","アプリ設定":"App Settings","新規プロジェクトのデフォルト":"New Project Defaults","設定":"Settings","Libraryの使い方":"Library Help","フォルダで整理":"Organize with folders","ゴミ箱":"Trash","バックアップ":"Backup","テーマカラー":"Theme Color","完了セルや選択状態などのアクセントカラーに使われます。":"Used for completed cells and selected states.",
+ "全工程":"All stages","締切":"Deadline","なし":"None","ページ":"Pages","未設定":"Not set","完了":"Done",
  "データ収集中":"Collecting data","完成！":"Complete!","変更は自動保存されます":"Changes are saved automatically",
  "保存しました ✓":"Saved ✓","該当するメモはありません。":"No matching notes.","（メモ本文なし）":"(No note text)",
  "修正点・忘れたくないことなど":"Corrections, reminders, etc.",
@@ -620,8 +620,8 @@ const FULL_I18N={
  "新しいプロジェクトを作るときの初期値です。プロジェクトごとに変更できます。":"Initial values for new projects. You can change them for each project.",
  "作品ごとの進捗・付箋・作業履歴は端末内に自動保存されます。":"Project progress, notes and work history are saved automatically on this device.",
  "まだ作品がありません。":"No projects yet.","「＋ 新しいプロジェクト」から作成できます。":"Create one with “+ New Project”.",
- "着手=0.5工程として直近7日から算出":"Calculated from the last 7 days, counting in-progress as 0.5 stage.",
- "全作品のページ数・進捗・付箋・作業履歴を1つのJSONに保存します。":"Save all projects, progress, notes and work history in one JSON file.",
+ 
+ 
  "Chromeのダウンロード一覧または端末の「Downloads」を確認してください。":"Check Chrome downloads or the device Downloads folder.",
  "タップするたびに「未着手 → 着手 → 完了 → 未着手」と切り替わります。":"Each tap cycles: Not started → In progress → Complete → Not started.",
  "工程マスを約0.5秒長押しし、上下または左右になぞると範囲をプレビューできます。指を離すと確定します。振動したら開始です。":"Long-press a stage cell for about 0.5 seconds, then slide vertically or horizontally to preview the range. Release to apply it. It starts when the device vibrates.",
@@ -644,45 +644,6 @@ function translateExactText(root=document){
    const p=el.getAttribute("placeholder");if(map[p])el.setAttribute("placeholder",map[p]);
  });
 }
-function translateDynamicEnglish(root=document){
- if(uiLang()!=="en")return;
- translateExactText(root);
- root.querySelectorAll?.("*").forEach(el=>{
-   if(el.children.length||el.closest("input,textarea"))return;
-   let s=el.textContent;
-   s=s.replace(/^全(\d+)P$/,"$1 pages")
-      .replace(/^完成 (\d+) \/ (\d+)P$/,"Completed $1 / $2 pages")
-      .replace(/^着手 (\d+)% ・ 完成 (\d+)%$/,"Started $1% · Completed $2%")
-      .replace(/^あと約(\d+)日$/,"About $1 days")
-      .replace(/^締切まで あと(\d+)日$/,"$1 days until deadline")
-      .replace(/^締切を (\d+)日超過$/,"$1 days past deadline")
-      .replace(/^(\d+)作品$/,"$1 projects")
-      .replace(/^(\d+)P 付箋$/,"Page $1 note")
-      .replace(/^全工程完了$/,"All stages complete");
-   el.textContent=s;
- });
-}
-const _applyLanguage=applyLanguage;
-applyLanguage=function(){
- _applyLanguage();
- translateDynamicEnglish(document);
-};
-const languageObserver=new MutationObserver(muts=>{
- if(uiLang()!=="en")return;
- muts.forEach(m=>{
-   if(m.type==="characterData"){
-     const n=m.target, raw=n.nodeValue||"", trim=raw.trim();
-     if(FULL_I18N.en[trim])n.nodeValue=raw.replace(trim,FULL_I18N.en[trim]);
-   }
-   m.addedNodes?.forEach(n=>{if(n.nodeType===1)translateDynamicEnglish(n);else if(n.nodeType===3&&FULL_I18N.en[n.nodeValue.trim()])n.nodeValue=FULL_I18N.en[n.nodeValue.trim()]});
- });
-});
-languageObserver.observe(document.body,{subtree:true,childList:true,characterData:true});
-
-
-
-
-
 /* ---- i18n helpers ---- */
 const I18N_MORE_EN={
  "作品編集":"Edit Project","作品名":"Project title","制作ページ":"Pages","制作ページ数":"Pages",
@@ -754,29 +715,6 @@ function translateUiPatterns(root=document){
  });
 }
 
-function refreshWholeLanguage(){
- applyLanguage();
- if(uiLang()==="en"){
-   translateExactText(document);
-   translateUiPatterns(document);
- }
-}
-
-
-
-// 動的再描画後の翻訳漏れも拾う
-const fullLanguageObserver=new MutationObserver(()=>{
- if(uiLang()==="en"){
-   clearTimeout(window.__fullLangTimer);
-   window.__fullLangTimer=setTimeout(()=>translateUiPatterns(document),0);
- }
-});
-fullLanguageObserver.observe(document.body,{childList:true,subtree:true,characterData:true});
-
-setTimeout(refreshWholeLanguage,0);
-
-
-
 /* ---- Deterministic runtime language switch ----
    Keep user-authored project/folder/stage/note text untouched.
    Re-render first, then localize fixed/dynamic UI in one direction. */
@@ -834,45 +772,6 @@ document.getElementById("languageButton").onclick=()=>{
 };
 document.getElementById("languageCancel").onclick=()=>document.getElementById("languageModal").classList.remove("open");
 document.getElementById("languageModal").onclick=e=>{if(e.target.id==="languageModal")e.currentTarget.classList.remove("open")};
-
-function handleLanguageOptionClick(btn){
- const selected=btn.dataset.lang;
- const old=languageSettings.language;
- if(selected===old)return;
- let ss=[...projectDefaults.stages];
- const jaDefault=ss.length===JA_STAGE_DEFAULTS.length&&ss.every((x,i)=>x===JA_STAGE_DEFAULTS[i]);
- const enDefault=ss.length===EN_STAGE_DEFAULTS.length&&ss.every((x,i)=>x===EN_STAGE_DEFAULTS[i]);
- if(selected==="en"&&jaDefault)ss=[...EN_STAGE_DEFAULTS];
- if(selected==="ja"&&enDefault)ss=[...JA_STAGE_DEFAULTS];
- appSettings=normalizeAppSettings({
-   language:selected,
-   defaultPages:projectDefaults.pages,
-   defaultStages:ss
- });
- persistAppSettings();
- document.getElementById("appLanguage").value=selected;
- updateLanguageButtons();
-
- location.reload();
- setTimeout(refreshSettingsLanguage,0);
- setTimeout(()=>{
-   translateDefaultStageNames(languageSettings.language);
-   localizeDefaultsSettingsUi();
-   if(document.getElementById("appSettingsModal").classList.contains("open")){
-     defaultStageDraft=[...projectDefaults.stages];
-     renderDefaultStageEditor();
-   }
-   folderRendering=false;
-   if(!currentProjectId){
-     renderProjectList();
-     renderFoldersAndFilter();
-   }
- },0);
-
-}
-document.querySelectorAll(".language-option").forEach(btn=>{
- btn.onclick=()=>handleLanguageOptionClick(btn);
-});
 
 document.getElementById("appSettingsButton").onclick=()=>{
  refreshSettingsLanguage();
@@ -963,43 +862,6 @@ setTimeout(()=>{syncStockDefaultsToLanguage();localizeDefaultsSettingsUi()},0);
 
 
 /* ---- Folder rendering + localized default stage names ---- */
-const DEFAULT_STAGE_NAME_MAP={
- jaToEn:{
-   "ネーム":"Storyboard",
-   "下書き":"Sketch",
-   "ペン":"Line Art",
-   "線画":"Line Art",
-   "背景":"Background",
-   "トーン":"Tone",
-   "写植":"Lettering",
-   "仕上げ":"Finishing",
-   "カラー":"Color"
- },
- enToJa:{
-   "Storyboard":"ネーム",
-   "Sketch":"下書き",
-   "Line Art":"ペン",
-   "Background":"背景",
-   "Tone":"トーン",
-   "Lettering":"写植",
-   "Finishing":"仕上げ",
-   "Color":"カラー"
- }
-};
-function translateDefaultStageNames(targetLang){
- const map=targetLang==="en"?DEFAULT_STAGE_NAME_MAP.jaToEn:DEFAULT_STAGE_NAME_MAP.enToJa;
- const translated=projectDefaults.stages.map(name=>map[name]||name);
- if(translated.some((x,i)=>x!==projectDefaults.stages[i])){
-   appSettings=normalizeAppSettings({
-     language:targetLang,
-     defaultPages:projectDefaults.pages,
-     defaultStages:translated
-   });
-   persistAppSettings();
- }
-}
-/* Language option maintenance is consolidated in handleLanguageOptionClick(). */
-
 /* After startup/reload, force one final folder-aware render after all language
    initialization has finished. This does not change folderId data. */
 setTimeout(()=>{
@@ -1037,7 +899,6 @@ setTimeout(refreshCurrentProjectTitle,0);
 })();
 /* Data management labels. */
 (function(){
-  const oldApply = window.applyCurrentLanguage;
   function localizeDataManagement(){
     const lang=(typeof languageSettings!=="undefined" && languageSettings?.language==="en")?"en":"ja";
     const set=(id,ja,en)=>{const el=document.getElementById(id);if(el)el.textContent=lang==="en"?en:ja};
@@ -1058,9 +919,6 @@ setTimeout(refreshCurrentProjectTitle,0);
    One runtime authority. Japanese HTML/render output is the source of truth.
    English is applied as a presentation layer. User-authored project/folder/stage/note
    text is excluded. Language changes persist once, then reload once. */
-try{ languageObserver.disconnect(); }catch(e){}
-try{ fullLanguageObserver.disconnect(); }catch(e){}
-
 const CLEAN_EN_EXACT = {
  "全体":"OVERALL",
  "作品一覧":"Projects","プロジェクト":"Projects","メモ一覧":"Notes","総合進捗":"Overall Progress","制作進捗":"Overall Progress",
