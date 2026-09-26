@@ -135,7 +135,6 @@ function applyProjectData(s){
   document.getElementById("deadlineInput").value=p.deadline||"";
   history=p.history?normalizeHistory(p.history):{day:localDate(),baselineDone:doneCount(),baselineWeighted:weightedCount(),weightedDays:{},days:{}};
   rollHistory();
-  currentView=0;
   syncRangeUI();
 }
 

@@ -77,17 +77,6 @@ function renderDefaultStageEditor(){
  document.getElementById("defaultStageAdd").disabled=false;
 }
 
-function renderStages(){
-  stageProgress.innerHTML="";
-  stages.forEach((name,s)=>{
-    const st=progress.filter(r=>r[s]>0).length,dn=progress.filter(r=>r[s]===2).length;
-    const sp=Math.round(st/totalPages*100),dp=Math.round(dn/totalPages*100);
-    const d=document.createElement("div");d.className="stage";
-    const stageStats=languageSettings?.language==="en" ? `Started ${sp}% · Completed ${dp}%` : `着手 ${sp}% ・ 完成 ${dp}%`;
-    d.innerHTML=`<div class="stage-info"><span>${displayStageName(name,s)}</span><span>${stageStats}</span></div><div class="dual-bar"><div class="started-bar" style="width:${sp}%"></div><div class="done-bar" style="width:${dp}%"></div></div>`;
-    stageProgress.appendChild(d);
-  });
-}
 
 function displayStageName(name,index){
   const value=String(name??"").trim();

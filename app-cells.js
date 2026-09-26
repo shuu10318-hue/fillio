@@ -169,7 +169,6 @@ function endPaint(commit){
     paintPreviewCells.clear();
     if(changed)fillioHaptic(18);
     save();
-    updateSummary();
   }else{
     restorePaintPreview();
   }

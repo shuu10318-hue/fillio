@@ -29,15 +29,12 @@ applyDisplayMode();
 // Explicit editor DOM references; do not rely on legacy window.<id> globals.
 const pages=document.getElementById("pages");
 const range=document.getElementById("range");
-const navPage=document.getElementById("navPage");
-const prev=document.getElementById("prev");
-const next=document.getElementById("next");
 const startPageInput=document.getElementById("startPageInput");
 const endPageInput=document.getElementById("endPageInput");
 const totalPageLabel=document.getElementById("totalPageLabel");
 
 let stages=[...DEFAULT_STAGES];
-let totalPages=48,startPage=1,currentView=0,progress=createProgress(48);
+let totalPages=48,startPage=1,progress=createProgress(48);
 let history={day:"",baselineDone:0,days:{}};
 let pageNotes={};
 
@@ -141,7 +138,7 @@ function openProject(id,historyMode="push"){
   // Android/Chrome: restored project data can finish binding after the first paint.
   // Re-sync only the visual summary on the next frame; storage/touch logic is untouched.
   requestAnimationFrame(()=>{
-    if(currentProjectId===id) updateSummary();
+
   });
 }
 function showProjectHome(historyMode="push"){
@@ -255,127 +252,8 @@ function resizeProgress(n){
   n=Math.max(1,Math.min(PROJECT_PAGE_MAX,Number(n)||48));
   const old=progress;
   progress=Array.from({length:n},(_,p)=>old[p]?[...old[p]]:Array(stages.length).fill(0));
-  totalPages=n;currentView=Math.min(currentView,Math.max(0,Math.ceil(n/12)-1));
+  totalPages=n;
   save();render();
-}
-function updateSummary(){
-  const f=progress.flat(),st=f.filter(v=>v>0).length,dn=f.filter(v=>v===2).length,t=Math.max(1,totalPages*stages.length);
-  const sp=Math.round(st/t*100),dp=Math.round(dn/t*100);
-  startedPercent.textContent=sp+"%";donePercent.textContent=dp+"%";
-  const overallRing=document.getElementById("overallRing");
-  if(overallRing){
-    overallRing.style.background=`conic-gradient(var(--done) 0 ${dp}%,var(--started) ${dp}% ${sp}%,#eceef1 ${sp}% 100%)`;
-  }
-  const completedPageCount=progress.filter(r=>r.every(v=>v===2)).length;
-  completePages.textContent=languageSettings?.language==="en" ? `Completed ${completedPageCount} / ${totalPages} pages` : `完成 ${completedPageCount} / ${totalPages}P`;
-  renderStages();renderHistory();
-}
-
-function renderHistory(){
-  rollHistory();
-  const today=localDate(),values=[];
-  for(let i=-6;i<=0;i++){
-    const date=addDays(today,i);
-    values.push({date,value:date===today?todayDelta():Number(history.days[date]||0)});
-  }
-  const total=values.reduce((a,x)=>a+x.value,0);
-  const avg=total/7;
-  const td=todayDelta();
-  todayWork.textContent=(td>=0?"+":"")+td;
-  weekWork.textContent=total;
-  avgWork.textContent=avg.toFixed(1);
-
-  const max=Math.max(1,...values.map(x=>Math.abs(x.value)));
-  historyChart.innerHTML="";
-  values.forEach((x,i)=>{
-    const el=document.createElement("div");el.className="history-day";
-    const h=x.value===0?2:Math.max(6,Math.round(Math.abs(x.value)/max*72));
-    const label=i===6?"今日":`${Number(x.date.slice(5,7))}/${Number(x.date.slice(8,10))}`;
-    el.innerHTML=`<div class="history-value">${x.value>0?"+":""}${x.value}</div><div class="history-bar" style="height:${h}px;${x.value<0?"opacity:.35":""}"></div><div class="history-label">${label}</div>`;
-    historyChart.appendChild(el);
-  });
-
-  const weightedValues=[];
-  for(let i=-6;i<=0;i++){
-    const date=addDays(today,i);
-    weightedValues.push(date===today?todayWeightedDelta():Number(history.weightedDays?.[date]||0));
-  }
-  const weightedAvg=weightedValues.reduce((a,v)=>a+v,0)/7;
-  const remaining=totalPages*stages.length-weightedCount();
-  if(remaining<=0){
-    forecastDate.innerHTML=`完成！<br><span style="font-size:10px;color:var(--muted);font-weight:400">全工程完了</span>`;
-  }else if(weightedAvg>0){
-    const days=Math.ceil(remaining/weightedAvg),d=new Date();d.setDate(d.getDate()+days);
-    forecastDate.innerHTML=`${d.getMonth()+1}/${d.getDate()}<br><span style="font-size:10px;color:var(--muted);font-weight:400">あと約${days}日</span>`;
-  }else{
-    forecastDate.innerHTML=`—<br><span style="font-size:10px;color:var(--muted);font-weight:400">データ収集中</span>`;
-  }
-
-  // 締切予定日と完成予想の差分
-  const deadlineEl=document.getElementById("deadlineStatus");
-  if(deadlineEl){
-    const active=projectStore?.projects?.[projectStore.activeProjectId];
-    const deadline=active?.deadline||document.getElementById("deadlineInput")?.value||"";
-    const isEnglish=languageSettings?.language==="en";
-    if(!deadline){
-      deadlineEl.textContent="";
-    }else if(doneCount()===totalPages*stages.length){
-      deadlineEl.textContent=isEnglish
-        ? `Deadline ${deadline.replaceAll("-","/")} · Completed`
-        : "締切 "+deadline.replaceAll("-","/")+" ・ 完成済み";
-    }else{
-      const dl=new Date(deadline+"T00:00:00");
-      const todayDate=new Date(localDate()+"T00:00:00");
-      const msDay=86400000;
-      const daysToDeadline=Math.round((dl-todayDate)/msDay);
-      const remWeighted=Math.max(0,totalPages*stages.length-weightedCount());
-      const needPerDay=daysToDeadline>=0 ? remWeighted/Math.max(1,daysToDeadline+1) : null;
-
-      let forecastDiff="";
-      if(weightedAvg>0){
-        const forecastDays=Math.ceil(remWeighted/weightedAvg);
-        const forecastDate=new Date(todayDate);
-        forecastDate.setDate(forecastDate.getDate()+forecastDays);
-        const diff=Math.round((dl-forecastDate)/msDay);
-        if(diff>0) forecastDiff=`完成予想は締切より ${diff}日早いペース`;
-        else if(diff<0) forecastDiff=`完成予想は締切より ${Math.abs(diff)}日超過するペース`;
-        else forecastDiff="完成予想は締切予定日と同日";
-      }else{
-        forecastDiff="完成予想との差分は、作業履歴がたまると表示";
-      }
-
-      const deadlineLabel=daysToDeadline>=0
-        ? `締切まで あと${daysToDeadline}日`
-        : `締切を ${Math.abs(daysToDeadline)}日超過`;
-
-      const paceLabel=needPerDay===null
-        ? ""
-        : ` ・ 必要ペース 1日${needPerDay.toFixed(1)}工程`;
-
-      if(isEnglish){
-        const deadlineLabelEn=daysToDeadline>=0
-          ? `${daysToDeadline} days until deadline`
-          : `${Math.abs(daysToDeadline)} days past deadline`;
-        let forecastDiffEn="";
-        if(weightedAvg>0){
-          const forecastDays=Math.ceil(remWeighted/weightedAvg);
-          const forecastDateEn=new Date(todayDate);
-          forecastDateEn.setDate(forecastDateEn.getDate()+forecastDays);
-          const diffEn=Math.round((dl-forecastDateEn)/msDay);
-          if(diffEn>0) forecastDiffEn=`Forecast is ${diffEn} days before deadline`;
-          else if(diffEn<0) forecastDiffEn=`Forecast is ${Math.abs(diffEn)} days after deadline`;
-          else forecastDiffEn="Forecast matches the deadline";
-        }else{
-          forecastDiffEn="The forecast comparison appears after enough work history is collected.";
-        }
-        const paceLabelEn=needPerDay===null ? "" : ` · Required pace: ${needPerDay.toFixed(1)} stages/day`;
-        deadlineEl.textContent=`${deadlineLabelEn} · ${forecastDiffEn}${paceLabelEn}`;
-      }else{
-        deadlineEl.textContent=`${deadlineLabel} ・ ${forecastDiff}${paceLabel}`;
-      }
-    }
-  }
-
 }
 
 let stickyPage=null,stickyColor="",stickyTodos=[];
@@ -477,21 +355,16 @@ function renderPages(){
         setCellVisual(b,progress[p][s]);
         fillioHaptic(8);
         save();
-        requestAnimationFrame(()=>updateSummary());
       };
       row.appendChild(b);
     }
     pages.appendChild(row);
   }
-  pages.classList.add("prototype-all-pages");
+  pages.classList.add("all-pages");
   range.textContent=languageSettings?.language==="en" ? `${totalPages} pages` : `全${totalPages}P`;
-  navPage.textContent="";
-  prev.disabled=true; next.disabled=true;
 }
 
-function render(){renderDynamicTableHead();renderPages();updateSummary()}
-prev.onclick=()=>{if(currentView>0){currentView--;renderPages()}};
-next.onclick=()=>{if(currentView<Math.ceil(totalPages/12)-1){currentView++;renderPages()}};
+function render(){renderDynamicTableHead();renderPages()}
 function syncRangeUI(){
   startPageInput.value=startPage;
   endPageInput.value=startPage+totalPages-1;
@@ -507,13 +380,13 @@ function applyPageRange(){
     if(page>=oldStart&&page<=oldEnd) newProgress.push([...old[page-oldStart]]);
     else newProgress.push(Array(stages.length).fill(0));
   }
-  startPage=a; totalPages=b-a+1; progress=newProgress; currentView=0;
+  startPage=a; totalPages=b-a+1; progress=newProgress;
   syncRangeUI(); save(); render();
 }
 startPageInput.addEventListener("change",applyPageRange);
 endPageInput.addEventListener("change",applyPageRange);
 document.getElementById("creationStartDateInput").addEventListener("change",save);
-document.getElementById("deadlineInput").addEventListener("change",()=>{save();renderHistory();});
+document.getElementById("deadlineInput").addEventListener("change",()=>{save();});
 document.getElementById("title").addEventListener("input",save);
 document.getElementById("exportBackup").addEventListener("click",exportBackup);
 document.getElementById("importBackup").addEventListener("click",()=>document.getElementById("backupFile").click());
@@ -786,9 +659,8 @@ const FULL_I18N={
  en:{
  "作品一覧":"Projects","プロジェクト":"Projects","＋ プロジェクト":"+ Project","＋ 新しいプロジェクト":"+ New Project","＋ フォルダ":"+ Folder","← 戻る":"← Back","名前変更":"Rename","削除":"Delete",
  "漫画制作進捗":"Manga Production Tracker","メモ一覧":"Notes","作品名":"Project title","制作ページ数":"Pages","制作ページ":"Pages",
- "作業開始日":"Start Date","締切予定日":"Deadline","総合進捗":"Overall Progress","制作進捗":"Overall Progress","工程別進捗":"Progress by Stage","工程表":"Production Table",
- "作業履歴":"Work History","今日":"Today","直近7日":"Last 7 days","1日平均":"Daily average","完成予想":"Estimated Completion",
- "← 前":"← Prev","次 →":"Next →","未着手":"Not started","着手中":"In progress","完成済み":"Completed","着手":"Started","完成":"Completed",
+ "作業開始日":"Start Date","締切予定日":"Deadline","工程表":"Production Table",
+"未着手":"Not started","着手中":"In progress","完成済み":"Completed","着手":"Started","完成":"Completed",
  "新しいプロジェクト":"New Project","作品編集":"Edit Project","工程設定":"Stage Settings","工程をカスタマイズ":"Customize Stages",
  "＋ 工程を追加":"+ Add Stage","キャンセル":"Cancel","保存":"Save","作成":"Create","編集":"Edit","この作品を削除":"Delete Project",
  "新しいフォルダ":"New Folder","フォルダ名":"Folder name","フォルダ名を変更":"Rename Folder","フォルダから戻す":"Move out of folder",
@@ -1006,7 +878,6 @@ function applyCurrentLanguageNow(){
     // reload. Only restore fixed Japanese labels here.
     restoreKnownJapaneseUi();
   }
-  if(currentProjectId && projectStore.projects[currentProjectId])updateSummary();
 }
 /* ---- Separate Language UI and Project Defaults UI ---- */
 function updateLanguageButtons(){
@@ -1259,18 +1130,16 @@ try{ fullLanguageObserver.disconnect(); }catch(e){}
 const CLEAN_EN_EXACT = {
  "全体":"OVERALL",
  "作品一覧":"Projects","プロジェクト":"Projects","メモ一覧":"Notes","総合進捗":"Overall Progress","制作進捗":"Overall Progress",
- "制作中":"In progress","完成率":"Completion","工程別進捗":"Progress by Stage","工程表":"Production Table",
- "作業履歴":"Work History","今日":"Today","直近7日":"Last 7 days","直近7日間":"Last 7 days",
- "1日平均":"Daily average","完成予想":"Estimated Completion","変更は自動保存されます":"Changes are saved automatically",
+ "制作中":"In progress","完成率":"Completion","工程表":"Production Table",
+ "変更は自動保存されます":"Changes are saved automatically",
  "着手中":"In progress","完成済み":"Completed","着手":"Started","完成":"Completed",
- "← 前":"← Prev","次 →":"Next →","閉じる":"Close","言語":"Language","アプリ設定":"App Settings",
+"閉じる":"Close","言語":"Language","アプリ設定":"App Settings",
  "新規プロジェクトのデフォルト":"New Project Defaults","制作ページ":"Pages","工程":"Stages",
  "＋ 工程を追加":"+ Add Stage","キャンセル":"Cancel","保存":"Save","データ管理":"Data Management","ページ":"Pages","全工程":"All stages","締切":"Deadline","未設定":"Not set","編集":"Edit","この作品を削除":"Delete this project","作品":"projects",
- "着手=0.5工程として直近7日から算出":"Calculated from the last 7 days, counting in-progress as 0.5 stage."
 };
 const CLEAN_USER_TEXT_SELECTOR = [
  ".project-title",".project-name",".folder-name",
- "#stageProgress .stage-name","#pages .stage-name",".memo-text",".memo-list",
+"#pages .stage-name",".memo-text",".memo-list",
  "input[type=text]","textarea","[data-user-text]"
 ].join(",");
 

@@ -1,5 +1,5 @@
 /* --- Home design  soft trash + monochrome controls --- */
-(function setupSoftTrashPrototype(){
+(function setupSoftTrash(){
   const zone=document.getElementById("dragTrashZone");
   const modal=document.getElementById("trashModal");
   const list=document.getElementById("trashList");
