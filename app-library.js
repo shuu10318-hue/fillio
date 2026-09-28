@@ -63,7 +63,7 @@ function projectStageStats(p){
     const total=vals.length;
     const started=vals.filter(v=>v>0).length;
     const done=vals.filter(v=>v===2).length;
-    return {name:stageLabel(name,undefined,s),startedPct:total?Math.round(started/total*100):0,pct:completionPercent(done,total),done,total};
+    return {name:stageLabel(name,undefined,stageIndex),startedPct:total?Math.round(started/total*100):0,pct:completionPercent(done,total),done,total};
   });
 }
 
@@ -84,8 +84,7 @@ function renderProjectList(){
     item.className="project-item";
     item.dataset.projectId=id; item.dataset.orderKey="p:"+id;
     // Keep Library/folder visibility correct from the moment the card enters the DOM.
-    // Startup language rendering can run before renderFoldersAndFilter's frame guard clears;
-    // never expose the unfiltered all-project list during that gap.
+    // Keep folder visibility correct immediately when the card enters the DOM.
     item.style.display=((p.folderId||null)===currentFolderId)?"":"none";
     const donePages=(p.progress||[]).filter((r,pi)=>Array.isArray(r)&&r.some((_,si)=>!p.notApplicable?.[pi]?.[si])&&r.every((v,si)=>p.notApplicable?.[pi]?.[si]||v===2)).length;
     const dash=projectDashboardStats(p);
