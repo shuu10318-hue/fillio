@@ -49,10 +49,12 @@ function normalizeStages(list){
  const out=Array.isArray(list)?list.slice(0,MAX_STAGES).map(normalizeStage):[];
  return out.length?out:cloneStages(DEFAULT_STAGES);
 }
-function stageLabel(stage,lang=languageSettings?.language||"ja"){
+function stageLabel(stage,lang=languageSettings?.language||"ja",index=null){
  if(stage?.defaultKey)return DEFAULT_STAGE_LABELS[lang]?.[stage.defaultKey]||DEFAULT_STAGE_LABELS.ja[stage.defaultKey]||"";
  const name=String(stage?.name??"").trim();
- return name||(lang==="en"?"New Stage":"新しい工程");
+ if(name)return name;
+ const number=Number.isInteger(index)?index+1:null;
+ return number?(lang==="en"?`Stage ${number}`:`工程${number}`):(lang==="en"?"Stage":"工程");
 }
 
 function normalizeAppSettings(raw){

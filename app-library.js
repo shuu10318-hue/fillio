@@ -63,7 +63,7 @@ function projectStageStats(p){
     const total=vals.length;
     const started=vals.filter(v=>v>0).length;
     const done=vals.filter(v=>v===2).length;
-    return {name:stageLabel(name),startedPct:total?Math.round(started/total*100):0,pct:completionPercent(done,total),done,total};
+    return {name:stageLabel(name,undefined,s),startedPct:total?Math.round(started/total*100):0,pct:completionPercent(done,total),done,total};
   });
 }
 
@@ -126,7 +126,7 @@ function renderProjectList(){
     <button class="project-stage-toggle" type="button" aria-expanded="${expanded}"><span>${t("library.stageDetails")}</span><span class="project-stage-toggle-end"><small class="project-stage-unit">Steps</small><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></span></button>
     <div class="project-stage-details${expanded?" open":""}">${detailRows}</div>`;
     item.querySelector(".project-item-title").textContent=title;
-    item.querySelectorAll(".project-stage-name").forEach((el,i)=>{el.textContent=stageStats[i]?.name||t("stage.new")});
+    item.querySelectorAll(".project-stage-name").forEach((el,i)=>{el.textContent=stageStats[i]?.name||stageLabel(p.stages?.[i],undefined,i)});
     item.querySelector(".project-open-title").onclick=e=>{e.stopPropagation();openProject(id)};
     item.querySelector(".project-edit-button").onclick=e=>{e.stopPropagation();openProjectEdit(id)};
     item.querySelectorAll(".project-stage-value").forEach(btn=>btn.onclick=e=>{

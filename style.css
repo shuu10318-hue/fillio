@@ -10,7 +10,7 @@ button{font:inherit;color:inherit}
 
 .table-toolbar{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:10px}
 .section-title{font-weight:700;font-size:15px;margin-bottom:12px}
-.range{color:var(--muted);font-size:12px}
+.range{color:var(--subtle-text);font-size:11px;font-weight:500;white-space:nowrap}
 
 
 
@@ -1191,8 +1191,8 @@ body.library-drag-active .drag-trash-zone.over{
 
 
 /* N/A mode: applicability is separate from progress; keep its surface identical to an empty cell. */
-.table-toolbar-end{display:flex;align-items:center;gap:8px}
-.na-mode-button{min-width:42px;height:30px;padding:0 9px;border:1px solid var(--border);border-radius:8px;background:var(--control-surface);color:var(--muted);font-size:11px;font-weight:800}
+.table-toolbar-end{display:flex;align-items:center;gap:7px}
+.na-mode-button{min-width:40px;height:28px;padding:0 8px;border:1px solid var(--border);border-radius:8px;background:var(--control-surface);color:var(--muted);font-size:11px;font-weight:800}
 .na-mode-button.active{background:var(--accent);border-color:var(--accent);color:var(--accent-text)}
 .progress-cell.is-na{background:var(--cell-empty)!important;border-color:var(--cell-border)!important;color:var(--na-text)!important;font-size:10px!important;font-weight:800!important;position:relative;z-index:0}
 .progress-cell.is-na::after{pointer-events:none}

@@ -3,7 +3,7 @@
    Progress-cell tap / long-press paint behavior remains in app.js. */
 
 function makeStageRow(stage,i,arr,render,meta){
- const name=stageLabel(stage);
+ const name=stageLabel(stage,undefined,i);
  const row=document.createElement("div"); row.className="stage-editor-row"; row.dataset.stageIndex=String(i);
  const pencil='<svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
  const trash='<svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg>';
@@ -22,7 +22,7 @@ function makeStageRow(stage,i,arr,render,meta){
  del.addEventListener("click",()=>{
    const idx=Number(row.dataset.stageIndex);
    if(arr.length<=1){alert(t("stage.min"));return}
-   const label=stageLabel(arr[idx]);
+   const label=stageLabel(arr[idx],undefined,idx);
    const ok=confirm(t("stage.confirmDelete",{name:label}));
    if(!ok)return;
    arr.splice(idx,1);if(meta)meta.splice(idx,1);render();
@@ -79,11 +79,11 @@ function renderDefaultStageEditor(){
 }
 
 
-function displayStageName(stage){return stageLabel(stage)}
+function displayStageName(stage,index){return stageLabel(stage,undefined,index)}
 function renderDynamicTableHead(){
   const head=document.getElementById("tableHead"); if(!head)return;
   document.documentElement.style.setProperty("--stage-count",String(stages.length));
-  head.innerHTML=`<div class="table-head-corner"></div>${stages.map((n,i)=>`<div class="head">${escapeStageHtml(displayStageName(n))}</div>`).join("")}`;
+  head.innerHTML=`<div class="table-head-corner"></div>${stages.map((n,i)=>`<div class="head">${escapeStageHtml(displayStageName(n,i))}</div>`).join("")}`;
   requestAnimationFrame(updateInitialTableCellSize);
 }
 
