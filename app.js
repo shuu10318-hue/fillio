@@ -67,7 +67,38 @@ function restoreFillioHistoryState(state){
     else showProjectHome();
   }finally{fillioHandlingPop=false}
 }
+function closeOpenModalForHistoryBack(){
+  const modalClosers=[
+    ["helpModal","helpClose"],
+    ["libraryHelpModal","libraryHelpClose"],
+    ["trashModal","trashClose"],
+    ["memoListModal","closeMemoList"],
+    ["editProjectModal","cancelEditProject"],
+    ["languageModal","languageCancel"],
+    ["appSettingsModal","settingsCancel"],
+    ["projectModal","cancelNewProject"],
+    ["stickyModal","stickyClose"],
+    ["folderModal","folderCancel"],
+    ["folderRenameModal","folderRenameCancel"]
+  ];
+  for(let i=modalClosers.length-1;i>=0;i--){
+    const [modalId,closeId]=modalClosers[i];
+    const modal=document.getElementById(modalId);
+    if(!modal?.classList.contains("open"))continue;
+    document.getElementById(closeId)?.click();
+    return true;
+  }
+  return false;
+}
 window.addEventListener("popstate",e=>{
+  if(closeOpenModalForHistoryBack()){
+    // Android's back swipe already consumed one browser-history entry.
+    // Restore the current Fillio view so this gesture closes only the modal;
+    // the next back gesture can then navigate to the previous view normally.
+    window.history.pushState(currentFillioNavState(),"");
+    fillioHistoryReady=true;
+    return;
+  }
   restoreFillioHistoryState(e.state?.fillio?e.state:fillioNavState("root"));
 });
 
