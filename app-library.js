@@ -151,8 +151,6 @@ function renderProjectList(){
 }
 
 function renderFoldersAndFilter(){
- if(folderRendering)return;
- folderRendering=true;
  const list=document.getElementById("projectList");if(!list)return;
  list.querySelectorAll(".folder-item").forEach(x=>x.remove());
  const head=document.getElementById("folderHead");
@@ -218,5 +216,4 @@ function renderFoldersAndFilter(){
    mixed.forEach(el=>list.append(el));
  }
  if(!currentFolderId)renderRootBreadcrumb();
- requestAnimationFrame(()=>{folderRendering=false});
 }

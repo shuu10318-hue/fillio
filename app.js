@@ -569,17 +569,9 @@ function folderCount(fid){return Object.values(projectStore.projects||{}).filter
 
 // Folder UI operations live in app-folder.js.
 
-// 既存renderProjectHome後にフォルダ表示を重ねる
-let folderRendering=false;
-const folderObserver=new MutationObserver(()=>{
- if(window.__mixedRootDragging||window.__libraryStageDragging||reorderDragging||folderRendering)return;
- clearTimeout(window.__folderRenderTimer);
- window.__folderRenderTimer=setTimeout(()=>{
-   if(!window.__mixedRootDragging&&!window.__libraryStageDragging&&!reorderDragging&&!folderRendering)renderFoldersAndFilter();
- },0);
-});
-const folderList=document.getElementById("projectList");
-if(folderList)folderObserver.observe(folderList,{childList:true});
+// Library/folder rendering is explicit. Every project-list rebuild is followed by
+// renderFoldersAndFilter(); no MutationObserver/frame lock is used here because it
+// can suppress a real root/folder navigation that happens in the same frame.
 
 // Library drag/drop handlers live in app-library-drag.js.
 
@@ -712,18 +704,6 @@ function refreshSettingsLanguage(){
     renderDefaultStageEditor();
   }
 }
-
-/* ---- Folder rendering + localized default stage names ---- */
-/* After startup/reload, force one final folder-aware render after all language
-   initialization has finished. This does not change folderId data. */
-setTimeout(()=>{
- folderRendering=false;
- if(!currentProjectId){
-   renderProjectList();
-   renderFoldersAndFilter();
- }
-},40);
-
 
 
 /* Visible project title */
