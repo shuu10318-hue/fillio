@@ -8,31 +8,23 @@ function createFolder(){
  projectStore.folders[id]={name,createdAt:new Date().toISOString()};
  if(!Array.isArray(projectStore.rootOrder))projectStore.rootOrder=[];
  projectStore.rootOrder=["f:"+id,...projectStore.rootOrder.filter(k=>k!=="f:"+id)];
- persistProjectStore();input.value="";document.getElementById("folderModal").classList.remove("open");document.body.style.overflow="";
+ persistProjectStore();input.value="";document.getElementById("folderModal").classList.remove("open");consumeModalHistory("folderModal");document.body.style.overflow="";
  renderFoldersAndFilter();
 }
-document.getElementById("folderAdd")?.addEventListener("click",()=>{document.getElementById("folderModal").classList.add("open");document.body.style.overflow="hidden";});
-document.getElementById("folderCancel")?.addEventListener("click",()=>{document.getElementById("folderModal").classList.remove("open");document.body.style.overflow=""});
+document.getElementById("folderAdd")?.addEventListener("click",()=>{document.getElementById("folderModal").classList.add("open");pushModalHistory("folderModal");document.body.style.overflow="hidden";});
+document.getElementById("folderCancel")?.addEventListener("click",()=>{document.getElementById("folderModal").classList.remove("open");consumeModalHistory("folderModal");document.body.style.overflow=""});
 document.getElementById("folderCreate")?.addEventListener("click",createFolder);
-// Android/file://でも確実に反応する予備の委譲ハンドラ
-document.addEventListener("click",e=>{
- if(e.target?.id==="folderCreate"){e.preventDefault();createFolder()}
- if(e.target?.id==="folderCancel"){
-   e.preventDefault();
-   document.getElementById("folderModal")?.classList.remove("open");
-   document.body.style.overflow="";
- }
-});
 document.getElementById("folderNameInput")?.addEventListener("keydown",e=>{if(e.key==="Enter")createFolder()});
 document.getElementById("folderRename")?.addEventListener("click",()=>{
  if(!currentFolderId)return;
  const f=projectStore.folders?.[currentFolderId];if(!f)return;
  const modal=document.getElementById("folderRenameModal"),input=document.getElementById("folderRenameInput");
- input.value=f.name||"";modal.classList.add("open");document.body.style.overflow="hidden";
+ input.value=f.name||"";modal.classList.add("open");pushModalHistory("folderRenameModal");document.body.style.overflow="hidden";
  setTimeout(()=>{input.focus();input.select();},50);
 });
 function closeFolderRename(){
  document.getElementById("folderRenameModal")?.classList.remove("open");
+ consumeModalHistory("folderRenameModal");
  document.body.style.overflow="";
 }
 function saveFolderRename(){

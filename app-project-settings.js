@@ -37,10 +37,12 @@ function openProjectEdit(id){
   document.getElementById("editProjectCreationStartDate").value=p.creationStartDate||"";
   document.getElementById("editProjectDeadline").value=p.deadline||"";
   document.getElementById("editProjectModal").classList.add("open");
+  pushModalHistory("editProjectModal");
   document.body.style.overflow="hidden";
 }
 function closeProjectEdit(){
   document.getElementById("editProjectModal").classList.remove("open");
+  consumeModalHistory("editProjectModal");
   document.body.style.overflow="";
   editingProjectId=null;
 }
@@ -80,12 +82,16 @@ document.getElementById("saveEditProject").addEventListener("click",()=>{
   // like the Library root.
   const returnFolderId=currentFolderId;
   persistProjectStore();
-  closeProjectEdit();
-  renderProjectList();
-  currentFolderId=(returnFolderId&&projectStore.folders?.[returnFolderId])?returnFolderId:null;
-  renderFoldersAndFilter();
-  saveViewState(currentFolderId?"folder":"root");
-  syncFillioHistory("replace");
+  document.getElementById("editProjectModal").classList.remove("open");
+  document.body.style.overflow="";
+  editingProjectId=null;
+  consumeModalHistory("editProjectModal",()=>{
+    renderProjectList();
+    currentFolderId=(returnFolderId&&projectStore.folders?.[returnFolderId])?returnFolderId:null;
+    renderFoldersAndFilter();
+    saveViewState(currentFolderId?"folder":"root");
+    syncFillioHistory("replace");
+  });
 });
 
 

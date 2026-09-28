@@ -3,12 +3,6 @@
 (function fillioUiFixes(){
   const $=id=>document.getElementById(id);
 
-  const helpBtn=$("libraryHelpButton"), helpModal=$("libraryHelpModal"), helpClose=$("libraryHelpClose");
-  const openHelp=()=>{if(!helpModal)return;lockPageScroll();helpModal.classList.add("open");helpModal.setAttribute("aria-hidden","false")};
-  const closeHelp=()=>{if(!helpModal)return;helpModal.classList.remove("open");helpModal.setAttribute("aria-hidden","true");unlockPageScroll()};
-  helpBtn?.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();openHelp()},{capture:true});
-  helpClose?.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();closeHelp()},{capture:true});
-
   document.querySelectorAll(".display-mode-option").forEach(btn=>btn.addEventListener("click",e=>{
     e.preventDefault();
     appSettings.displayMode=btn.dataset.displayMode;

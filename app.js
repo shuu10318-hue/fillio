@@ -41,9 +41,13 @@ function createProgress(n,stageCount=stages.length){return Array.from({length:n}
 function createNotApplicable(n,stageCount=stages.length){return Array.from({length:n},()=>Array(stageCount).fill(false))}
 
 
-/* Browser/PWA navigation history: enables Android back-swipe without changing saved project data. */
+/* Browser/PWA navigation history.
+   A modal owns one history entry while it is open. Android/browser Back consumes
+   that entry and closes the modal; it never rewrites history after the gesture. */
 let fillioHistoryReady=false;
 let fillioHandlingPop=false;
+let fillioClosingModalFromPop=false;
+let fillioAfterModalHistoryClose=null;
 function fillioNavState(view,extra={}){
   return {fillio:true,view,...extra};
 }
@@ -67,7 +71,22 @@ function restoreFillioHistoryState(state){
     else showProjectHome();
   }finally{fillioHandlingPop=false}
 }
-function closeOpenModalForHistoryBack(){
+function pushModalHistory(modalId){
+  const modal=document.getElementById(modalId);
+  if(!modal||window.history.state?.fillioModal===modalId)return;
+  window.history.pushState({...currentFillioNavState(),fillioModal:modalId},"");
+  fillioHistoryReady=true;
+}
+function consumeModalHistory(modalId,afterClose){
+  if(fillioClosingModalFromPop){afterClose?.();return;}
+  if(window.history.state?.fillioModal===modalId){
+    fillioAfterModalHistoryClose=typeof afterClose==="function"?afterClose:()=>{};
+    window.history.back();
+    return;
+  }
+  afterClose?.();
+}
+function closeOpenModalFromHistory(){
   const modalClosers=[
     ["helpModal","helpClose"],
     ["libraryHelpModal","libraryHelpClose"],
@@ -83,22 +102,21 @@ function closeOpenModalForHistoryBack(){
   ];
   for(let i=modalClosers.length-1;i>=0;i--){
     const [modalId,closeId]=modalClosers[i];
-    const modal=document.getElementById(modalId);
-    if(!modal?.classList.contains("open"))continue;
-    document.getElementById(closeId)?.click();
+    if(!document.getElementById(modalId)?.classList.contains("open"))continue;
+    fillioClosingModalFromPop=true;
+    try{document.getElementById(closeId)?.click()}finally{fillioClosingModalFromPop=false}
     return true;
   }
   return false;
 }
 window.addEventListener("popstate",e=>{
-  if(closeOpenModalForHistoryBack()){
-    // Android's back swipe already consumed one browser-history entry.
-    // Restore the current Fillio view so this gesture closes only the modal;
-    // the next back gesture can then navigate to the previous view normally.
-    window.history.pushState(currentFillioNavState(),"");
-    fillioHistoryReady=true;
+  if(fillioAfterModalHistoryClose){
+    const after=fillioAfterModalHistoryClose;
+    fillioAfterModalHistoryClose=null;
+    after();
     return;
   }
+  if(closeOpenModalFromHistory())return;
   restoreFillioHistoryState(e.state?.fillio?e.state:fillioNavState("root"));
 });
 
@@ -288,6 +306,7 @@ function openSticky(page){
   renderStickyTodos();
   document.querySelectorAll(".color-pick").forEach(b=>b.classList.toggle("selected",b.dataset.color===stickyColor));
   document.getElementById("stickyModal").classList.add("open");
+  pushModalHistory("stickyModal");
 }
 
 function renderStickyTodos(){
@@ -320,8 +339,8 @@ document.querySelectorAll(".color-pick").forEach(b=>b.onclick=()=>{
   stickyColor=b.dataset.color||"";
   document.querySelectorAll(".color-pick").forEach(x=>x.classList.toggle("selected",x===b));
 });
-document.getElementById("stickyClose").onclick=()=>document.getElementById("stickyModal").classList.remove("open");
-document.getElementById("stickyModal").onclick=e=>{if(e.target.id==="stickyModal")e.currentTarget.classList.remove("open")};
+document.getElementById("stickyClose").onclick=()=>{document.getElementById("stickyModal").classList.remove("open");consumeModalHistory("stickyModal")};
+document.getElementById("stickyModal").onclick=e=>{if(e.target.id==="stickyModal"){e.currentTarget.classList.remove("open");consumeModalHistory("stickyModal")}};
 document.getElementById("stickyDelete").onclick=()=>{
   if(stickyPage===null)return;
   const deleteMessage=t("memo.confirmDelete");
@@ -333,6 +352,7 @@ document.getElementById("stickyDelete").onclick=()=>{
   renderStickyTodos();
   save();
   document.getElementById("stickyModal").classList.remove("open");
+  consumeModalHistory("stickyModal");
   renderPages();
 };
 document.getElementById("stickySave").onclick=()=>{
@@ -345,6 +365,7 @@ document.getElementById("stickySave").onclick=()=>{
   pageNotes[String(stickyPage)]={text,color:stickyColor,label,todos:stickyTodos.map(t=>({id:t.id,text:t.text,done:!!t.done}))};
   save();
   document.getElementById("stickyModal").classList.remove("open");
+  consumeModalHistory("stickyModal");
   renderPages();
 };
 
@@ -469,6 +490,7 @@ function renderMemoList(){
     jump.onclick=()=>{
       if(index<0||index>=totalPages)return;
       document.getElementById("memoListModal").classList.remove("open");
+      consumeModalHistory("memoListModal");
       document.body.style.overflow="";
       render();
       const pages=document.getElementById("pages");
@@ -501,15 +523,18 @@ document.getElementById("memoListButton").onclick=()=>{
   document.querySelectorAll(".memo-filter").forEach(b=>b.classList.toggle("active",b.dataset.filter==="all"));
   renderMemoList();
   document.getElementById("memoListModal").classList.add("open");
+  pushModalHistory("memoListModal");
   document.body.style.overflow="hidden";
 };
 document.getElementById("closeMemoList").onclick=()=>{
   document.getElementById("memoListModal").classList.remove("open");
+  consumeModalHistory("memoListModal");
   document.body.style.overflow="";
 };
 document.getElementById("memoListModal").onclick=e=>{
   if(e.target.id==="memoListModal"){
     e.currentTarget.classList.remove("open");
+    consumeModalHistory("memoListModal");
     document.body.style.overflow="";
   }
 };
@@ -524,6 +549,7 @@ document.querySelectorAll(".memo-filter").forEach(btn=>btn.onclick=()=>{
 
 function closeAppSettings(){
   document.getElementById("appSettingsModal").classList.remove("open");
+  consumeModalHistory("appSettingsModal");
   unlockPageScroll();
 }
 
@@ -543,8 +569,8 @@ load();
 const libraryHelpButton=document.getElementById("libraryHelpButton");
 const libraryHelpModal=document.getElementById("libraryHelpModal");
 const libraryHelpClose=document.getElementById("libraryHelpClose");
-function openLibraryHelp(){lockPageScroll();libraryHelpModal.classList.add("open");libraryHelpModal.setAttribute("aria-hidden","false")}
-function closeLibraryHelp(){libraryHelpModal.classList.remove("open");libraryHelpModal.setAttribute("aria-hidden","true");unlockPageScroll()}
+function openLibraryHelp(){lockPageScroll();libraryHelpModal.classList.add("open");libraryHelpModal.setAttribute("aria-hidden","false");pushModalHistory("libraryHelpModal")}
+function closeLibraryHelp(){libraryHelpModal.classList.remove("open");libraryHelpModal.setAttribute("aria-hidden","true");consumeModalHistory("libraryHelpModal");unlockPageScroll()}
 libraryHelpButton?.addEventListener("click",openLibraryHelp);
 libraryHelpClose?.addEventListener("click",closeLibraryHelp);
 libraryHelpModal?.addEventListener("click",e=>{if(e.target===libraryHelpModal)closeLibraryHelp()});
@@ -555,11 +581,13 @@ const helpModal=document.getElementById("helpModal");
 const helpClose=document.getElementById("helpClose");
 function openHelp(){
   helpModal.classList.add("open");
+  pushModalHistory("helpModal");
   helpModal.setAttribute("aria-hidden","false");
   document.body.style.overflow="hidden";
 }
 function closeHelp(){
   helpModal.classList.remove("open");
+  consumeModalHistory("helpModal");
   helpModal.setAttribute("aria-hidden","true");
   document.body.style.overflow="";
 }
@@ -661,15 +689,17 @@ function updateLanguageButtons(){
 document.getElementById("languageButton").onclick=()=>{
  updateLanguageButtons();
  document.getElementById("languageModal").classList.add("open");
+ pushModalHistory("languageModal");
 };
-document.getElementById("languageCancel").onclick=()=>document.getElementById("languageModal").classList.remove("open");
-document.getElementById("languageModal").onclick=e=>{if(e.target.id==="languageModal")e.currentTarget.classList.remove("open")};
+document.getElementById("languageCancel").onclick=()=>{document.getElementById("languageModal").classList.remove("open");consumeModalHistory("languageModal")};
+document.getElementById("languageModal").onclick=e=>{if(e.target.id==="languageModal"){e.currentTarget.classList.remove("open");consumeModalHistory("languageModal")}};
 
 document.querySelectorAll(".language-option").forEach(btn=>{
  btn.onclick=()=>{
    const selected=btn.dataset.lang==="en"?"en":"ja";
    if(selected===languageSettings.language){
      document.getElementById("languageModal")?.classList.remove("open");
+     consumeModalHistory("languageModal");
      return;
    }
    appSettings=normalizeAppSettings({
@@ -679,7 +709,8 @@ document.querySelectorAll(".language-option").forEach(btn=>{
      defaultStages:cloneStages(projectDefaults.stages)
    });
    if(!persistAppSettings())return;
-   location.reload();
+   document.getElementById("languageModal")?.classList.remove("open");
+   consumeModalHistory("languageModal",()=>location.reload());
  };
 });
 
@@ -691,6 +722,7 @@ document.getElementById("appSettingsButton").onclick=()=>{
  localizeDefaultsSettingsUi();
  lockPageScroll();
  document.getElementById("appSettingsModal").classList.add("open");
+ pushModalHistory("appSettingsModal");
 };
 document.getElementById("settingsSave").onclick=()=>{
  const b=clampPageCount(document.getElementById("defaultPages").value);
@@ -703,6 +735,7 @@ document.getElementById("settingsSave").onclick=()=>{
  });
  persistAppSettings();
  document.getElementById("appSettingsModal").classList.remove("open");
+ consumeModalHistory("appSettingsModal");
  unlockPageScroll();
  applyCurrentLanguageNow();
 };

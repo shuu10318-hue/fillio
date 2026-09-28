@@ -32,11 +32,13 @@ document.getElementById("newProjectButton").onclick=()=>{
   renderNewProjectStageEditor();
   lockPageScroll();
   document.getElementById("projectModal").classList.add("open");
+  pushModalHistory("projectModal");
   // Do not auto-focus: opening the create sheet should not summon the mobile keyboard.
 };
 
 function closeNewProjectModal(){
   document.getElementById("projectModal").classList.remove("open");
+  consumeModalHistory("projectModal");
   unlockPageScroll();
 }
 
@@ -64,6 +66,7 @@ document.getElementById("createNewProject").onclick=()=>{
   }
   projectStore.activeProjectId=id;
   persistProjectStore();
-  closeNewProjectModal();
-  openProject(id);
+  document.getElementById("projectModal").classList.remove("open");
+  unlockPageScroll();
+  consumeModalHistory("projectModal",()=>openProject(id));
 };

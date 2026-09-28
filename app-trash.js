@@ -44,8 +44,8 @@
     if(allProjectIds.has(projectStore.activeProjectId))projectStore.activeProjectId=null;
     persistProjectStore();renderTrash();renderProjectList();renderFoldersAndFilter();
   };
-  open.onclick=()=>{renderTrash();modal.classList.add("open");lockPageScroll()};
-  close.onclick=()=>{modal.classList.remove("open");unlockPageScroll()};
+  open.onclick=()=>{renderTrash();modal.classList.add("open");pushModalHistory("trashModal");lockPageScroll()};
+  close.onclick=()=>{modal.classList.remove("open");consumeModalHistory("trashModal");unlockPageScroll()};
   modal.addEventListener("click",e=>{if(e.target===modal)close.click()});
   function setZoneText(){document.getElementById("trashTitle").textContent=t("trash.title");document.getElementById("dragTrashLabel").textContent=t("trash.move");open.querySelector("span").textContent=t("trash.title");empty.textContent=t("trash.empty");close.textContent="×";close.setAttribute("aria-label",t("common.close"))}
   setZoneText();
