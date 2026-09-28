@@ -181,7 +181,9 @@ button{font:inherit;color:inherit}
 .help-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .help-item{padding:14px 0;border-bottom:1px solid var(--border)}
 .help-item:last-child{border-bottom:0}
-.help-item-title{font-weight:800;margin-bottom:5px}
+.help-item-title{display:flex;align-items:center;gap:9px;font-weight:800;margin-bottom:6px}
+.help-item-icon{width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 20px;color:var(--text)}
+.help-item-icon .icon-line{width:20px;height:20px}
 .help-item-text{font-size:13px;line-height:1.65;color:var(--muted)}
 .help-states{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap}
 .help-state{display:flex;align-items:center;gap:6px;font-size:12px}
