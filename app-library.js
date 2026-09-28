@@ -154,7 +154,7 @@ function renderFoldersAndFilter(){
  const head=document.getElementById("folderHead");
  if(currentFolderId&&projectStore.folders[currentFolderId]){
    head?.classList.add("show");
-   document.getElementById("folderHeadTitle").innerHTML=`<button type="button" class="crumb-link" data-nav="root">${"Library"}</button><span class="crumb-sep">›</span><span class="crumb-current">${String(projectStore.folders[currentFolderId].name).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}</span>`;
+   document.getElementById("folderHeadTitle").innerHTML=`<button type="button" class="crumb-link" data-nav="root">${t("library.title")}</button><span class="crumb-sep">›</span><span class="crumb-current">${String(projectStore.folders[currentFolderId].name).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}</span>`;
  const renameBtn=document.getElementById("folderRename");
  const deleteBtn=document.getElementById("folderDelete");
  if(renameBtn)renameBtn.style.display="";

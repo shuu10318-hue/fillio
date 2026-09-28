@@ -125,7 +125,7 @@ function renderRootBreadcrumb(){
   const title=document.getElementById("folderHeadTitle");
   if(!head||!title||currentFolderId)return;
   head.style.display="";
-  title.innerHTML=`<span class="crumb-current">${"Library"}</span>`;
+  title.innerHTML=`<span class="crumb-current">${t("library.title")}</span>`;
   const rename=document.getElementById("folderRename");
   const del=document.getElementById("folderDelete");
   if(rename)rename.style.display="none";
@@ -145,7 +145,7 @@ function renderProjectBreadcrumb(){
   const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
   const rawProjectName=p?.title||"";
   const projectName=esc(rawProjectName||(t("project.defaultTitle")));
-  const rootLabel="Library";
+  const rootLabel=t("library.title");
   if(fid){
     el.innerHTML=`<button type="button" class="crumb-link" data-nav="root">${rootLabel}</button><span class="crumb-sep">›</span><button type="button" class="crumb-link" data-nav="folder" data-folder-id="${esc(fid)}">${esc(projectStore.folders[fid].name)}</button><span class="crumb-sep">›</span><span class="crumb-current" data-user-text="1">${projectName}</span>`;
   }else{
