@@ -152,13 +152,13 @@ function showProjectHome(historyMode="push"){
   saveViewState("root");
   syncFillioHistory(historyMode);
 }
-document.addEventListener("click",e=>{
-  const homeLogo=e.target.closest?.(".fillio-home-link");
-  if(homeLogo){
+document.querySelectorAll(".fillio-home-link").forEach(button=>{
+  button.addEventListener("click",e=>{
     e.preventDefault();
     showProjectHome();
-    return;
-  }
+  });
+});
+document.addEventListener("click",e=>{
   const crumb=e.target.closest?.(".crumb-link");
   if(!crumb)return;
   e.preventDefault();
