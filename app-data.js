@@ -3,21 +3,37 @@ function localDate(d=new Date()){
   const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");
   return `${y}-${m}-${day}`;
 }
-function isApplicableCell(p,s){return !notApplicable?.[p]?.[s]}
-function applicableCount(){
-  let count=0;
-  for(let p=0;p<progress.length;p++)for(let s=0;s<(progress[p]?.length||0);s++)if(isApplicableCell(p,s))count++;
-  return count;
+function progressTotals(rows,naRows){
+  const progressRows=Array.isArray(rows)?rows:[];
+  const na=Array.isArray(naRows)?naRows:[];
+  let applicable=0,started=0,done=0,weighted=0;
+  progressRows.forEach((row,p)=>{
+    if(!Array.isArray(row))return;
+    row.forEach((raw,s)=>{
+      if(na?.[p]?.[s])return;
+      const value=Number(raw)||0;
+      applicable++;
+      if(value>0)started++;
+      if(value===2){done++;weighted+=1}
+      else if(value===1)weighted+=0.5;
+    });
+  });
+  return {applicable,started,done,weighted};
 }
-function doneCount(){
-  let count=0;
-  for(let p=0;p<progress.length;p++)for(let s=0;s<(progress[p]?.length||0);s++)if(isApplicableCell(p,s)&&progress[p][s]===2)count++;
-  return count;
-}
-function weightedCount(){
-  let sum=0;
-  for(let p=0;p<progress.length;p++)for(let s=0;s<(progress[p]?.length||0);s++)if(isApplicableCell(p,s))sum+=progress[p][s]===2?1:progress[p][s]===1?0.5:0;
-  return sum;
+function applicableCount(){return progressTotals(progress,notApplicable).applicable}
+function doneCount(){return progressTotals(progress,notApplicable).done}
+function weightedCount(){return progressTotals(progress,notApplicable).weighted}
+function rebaseProjectHistoryAfterStructureChange(project,beforeTotals){
+  const today=localDate();
+  const h=project?.history&&typeof project.history==="object"?project.history:null;
+  if(!h||h.day!==today)return;
+  const before=beforeTotals||{done:0,weighted:0};
+  const todayDone=before.done-Number(h.baselineDone||0);
+  const todayWeighted=before.weighted-Number(h.baselineWeighted||0);
+  const after=progressTotals(project.progress,project.notApplicable);
+  // Page/Stage structure edits are not work. Preserve today's recorded work delta.
+  h.baselineDone=after.done-todayDone;
+  h.baselineWeighted=after.weighted-todayWeighted;
 }
 function addDays(dateStr,n){
   const [y,m,d]=dateStr.split("-").map(Number);

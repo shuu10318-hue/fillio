@@ -23,12 +23,11 @@ function projectPercent(p){
 }
 
 function projectDashboardStats(p){
-  const rows=Array.isArray(p?.progress)?p.progress:[];
-  const vals=projectApplicableValues(p);
-  const total=Math.max(1,vals.length);
-  const started=vals.filter(v=>v>0).length;
-  const done=vals.filter(v=>v===2).length;
-  const weighted=vals.reduce((sum,v)=>sum+(v===2?1:v===1?0.5:0),0);
+  const totals=progressTotals(p?.progress,p?.notApplicable);
+  const total=totals.applicable;
+  const started=totals.started;
+  const done=totals.done;
+  const weighted=totals.weighted;
   const today=localDate();
   const h=p?.history&&typeof p.history==="object"?p.history:{};
   const todayDone=h.day===today ? done-Number(h.baselineDone||0) : Number(h.days?.[today]||0);
@@ -46,12 +45,12 @@ function projectDashboardStats(p){
   const avgWeighted=weekWeighted/7;
   const remaining=Math.max(0,total-weighted);
   let forecast="—";
-  if(remaining<=0) forecast=t("library.completed");
+  if(total>0&&remaining<=0) forecast=t("library.completed");
   else if(avgWeighted>0){
     const days=Math.ceil(remaining/avgWeighted),d=new Date(); d.setDate(d.getDate()+days);
     forecast=`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;
   }
-  return {startedPct:Math.round(started/total*100),donePct:completionPercent(done,total),todayDone,weekDone,forecast};
+  return {startedPct:total?Math.round(started/total*100):0,donePct:completionPercent(done,total),todayDone,weekDone,forecast};
 }
 
 function projectStageStats(p){

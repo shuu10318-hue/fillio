@@ -53,6 +53,7 @@ document.getElementById("saveEditProject").addEventListener("click",()=>{
   const newTotal=clampPageCount(document.getElementById("editProjectPages").value);
   const oldProgress=Array.isArray(p.progress)?p.progress:[];
   const oldNotApplicable=Array.isArray(p.notApplicable)?p.notApplicable:[];
+  const beforeTotals=progressTotals(oldProgress,oldNotApplicable);
   const oldStages=Array.isArray(p.stages)&&p.stages.length?cloneStages(p.stages):cloneStages(DEFAULT_STAGES);
   const cleanedStages=stageDraft.map(normalizeStage);
   // Each draft item carries its original column index, so rename/reorder preserves the exact progress column.
@@ -72,6 +73,7 @@ document.getElementById("saveEditProject").addEventListener("click",()=>{
   p.totalPages=newTotal;
   p.creationStartDate=document.getElementById("editProjectCreationStartDate").value||p.creationStartDate||localDate();
   p.deadline=document.getElementById("editProjectDeadline").value||"";
+  rebaseProjectHistoryAfterStructureChange(p,beforeTotals);
   // Keep the Library context that was active when this settings sheet was opened.
   // renderProjectList() rebuilds every project card, so the folder filter must be
   // reapplied explicitly after saving; otherwise a folder view temporarily looks
