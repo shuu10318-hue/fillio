@@ -32,10 +32,13 @@ const range=document.getElementById("range");
 
 let stages=cloneStages(DEFAULT_STAGES);
 let totalPages=48,progress=createProgress(48);
+let notApplicable=createNotApplicable(48);
+let naMode=false;
 let history={day:"",baselineDone:0,days:{}};
 let pageNotes={};
 
 function createProgress(n,stageCount=stages.length){return Array.from({length:n},()=>Array(stageCount).fill(0))}
+function createNotApplicable(n,stageCount=stages.length){return Array.from({length:n},()=>Array(stageCount).fill(false))}
 
 
 /* Browser/PWA navigation history: enables Android back-swipe without changing saved project data. */
@@ -330,12 +333,21 @@ function renderPages(){
     num.onclick=()=>openSticky(actualPage);
     row.appendChild(num);
     for(let s=0;s<stages.length;s++){
-      const b=document.createElement("button");b.className="progress-cell state"+progress[p][s];
-      b.textContent="";
+      const b=document.createElement("button");b.className="progress-cell state"+progress[p][s]+(notApplicable[p]?.[s]?" is-na":"");
+      b.textContent=notApplicable[p]?.[s]?"N/A":"";
       b.dataset.pageIndex=String(p);
       b.dataset.stageIndex=String(s);
       b.onclick=()=>{
         if(Date.now()<suppressCellClickUntil)return;
+        if(naMode){
+          if(progress[p][s]!==0 && !notApplicable[p]?.[s])return;
+          notApplicable[p][s]=!notApplicable[p][s];
+          setCellVisual(b,progress[p][s]);
+          fillioHaptic(8);
+          save();
+          return;
+        }
+        if(notApplicable[p]?.[s])return;
         progress[p][s]=(progress[p][s]+1)%3;
         setCellVisual(b,progress[p][s]);
         fillioHaptic(8);

@@ -28,8 +28,12 @@ const PAINT_SCROLL_EDGE=72;
 const PAINT_SCROLL_MAX=12;
 
 function setCellVisual(cell,value){
-  cell.classList.remove("state0","state1","state2");
+  const p=Number(cell.dataset.pageIndex),s=Number(cell.dataset.stageIndex);
+  const isNA=Number.isInteger(p)&&Number.isInteger(s)&&Boolean(notApplicable?.[p]?.[s]);
+  cell.classList.remove("state0","state1","state2","is-na");
   cell.classList.add("state"+value);
+  cell.classList.toggle("is-na",isNA);
+  cell.textContent=isNA?"N/A":"";
 }
 function cancelPaintHold(){
   if(paintHoldTimer){clearTimeout(paintHoldTimer);paintHoldTimer=null}
@@ -70,7 +74,7 @@ function showPaintPreview(endPage,endStage){
   for(const key of next){
     const [p,s]=key.split(":").map(Number);
     const cell=getPaintCell(p,s);
-    if(cell)setCellVisual(cell,paintValue);
+    if(cell && !notApplicable?.[p]?.[s])setCellVisual(cell,paintValue);
   }
   paintPreviewCells=next;
 }
@@ -163,6 +167,7 @@ function endPaint(commit){
     let changed=false;
     for(const key of paintPreviewCells){
       const [p,s]=key.split(":").map(Number);
+      if(notApplicable?.[p]?.[s])continue;
       if(progress[p][s]!==paintValue)changed=true;
       progress[p][s]=paintValue;
     }
@@ -177,6 +182,9 @@ pages.addEventListener('touchstart',e=>{
   if(e.touches.length!==1)return;
   const cell=e.target.closest?.('.progress-cell');
   if(!cell)return;
+  if(naMode)return;
+  const sourceP=Number(cell.dataset.pageIndex),sourceS=Number(cell.dataset.stageIndex);
+  if(notApplicable?.[sourceP]?.[sourceS])return;
   cancelPaintHold();
   stopPaintAutoScroll();
   paintMode=false;
@@ -219,3 +227,21 @@ pages.addEventListener('touchmove',e=>{
 
 pages.addEventListener('touchend',()=>endPaint(true),{passive:true});
 pages.addEventListener('touchcancel',()=>endPaint(false),{passive:true});
+
+
+// N/A is a separate edit mode. Only untouched cells can become N/A; N/A toggles back to an empty cell.
+const naModeButton=document.getElementById("naModeButton");
+function syncNaModeButton(){
+  if(!naModeButton)return;
+  naModeButton.classList.toggle("active",naMode);
+  naModeButton.setAttribute("aria-pressed",naMode?"true":"false");
+}
+if(naModeButton){
+  naModeButton.addEventListener("click",()=>{
+    endPaint(false);
+    naMode=!naMode;
+    syncNaModeButton();
+    fillioHaptic(8);
+  });
+  syncNaModeButton();
+}

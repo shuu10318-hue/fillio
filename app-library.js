@@ -5,15 +5,26 @@ function stepUnit(value){
   return Math.abs(Number(value))===1?"Step":"Steps";
 }
 
+function projectApplicableValues(p){
+  const rows=Array.isArray(p?.progress)?p.progress:[];
+  const na=Array.isArray(p?.notApplicable)?p.notApplicable:[];
+  const vals=[];
+  rows.forEach((row,pi)=>(Array.isArray(row)?row:[]).forEach((v,si)=>{if(!na?.[pi]?.[si])vals.push(Number(v)||0)}));
+  return vals;
+}
+function completionPercent(done,total){
+  if(total<=0)return 0;
+  if(done>=total)return 100;
+  return Math.min(99,Math.round(done/total*100));
+}
 function projectPercent(p){
-  const vals=(p.progress||[]).flat();
-  if(!vals.length)return 0;
-  return Math.round(vals.filter(v=>v===2).length/vals.length*100);
+  const vals=projectApplicableValues(p);
+  return completionPercent(vals.filter(v=>v===2).length,vals.length);
 }
 
 function projectDashboardStats(p){
   const rows=Array.isArray(p?.progress)?p.progress:[];
-  const vals=rows.flat();
+  const vals=projectApplicableValues(p);
   const total=Math.max(1,vals.length);
   const started=vals.filter(v=>v>0).length;
   const done=vals.filter(v=>v===2).length;
@@ -40,18 +51,19 @@ function projectDashboardStats(p){
     const days=Math.ceil(remaining/avgWeighted),d=new Date(); d.setDate(d.getDate()+days);
     forecast=`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;
   }
-  return {startedPct:Math.round(started/total*100),donePct:Math.round(done/total*100),todayDone,weekDone,forecast};
+  return {startedPct:Math.round(started/total*100),donePct:completionPercent(done,total),todayDone,weekDone,forecast};
 }
 
 function projectStageStats(p){
   const rows=Array.isArray(p?.progress)?p.progress:[];
   const names=Array.isArray(p?.stages)&&p.stages.length?p.stages:DEFAULT_STAGES;
   return names.map((name,stageIndex)=>{
-    const vals=rows.map(row=>Array.isArray(row)?Number(row[stageIndex]||0):0);
-    const total=Math.max(1,vals.length);
+    const na=Array.isArray(p?.notApplicable)?p.notApplicable:[];
+    const vals=rows.map((row,pageIndex)=>({value:Array.isArray(row)?Number(row[stageIndex]||0):0,na:Boolean(na?.[pageIndex]?.[stageIndex])})).filter(x=>!x.na).map(x=>x.value);
+    const total=vals.length;
     const started=vals.filter(v=>v>0).length;
     const done=vals.filter(v=>v===2).length;
-    return {name:stageLabel(name),startedPct:Math.round(started/total*100),pct:Math.round(done/total*100),done,total};
+    return {name:stageLabel(name),startedPct:total?Math.round(started/total*100):0,pct:completionPercent(done,total),done,total};
   });
 }
 
@@ -75,7 +87,7 @@ function renderProjectList(){
     // Startup language rendering can run before renderFoldersAndFilter's frame guard clears;
     // never expose the unfiltered all-project list during that gap.
     item.style.display=((p.folderId||null)===currentFolderId)?"":"none";
-    const donePages=(p.progress||[]).filter(r=>Array.isArray(r)&&r.every(v=>v===2)).length;
+    const donePages=(p.progress||[]).filter((r,pi)=>Array.isArray(r)&&r.some((_,si)=>!p.notApplicable?.[pi]?.[si])&&r.every((v,si)=>p.notApplicable?.[pi]?.[si]||v===2)).length;
     const dash=projectDashboardStats(p);
     const donePct=projectPercent(p);
     const stageStats=projectStageStats(p);

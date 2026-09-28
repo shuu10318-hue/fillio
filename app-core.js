@@ -19,8 +19,8 @@ function saveProjectStageValueModes(){return safeStorageSet(STAGE_VALUE_MODE_KEY
 let appSettings=null;
 let languageSettings={language:"ja"};
 let projectDefaults={pages:48,stages:[]};
-const DATA_VERSION=3;
-const BACKUP_VERSION=3;
+const DATA_VERSION=4;
+const BACKUP_VERSION=4;
 const PROJECT_PAGE_MAX=500;
 let projectStore={version:DATA_VERSION,activeProjectId:null,projects:{}};
 let currentProjectId=null;

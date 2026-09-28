@@ -52,6 +52,7 @@ document.getElementById("saveEditProject").addEventListener("click",()=>{
   const p=projectStore.projects[editingProjectId];
   const newTotal=clampPageCount(document.getElementById("editProjectPages").value);
   const oldProgress=Array.isArray(p.progress)?p.progress:[];
+  const oldNotApplicable=Array.isArray(p.notApplicable)?p.notApplicable:[];
   const oldStages=Array.isArray(p.stages)&&p.stages.length?cloneStages(p.stages):cloneStages(DEFAULT_STAGES);
   const cleanedStages=stageDraft.map(normalizeStage);
   // Each draft item carries its original column index, so rename/reorder preserves the exact progress column.
@@ -61,6 +62,11 @@ document.getElementById("saveEditProject").addEventListener("click",()=>{
     if(i>=oldProgress.length)return Array(p.stages.length).fill(0);
     const oldRow=oldProgress[i]||[];
     return mapping.map(oi=>oi===null?0:(oldRow[oi]??0));
+  });
+  p.notApplicable=Array.from({length:newTotal},(_,i)=>{
+    if(i>=oldNotApplicable.length)return Array(p.stages.length).fill(false);
+    const oldRow=oldNotApplicable[i]||[];
+    return mapping.map(oi=>oi===null?false:Boolean(oldRow[oi]));
   });
   p.title=document.getElementById("editProjectTitle").value.trim();
   p.totalPages=newTotal;

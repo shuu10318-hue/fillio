@@ -3,8 +3,22 @@ function localDate(d=new Date()){
   const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");
   return `${y}-${m}-${day}`;
 }
-function doneCount(){return progress.flat().filter(v=>v===2).length}
-function weightedCount(){return progress.flat().reduce((sum,v)=>sum+(v===2?1:v===1?0.5:0),0)}
+function isApplicableCell(p,s){return !notApplicable?.[p]?.[s]}
+function applicableCount(){
+  let count=0;
+  for(let p=0;p<progress.length;p++)for(let s=0;s<(progress[p]?.length||0);s++)if(isApplicableCell(p,s))count++;
+  return count;
+}
+function doneCount(){
+  let count=0;
+  for(let p=0;p<progress.length;p++)for(let s=0;s<(progress[p]?.length||0);s++)if(isApplicableCell(p,s)&&progress[p][s]===2)count++;
+  return count;
+}
+function weightedCount(){
+  let sum=0;
+  for(let p=0;p<progress.length;p++)for(let s=0;s<(progress[p]?.length||0);s++)if(isApplicableCell(p,s))sum+=progress[p][s]===2?1:progress[p][s]===1?0.5:0;
+  return sum;
+}
 function addDays(dateStr,n){
   const [y,m,d]=dateStr.split("-").map(Number);
   const x=new Date(y,m-1,d); x.setDate(x.getDate()+n); return localDate(x);
@@ -43,6 +57,7 @@ function makeProjectData(){
     deadline:current.deadline||"",
     totalPages,
     progress:progress.map(r=>[...r]),
+    notApplicable:notApplicable.map(r=>[...r]),
     stages:cloneStages(stages),
     history:JSON.parse(JSON.stringify(history)),
     pageNotes:JSON.parse(JSON.stringify(pageNotes))
@@ -51,7 +66,7 @@ function makeProjectData(){
 function freshProjectData(title="新しいプロジェクト",pages=1){
   const n=Math.max(1,Math.min(PROJECT_PAGE_MAX,pages));
   return {
-    title,creationStartDate:localDate(),deadline:"",totalPages:n,progress:createProgress(n),stages:cloneStages(DEFAULT_STAGES),folderId:null,
+    title,creationStartDate:localDate(),deadline:"",totalPages:n,progress:createProgress(n),notApplicable:createNotApplicable(n),stages:cloneStages(DEFAULT_STAGES),folderId:null,
     history:{day:localDate(),baselineDone:0,baselineWeighted:0,weightedDays:{},days:{}},
     pageNotes:{}
   };
@@ -80,12 +95,13 @@ function normalizeProjectData(s){
   let n=Number.isInteger(s?.totalPages)&&s.totalPages>0?Math.min(PROJECT_PAGE_MAX,s.totalPages):48;
 const projectStages=normalizeStages(s?.stages);
   let pg=Array.from({length:n},(_,p)=>Array.from({length:projectStages.length},(_,i)=>[0,1,2].includes(s?.progress?.[p]?.[i])?s.progress[p][i]:0));
+  let na=Array.from({length:n},(_,p)=>Array.from({length:projectStages.length},(_,i)=>Boolean(s?.notApplicable?.[p]?.[i]) && pg[p][i]===0));
   return {
     title:typeof s?.title==="string"?s.title:"",
     stages:projectStages,
     creationStartDate:typeof s?.creationStartDate==="string"&&s.creationStartDate?s.creationStartDate:localDate(),
     deadline:typeof s?.deadline==="string"?s.deadline:"",
-    totalPages:n,progress:pg,
+    totalPages:n,progress:pg,notApplicable:na,
     folderId:typeof s?.folderId==="string"&&s.folderId?s.folderId:null,
     trashedAt:Number.isFinite(Number(s?.trashedAt))&&Number(s.trashedAt)>0?Number(s.trashedAt):null,
     history:s?.history&&typeof s.history==="object"?s.history:null,
@@ -120,6 +136,9 @@ function applyProjectData(s){
   const p=normalizeProjectData(s);
   totalPages=p.totalPages;
   progress=p.progress;
+  notApplicable=p.notApplicable;
+  naMode=false;
+  if(typeof syncNaModeButton==="function")syncNaModeButton();
   stages=cloneStages(p.stages||DEFAULT_STAGES);
   pageNotes=p.pageNotes;
   const currentTitleEl=document.getElementById("currentProjectTitle");

@@ -53,6 +53,7 @@ document.getElementById("createNewProject").onclick=()=>{
   const newStages=newProjectStageDraft.map(normalizeStage);
   projectStore.projects[id].stages=newStages;
   projectStore.projects[id].progress=Array.from({length:pages},()=>Array(newStages.length).fill(0));
+  projectStore.projects[id].notApplicable=Array.from({length:pages},()=>Array(newStages.length).fill(false));
   projectStore.projects[id].deadline=document.getElementById("newProjectDeadline").value||"";
   projectStore.projectOrder=[id,...(Array.isArray(projectStore.projectOrder)?projectStore.projectOrder:[]).filter(x=>x!==id)];
   if(!Array.isArray(projectStore.rootOrder))projectStore.rootOrder=[];

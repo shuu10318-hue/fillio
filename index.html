@@ -14,7 +14,7 @@
 <title>fillio</title>
 
 
-<link rel="stylesheet" href="style.css?v=107">
+<link rel="stylesheet" href="style.css?v=108">
 </head>
 <body>
 
@@ -38,6 +38,10 @@
       <div class="help-item">
         <div class="help-item-title" data-i18n="editor.help.slide.title">長押し＋スライド</div>
         <div class="help-item-text" data-i18n="editor.help.slide.text">工程マスを約0.5秒長押しし、上下または左右になぞると範囲をプレビューできます。指を離すと確定します。振動したら開始です。</div>
+      </div>
+      <div class="help-item">
+        <div class="help-item-title" data-i18n="editor.help.na.title">N/Aモード</div>
+        <div class="help-item-text" data-i18n="editor.help.na.text">N/Aをオンにすると、未着手の空セルだけを対象外にできます。N/Aセルをもう一度タップすると空セルに戻ります。</div>
       </div>
       <div class="help-item">
         <div class="help-item-title" data-i18n="editor.help.page.title">ページ番号をタップ</div>
@@ -88,7 +92,7 @@
 <div class="top-title"><div class="editor-brand"><button type="button" class="fillio-home-link" aria-label="Libraryへ戻る"><img src="fillio-logo.svg" class="fillio-logo" alt="fillio"></button></div><div class="top-actions"><button id="memoListButton" class="memo-list-button" type="button"><svg class="memo-list-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.75h14a1.25 1.25 0 0 1 1.25 1.25v10.5L15.5 20.25H5A1.25 1.25 0 0 1 3.75 19V5A1.25 1.25 0 0 1 5 3.75Z"/><path d="M15.5 20.25V16.5a1 1 0 0 1 1-1h3.75"/></svg><span class="memo-list-label">メモ一覧</span></button></div></div>
 <div class="current-project-title-wrap"><div class="current-project-title-label" id="currentProjectTitleLabel" data-i18n="project.label">作品</div><div id="currentProjectTitle" class="current-project-title"></div></div><div id="projectBreadcrumb" class="project-breadcrumb"></div>
 <div class="card stage-grid-card">
-<div class="table-toolbar"><div style="display:flex;align-items:center"><div class="section-title" style="margin:0" data-i18n="editor.table">工程表</div><button id="helpButton" class="help-fab" type="button" aria-label="使い方">?</button></div><div id="range" class="range"></div></div>
+<div class="table-toolbar"><div style="display:flex;align-items:center"><div class="section-title" style="margin:0" data-i18n="editor.table">工程表</div><button id="helpButton" class="help-fab" type="button" aria-label="使い方">?</button></div><div class="table-toolbar-end"><button id="naModeButton" class="na-mode-button" type="button" aria-pressed="false">N/A</button><div id="range" class="range"></div></div></div>
 <div class="stage-table-scroll" id="stageTableScroll">
 <div id="tableHeadAnchor" class="table-head-anchor"><div id="tableHead" class="table-head"></div></div>
 <div id="pages"></div>
@@ -260,20 +264,20 @@
 </div>
 
 
-<script src="app-core.js?v=107"></script>
-<script src="app-i18n.js?v=107"></script>
-<script src="app-data.js?v=107"></script>
-<script src="app-stage.js?v=107"></script>
-<script src="app.js?v=107"></script>
-<script src="app-cells.js?v=107"></script>
-<script src="app-library.js?v=107"></script>
-<script src="app-folder.js?v=107"></script>
-<script src="app-library-drag.js?v=107"></script>
-<script src="app-trash.js?v=107"></script>
-<script src="app-project-settings.js?v=107"></script>
-<script src="app-settings.js?v=107"></script>
-<script src="app-ui.js?v=107"></script>
-<script src="app-project-modal.js?v=107"></script>
+<script src="app-core.js?v=108"></script>
+<script src="app-i18n.js?v=108"></script>
+<script src="app-data.js?v=108"></script>
+<script src="app-stage.js?v=108"></script>
+<script src="app.js?v=108"></script>
+<script src="app-cells.js?v=108"></script>
+<script src="app-library.js?v=108"></script>
+<script src="app-folder.js?v=108"></script>
+<script src="app-library-drag.js?v=108"></script>
+<script src="app-trash.js?v=108"></script>
+<script src="app-project-settings.js?v=108"></script>
+<script src="app-settings.js?v=108"></script>
+<script src="app-ui.js?v=108"></script>
+<script src="app-project-modal.js?v=108"></script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
