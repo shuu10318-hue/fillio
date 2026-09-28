@@ -628,10 +628,6 @@ function folderCount(fid){return Object.values(projectStore.projects||{}).filter
 
 // Folder UI operations live in app-folder.js.
 
-// Library/folder rendering is explicit. Every project-list rebuild is followed by
-// renderFoldersAndFilter(); no MutationObserver/frame lock is used here because it
-// can suppress a real root/folder navigation that happens in the same frame.
-
 // Library drag/drop handlers live in app-library-drag.js.
 
 ensureFolders();

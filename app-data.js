@@ -79,7 +79,7 @@ function makeProjectData(){
     pageNotes:JSON.parse(JSON.stringify(pageNotes))
   };
 }
-function freshProjectData(title="新しいプロジェクト",pages=1){
+function freshProjectData(title="",pages=1){
   const n=Math.max(1,Math.min(PROJECT_PAGE_MAX,pages));
   return {
     title,creationStartDate:localDate(),deadline:"",totalPages:n,progress:createProgress(n),notApplicable:createNotApplicable(n),stages:cloneStages(DEFAULT_STAGES),folderId:null,

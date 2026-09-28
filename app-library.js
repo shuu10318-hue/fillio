@@ -1,5 +1,4 @@
-/* Fillio — Library rendering module
-   Rendering only. Folder mutations and Library drag/drop remain in app.js. */
+/* Fillio — Library rendering module. */
 
 function stepUnit(value){
   return Math.abs(Number(value))===1?"Step":"Steps";
@@ -82,12 +81,12 @@ function renderProjectList(){
     const item=document.createElement("div");
     item.className="project-item";
     item.dataset.projectId=id; item.dataset.orderKey="p:"+id;
-    // Keep Library/folder visibility correct from the moment the card enters the DOM.
     // Keep folder visibility correct immediately when the card enters the DOM.
     item.style.display=((p.folderId||null)===currentFolderId)?"":"none";
-    const donePages=(p.progress||[]).filter((r,pi)=>Array.isArray(r)&&r.some((_,si)=>!p.notApplicable?.[pi]?.[si])&&r.every((v,si)=>p.notApplicable?.[pi]?.[si]||v===2)).length;
+    const donePages=(p.progress||[]).filter((r,pi)=>Array.isArray(r)&&r.length>0&&r.every((v,si)=>p.notApplicable?.[pi]?.[si]||v===2)).length;
     const dash=projectDashboardStats(p);
     const donePct=projectPercent(p);
+    const projectComplete=donePct===100;
     const stageStats=projectStageStats(p);
     const expanded=expandedStageDetails.has(id);
     const stageValueMode=projectStageValueMode(id);
@@ -96,7 +95,7 @@ function renderProjectList(){
     item.innerHTML=`<div class="project-item-main">
       <div style="min-width:0">
         <button class="project-open-title" type="button" aria-label="${t("library.openInput")}" title="${t("library.openInput")}"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span class="project-item-title" data-user-text="1"></span></button>
-        ${donePages>=p.totalPages ? `
+        ${projectComplete ? `
 <div class="project-summary project-summary-complete">
   <div class="project-summary-main"><b>${donePages} / ${p.totalPages}P</b><strong>✓ ${t("library.completed")}</strong></div>
   <div class="project-progress-track dual"><i class="started" style="width:100%"></i><i class="done" style="width:100%"></i></div>
@@ -171,7 +170,7 @@ function renderFoldersAndFilter(){
    el.style.display=(!p?.trashedAt&&(p?.folderId||null)===currentFolderId)?"":"none";
  });
  if(currentFolderId){
-   // フォルダ内の各作品に「フォルダから戻す」を表示
+   // フォルダ内の各プロジェクトに「フォルダから戻す」を表示
    [...list.querySelectorAll(".project-item[data-project-id]")].forEach(item=>{
      const pid=item.dataset.projectId;
      const p=projectStore.projects[pid];
