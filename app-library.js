@@ -1,6 +1,10 @@
 /* Fillio — Library rendering module
    Rendering only. Folder mutations and Library drag/drop remain in app.js. */
 
+function stepUnit(value){
+  return Math.abs(Number(value))===1?"Step":"Steps";
+}
+
 function projectPercent(p){
   const vals=(p.progress||[]).flat();
   if(!vals.length)return 0;
@@ -97,8 +101,8 @@ function renderProjectList(){
   </div>
   <div class="project-dashboard-strip project-dashboard-compact">
     <div><span>${t("library.started")}</span><b>${dash.startedPct}%</b></div>
-    <div><span>${t("library.today")}</span><b>${dash.todayDone>=0?"+":""}${dash.todayDone}</b></div>
-    <div><span>${t("library.sevenDays")}</span><b>${dash.weekDone}</b></div>
+    <div><span>${t("library.today")}</span><b>${dash.todayDone>=0?"+":""}${dash.todayDone} <small class="step-unit">${stepUnit(dash.todayDone)}</small></b></div>
+    <div><span>${t("library.sevenDays")}</span><b>${dash.weekDone} <small class="step-unit">${stepUnit(dash.weekDone)}</small></b></div>
   </div>
 </div>`}
       </div>
@@ -107,7 +111,7 @@ function renderProjectList(){
         <button class="project-edit-button project-icon-button" type="button" aria-label="${t("library.projectSettings")}" title="${t("library.projectSettings")}"><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.09A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.09A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.09A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.13.37.35.7.64.96.3.27.68.42 1.08.44H21v4h-.09A1.7 1.7 0 0 0 19.4 15z"/></svg></button>
       </div>
     </div>
-    <button class="project-stage-toggle" type="button" aria-expanded="${expanded}"><span>${t("library.stageDetails")}</span><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></button>
+    <button class="project-stage-toggle" type="button" aria-expanded="${expanded}"><span>${t("library.stageDetails")}</span><span class="project-stage-toggle-end"><small class="project-stage-unit">Steps</small><svg class="icon-line" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></span></button>
     <div class="project-stage-details${expanded?" open":""}">${detailRows}</div>`;
     item.querySelector(".project-item-title").textContent=title;
     item.querySelectorAll(".project-stage-name").forEach((el,i)=>{el.textContent=stageStats[i]?.name||t("stage.new")});

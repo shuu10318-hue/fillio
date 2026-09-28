@@ -970,6 +970,9 @@ body.library-drag-active .drag-trash-zone.over{
 .project-progress-track.dual>.done{background:var(--progress-done)}
 
 .project-stage-toggle{width:100%;height:34px;margin-top:10px;padding:0 3px;border:0;border-top:1px solid var(--border);border-radius:0;background:transparent;color:var(--muted);display:flex;align-items:flex-end;justify-content:space-between;font-size:11px;font-weight:700;cursor:pointer}
+.project-stage-toggle-end{display:flex;align-items:center;gap:6px}
+.project-stage-unit,.step-unit{font-size:10px;font-weight:600;line-height:1;color:var(--muted)}
+.project-dashboard-strip b .step-unit{font-size:9px}
 .project-stage-toggle .icon-line{width:16px;height:16px;transition:transform .18s ease}
 .project-stage-toggle[aria-expanded="true"] .icon-line{transform:rotate(180deg)}
 .project-stage-details{display:none;padding:10px 2px 2px}
