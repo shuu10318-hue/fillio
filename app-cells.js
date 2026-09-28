@@ -15,6 +15,7 @@ let paintMode=false;
 let paintAxis=null;
 let paintStartX=0,paintStartY=0;
 let paintStage=-1,paintValue=0;
+let paintNaGesture=false,paintNaValue=false;
 let paintSourcePage=-1;
 let paintSourceCell=null;
 let paintPreviewCells=new Set();
@@ -39,6 +40,16 @@ function cancelPaintHold(){
   if(paintHoldTimer){clearTimeout(paintHoldTimer);paintHoldTimer=null}
 }
 function paintKey(p,s){return `${p}:${s}`}
+function setNaPreviewVisual(cell,isNA){
+  const p=Number(cell.dataset.pageIndex),s=Number(cell.dataset.stageIndex);
+  cell.classList.remove("state0","state1","state2","is-na");
+  cell.classList.add("state"+progress[p][s]);
+  cell.classList.toggle("is-na",isNA);
+  cell.textContent=isNA?"N/A":"";
+}
+function canPaintNaCell(p,s){
+  return paintNaValue ? progress[p]?.[s]===0 : Boolean(notApplicable?.[p]?.[s]);
+}
 function getPaintCell(p,s){
   return pages.querySelector(`.progress-cell[data-page-index="${p}"][data-stage-index="${s}"]`);
 }
@@ -74,7 +85,12 @@ function showPaintPreview(endPage,endStage){
   for(const key of next){
     const [p,s]=key.split(":").map(Number);
     const cell=getPaintCell(p,s);
-    if(cell && !notApplicable?.[p]?.[s])setCellVisual(cell,paintValue);
+    if(!cell)continue;
+    if(paintNaGesture){
+      if(canPaintNaCell(p,s))setNaPreviewVisual(cell,paintNaValue);
+    }else if(!notApplicable?.[p]?.[s]){
+      setCellVisual(cell,paintValue);
+    }
   }
   paintPreviewCells=next;
 }
@@ -167,9 +183,15 @@ function endPaint(commit){
     let changed=false;
     for(const key of paintPreviewCells){
       const [p,s]=key.split(":").map(Number);
-      if(notApplicable?.[p]?.[s])continue;
-      if(progress[p][s]!==paintValue)changed=true;
-      progress[p][s]=paintValue;
+      if(paintNaGesture){
+        if(!canPaintNaCell(p,s))continue;
+        if(Boolean(notApplicable[p][s])!==paintNaValue)changed=true;
+        notApplicable[p][s]=paintNaValue;
+      }else{
+        if(notApplicable?.[p]?.[s])continue;
+        if(progress[p][s]!==paintValue)changed=true;
+        progress[p][s]=paintValue;
+      }
     }
     paintPreviewCells.clear();
     if(changed)fillioHaptic(18);
@@ -177,18 +199,22 @@ function endPaint(commit){
   }else{
     restorePaintPreview();
   }
+  paintNaGesture=false;
 }
 pages.addEventListener('touchstart',e=>{
   if(e.touches.length!==1)return;
   const cell=e.target.closest?.('.progress-cell');
   if(!cell)return;
-  if(naMode)return;
   const sourceP=Number(cell.dataset.pageIndex),sourceS=Number(cell.dataset.stageIndex);
-  if(notApplicable?.[sourceP]?.[sourceS])return;
+  if(naMode){
+    // N/A paint starts only from an empty or already-N/A cell. Filled cells remain protected.
+    if(progress?.[sourceP]?.[sourceS]!==0 && !notApplicable?.[sourceP]?.[sourceS])return;
+  }else if(notApplicable?.[sourceP]?.[sourceS])return;
   cancelPaintHold();
   stopPaintAutoScroll();
   paintMode=false;
   paintAxis=null;
+  paintNaGesture=false;
   paintLastHapticKey=null;
   paintPreviewCells.clear();
   paintStartX=paintLastX=e.touches[0].clientX;
@@ -199,10 +225,13 @@ pages.addEventListener('touchstart',e=>{
     if(!Number.isInteger(p)||!Number.isInteger(s))return;
     paintMode=true;
     paintStage=s;
+    paintNaGesture=naMode;
+    paintNaValue=paintNaGesture?Boolean(notApplicable?.[p]?.[s]):false;
     paintValue=progress[p][s];
     paintSourcePage=p;
     paintLastHapticKey=paintKey(p,s);
     paintPreviewCells=new Set([paintKey(p,s)]);
+    if(paintNaGesture)setNaPreviewVisual(cell,paintNaValue);
     cell.classList.add('paint-source');
     suppressCellClickUntil=Date.now()+1000;
     suppressPageSwipeUntil=Date.now()+1000;
