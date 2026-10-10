@@ -1195,3 +1195,8 @@ body.library-drag-active .drag-trash-zone.over{
 .progress-cell.is-na::after{pointer-events:none}
 :root[data-cell-shape="circle"] .progress-cell.is-na::before,:root[data-cell-shape="circle"] .progress-cell.is-na::after,:root[data-cell-shape="star"] .progress-cell.is-na::before,:root[data-cell-shape="star"] .progress-cell.is-na::after{display:none!important}
 :root[data-cell-shape="circle"] .progress-cell.is-na,:root[data-cell-shape="star"] .progress-cell.is-na{border:1px solid var(--cell-border)!important;border-radius:8px!important}
+
+.drive-restore-choices{margin-top:10px;display:grid;gap:8px}
+.drive-restore-choices[hidden]{display:none}
+.drive-restore-choices select{width:100%;min-height:44px;border:1px solid var(--border);border-radius:9px;background:var(--surface,white);color:var(--text);padding:8px}
+.drive-restore-choices button{min-height:44px}
